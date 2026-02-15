@@ -1,5 +1,6 @@
 <script>
     import Button from "$lib/components/ui/button/button.svelte";
+      import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import Input from "$lib/components/ui/input/input.svelte";
     import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 </script>
@@ -48,5 +49,20 @@ href="#"
 <div>
     Input:
     <Input />
+</div>
+<div>
+    Dropdown Menu:
+    <br/>
+    <DropdownMenu.Root>
+ <DropdownMenu.Trigger>
+    <Button variant="outline">Locale</Button>
+ </DropdownMenu.Trigger>
+ <DropdownMenu.Content>
+  <DropdownMenu.Group>
+   <DropdownMenu.Label>et</DropdownMenu.Label>
+   <DropdownMenu.Item>en</DropdownMenu.Item>
+  </DropdownMenu.Group>
+ </DropdownMenu.Content>
+</DropdownMenu.Root>
 </div>
 </div>
