@@ -1,13 +1,22 @@
+<script>
+    import Button from "$lib/components/ui/button/button.svelte";
+</script>
+
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
 
-<a
-  class="group inline-block rounded-full bg-linear-to-r from-pink-500 via-red-500 to-yellow-500 p-0.5 hover:text-white"
-  href="#"
->
-  <span
-    class="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent"
-  >
-    tailwind test btn
-  </span>
-</a>
+
+<div>
+    <a
+    class="group inline-block rounded-full bg-linear-to-r from-pink-500 via-red-500 to-yellow-500 p-0.5 hover:text-white"
+    href="#"
+    >
+    <span
+        class="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent"
+    >
+        raw tailwind btn
+    </span>
+    </a>
+
+    <Button variant="outline" size="lg">sveltekit button</Button>
+</div>
