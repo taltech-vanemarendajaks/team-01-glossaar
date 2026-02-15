@@ -1,19 +1,21 @@
 <script>
     import Button from "$lib/components/ui/button/button.svelte";
+    import Input from "$lib/components/ui/input/input.svelte";
     import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 </script>
 
 <style lang="scss">
-    main {
-        padding: 2rem;
-    }
     h2 {
         margin-top: 3rem;
     }
     div {
         margin-bottom: 1rem;
+        width: 50%;
     }
+
 </style>
+
+<div class="p-2 m-1 border-solid border-2 border-gray-300 rounded">
 
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
@@ -42,4 +44,9 @@ href="#"
 <div>
     Textarea:
     <Textarea/>
+</div>
+<div>
+    Input:
+    <Input />
+</div>
 </div>
