@@ -1,0 +1,60 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Compiled class files
+*.class
+
+# Logs
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# IDE - IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# IDE - Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+ehthumbs.db
+
+# Environment variables
+.env
+
+# Build directories
+out/
+build/
+
+# Test output
+surefire-reports/
+failsafe-reports/
+
+# Lombok generated files
+delombok/
+
+# Spring Boot Devtools
+.springBeans
+
+# Temporary files
+*.swp
+*.tmp
