@@ -1,85 +1,79 @@
 <script>
-    import Button from "$lib/components/ui/button/button.svelte";
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-      import * as Tabs from "$lib/components/ui/tabs/index.js";
-    import Input from "$lib/components/ui/input/input.svelte";
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+  import Button from '$lib/components/ui/button/button.svelte';
+  import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+  import * as Tabs from '$lib/components/ui/tabs/index.js';
+  import Input from '$lib/components/ui/input/input.svelte';
+  import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 </script>
 
-<style lang="scss">
-    h2 {
-        margin-top: 3rem;
-    }
-    div {
-        margin-bottom: 1rem;
-        width: 50%;
-    }
+<div class="m-1 rounded border-2 border-solid border-gray-300 p-2">
+  <h1>Welcome to SvelteKit</h1>
+  <p>
+    Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation
+  </p>
 
-</style>
+  <h2>using raw tailwind</h2>
+  <a
+    class="group inline-block rounded-full bg-linear-to-r from-pink-500 via-red-500 to-yellow-500 p-0.5 hover:text-white"
+    href="#"
+  >
+    <span
+      class="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent"
+    >
+      raw tailwind btn
+    </span>
+  </a>
 
-<div class="p-2 m-1 border-solid border-2 border-gray-300 rounded">
-
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
-
-
-<h2> using raw tailwind</h2>
-<a
-class="group inline-block rounded-full bg-linear-to-r from-pink-500 via-red-500 to-yellow-500 p-0.5 hover:text-white"
-href="#"
->
-<span
-    class="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent"
->
-    raw tailwind btn
-</span>
-</a>
-
-
-
-
-<h2>Using shadcn components</h2>
-<div>
+  <h2>Using shadcn components</h2>
+  <div>
     Button:
     <Button variant="outline" size="lg">sveltekit button</Button>
-</div>
-<div>
+  </div>
+  <div>
     Textarea:
-    <Textarea/>
-</div>
-<div>
+    <Textarea />
+  </div>
+  <div>
     Input:
     <Input />
-</div>
-<div>
+  </div>
+  <div>
     Dropdown Menu:
-    <br/>
+    <br />
     <DropdownMenu.Root>
- <DropdownMenu.Trigger>
-    <Button variant="outline">Locale</Button>
- </DropdownMenu.Trigger>
- <DropdownMenu.Content>
-  <DropdownMenu.Group>
-   <DropdownMenu.Label>et</DropdownMenu.Label>
-   <DropdownMenu.Item>en</DropdownMenu.Item>
-  </DropdownMenu.Group>
- </DropdownMenu.Content>
-</DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <Button variant="outline">Locale</Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Group>
+          <DropdownMenu.Label>et</DropdownMenu.Label>
+          <DropdownMenu.Item>en</DropdownMenu.Item>
+        </DropdownMenu.Group>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  </div>
+
+  <div>
+    Tabs:
+    <Tabs.Root value="add" class="w-[400px]">
+      <Tabs.List>
+        <Tabs.Trigger value="add">Add</Tabs.Trigger>
+        <Tabs.Trigger value="list">List</Tabs.Trigger>
+        <Tabs.Trigger value="quiz">Quiz</Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="add">Add a word</Tabs.Content>
+      <Tabs.Content value="list">List words</Tabs.Content>
+      <Tabs.Content value="quiz">Take a quiz</Tabs.Content>
+    </Tabs.Root>
+  </div>
 </div>
 
-<div>
-    Tabs:
-<Tabs.Root value="add" class="w-[400px]">
- <Tabs.List>
-  <Tabs.Trigger value="add">Add</Tabs.Trigger>
-  <Tabs.Trigger value="list">List</Tabs.Trigger>
-  <Tabs.Trigger value="quiz">Quiz</Tabs.Trigger>
- </Tabs.List>
- <Tabs.Content value="add">
-  Add a word
- </Tabs.Content>
- <Tabs.Content value="list">List words</Tabs.Content>
- <Tabs.Content value="quiz">Take a quiz</Tabs.Content>
-</Tabs.Root>
-</div>
-</div>
+<style lang="scss">
+  h2 {
+    margin-top: 3rem;
+  }
+  div {
+    margin-bottom: 1rem;
+    width: 50%;
+  }
+</style>
