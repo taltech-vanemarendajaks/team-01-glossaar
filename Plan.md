@@ -4,14 +4,14 @@ Plaani puhul prioritiseerime vastavalt Glossaar.md roadmap failis kirjeldatud pe
 
 ## Setup
 
-- [ ] Loo uus repo + ligipääsud + protected main (#1)
-- [ ] Svelte starter project (#2)
+- [x] Loo uus repo + ligipääsud + protected main (#1)
+- [x] Svelte starter project (#2)
 - [ ] Java Spring starter project (#3)
 - [ ] ise nullist authi ei teeks - oauth2 integratsioon BE (kas FE tahab ka midagi?) (#4)
 - [ ] mingisugune ORM lahendus üles seada (Java maailma standard on JPA?) (#5)
 - [ ] mingisugune light-weight svelte komponentide raamistik üles seada (btn, card, textfield, mida veel vaja?) bootstrap / tailwind / miski muu? (#6)
 - [ ] võiks mingi automaatne format-on-save lahendus olla BE (#7)
-- [ ] võiks mingi automaatne format-on-save lahendus olla FE (eslint + prettier? miskit tuleb ehk automaatselt kaasa) (#8)
+- [x] võiks mingi automaatne format-on-save lahendus olla FE (eslint + prettier? miskit tuleb ehk automaatselt kaasa) (#8)
 - [ ] kuidas lokaalselt jooksutame? (ka docker?) (#9)
 
 ## developemnt
@@ -35,8 +35,8 @@ Plaani puhul prioritiseerime vastavalt Glossaar.md roadmap failis kirjeldatud pe
 
 ## CI/CD
 
-- [ ] 1. Serverise docker (#23)
-- [ ] 2. Serverisse nginx (#24)
+- [x] 1. Serverise docker (#23)
+- [x] 2. Serverisse nginx (#24)
 - [ ] 3. Serverisse andmebaas püsti panna (saab sama psql instance kasutada mis borsibaar) (#25)
 - [ ] FE build + ghrc deploy action + secretid (server + vajadusel GH) (#26)
 - [ ] BE build + ghrc BE deploy action + secretid (server + vajadusel GH) (#27)
@@ -44,4 +44,4 @@ Plaani puhul prioritiseerime vastavalt Glossaar.md roadmap failis kirjeldatud pe
 
 ## Design
 
-- [ ] vaadete wireframe'id luua vastavalt roadmapis väljatoodule (#29)
+- [x] vaadete wireframe'id luua vastavalt roadmapis väljatoodule (#29)

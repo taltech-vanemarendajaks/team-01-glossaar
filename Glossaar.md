@@ -33,6 +33,7 @@
 - i18n
 - Mingisugune AI lahendus
 - Priviligeeritud admin roll
+- Võiks saada vaadete vahel liikuda lohistades vasakule-paremale.
 
 ---
 
