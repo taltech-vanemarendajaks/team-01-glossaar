@@ -1,6 +1,7 @@
 <script>
     import Button from "$lib/components/ui/button/button.svelte";
-      import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+      import * as Tabs from "$lib/components/ui/tabs/index.js";
     import Input from "$lib/components/ui/input/input.svelte";
     import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 </script>
@@ -64,5 +65,21 @@ href="#"
   </DropdownMenu.Group>
  </DropdownMenu.Content>
 </DropdownMenu.Root>
+</div>
+
+<div>
+    Tabs:
+<Tabs.Root value="add" class="w-[400px]">
+ <Tabs.List>
+  <Tabs.Trigger value="add">Add</Tabs.Trigger>
+  <Tabs.Trigger value="list">List</Tabs.Trigger>
+  <Tabs.Trigger value="quiz">Quiz</Tabs.Trigger>
+ </Tabs.List>
+ <Tabs.Content value="add">
+  Add a word
+ </Tabs.Content>
+ <Tabs.Content value="list">List words</Tabs.Content>
+ <Tabs.Content value="quiz">Take a quiz</Tabs.Content>
+</Tabs.Root>
 </div>
 </div>
