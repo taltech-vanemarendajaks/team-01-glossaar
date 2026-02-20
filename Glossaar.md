@@ -34,6 +34,7 @@
 - Mingisugune AI lahendus
 - Priviligeeritud admin roll
 - Võiks saada vaadete vahel liikuda lohistades vasakule-paremale.
+- dark mode / light mode võimekus + switch?
 
 ---
 
