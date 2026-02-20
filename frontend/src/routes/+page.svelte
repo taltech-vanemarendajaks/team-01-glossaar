@@ -6,7 +6,7 @@
   import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 </script>
 
-<div class="m-1 rounded border-2 border-solid border-gray-300 p-2">
+<div>
   <h1>Welcome to SvelteKit</h1>
   <p>
     Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation
@@ -74,6 +74,5 @@
   }
   div {
     margin-bottom: 1rem;
-    width: 50%;
   }
 </style>
