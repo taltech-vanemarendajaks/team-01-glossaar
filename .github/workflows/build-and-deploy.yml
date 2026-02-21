@@ -36,5 +36,6 @@ jobs:
           context: ./${{ inputs.component }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/${{ inputs.component }}:latest
-            ghcr.io/${{ github.repository }}/${{ inputs.component }}:${{ github.sha }}
+            glossaar-${{ inputs.component }}:latest
+            ghcr.io/taltech-vanemarendajaks/team-01-glossaar-${{ inputs.component }}:latest
+            ghcr.io/taltech-vanemarendajaks/team-01-glossaar-${{ inputs.component }}:${{ github.sha }}
