@@ -1,4 +1,4 @@
-FROM node:24-alpine AS build-step
+FROM node:lts-alpine AS build-step
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build
 
 
-FROM nginx:alpine
+FROM nginx:stable-alpine
 COPY --from=build-step /app/build /usr/share/nginx/html
 
 EXPOSE 80
