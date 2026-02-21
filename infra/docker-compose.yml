@@ -3,9 +3,13 @@
 services:
   frontend:
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar-frontend:latest
+    # No ports exposed, as nginx will proxy requests to its default port 80
+  nginx:
+    image: nginx:latest
     ports:
-      - "8080:80"
+      - "80:80"
+    volumes:
+      - ./nginx/:/etc/nginx/:ro
 
-# nginx:  TODO: setup
 # BE:  TODO: setup
 # DB:  TODO: setup
