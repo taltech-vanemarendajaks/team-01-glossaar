@@ -5,7 +5,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [sveltekit()],
+  plugins: [tailwindcss(), sveltekit()],
+
   server: {
     host: true,
     port: 5173,
@@ -15,12 +16,15 @@ export default defineConfig({
         target: 'http://backend:8080',
         changeOrigin: true
       }
-  plugins: [tailwindcss(), sveltekit()],
+    }
+  },
+
   resolve: {
     alias: {
       $lib: path.resolve('./src/lib')
     }
   },
+
   test: {
     expect: { requireAssertions: true },
     projects: [
