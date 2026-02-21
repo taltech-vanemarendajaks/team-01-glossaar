@@ -1,6 +1,8 @@
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
+import path from 'path';
 
 export default defineConfig({
   plugins: [sveltekit()],
@@ -13,6 +15,10 @@ export default defineConfig({
         target: 'http://backend:8080',
         changeOrigin: true
       }
+  plugins: [tailwindcss(), sveltekit()],
+  resolve: {
+    alias: {
+      $lib: path.resolve('./src/lib')
     }
   },
   test: {

@@ -1,33 +1,19 @@
-# sv
+# Glossaar
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## Devloping on a local machine
 
-## Creating a project
+### Frontend
 
-If you're seeing this, you've probably already done this step. Congrats!
+Install the runtime and deps manually:
+    - Install some modern node.js LTS version (nvm or other version manager recommended)
+    - run `npm install` to install projects dependencies
+    - run `npm run dev` to start local development server
 
-```sh
-# create a new project
-npx sv create my-app
-```
+Which ever one you choose, you'll have the frontend dev server running at [localhost:5173](http://localhost:5173/).
 
-To recreate this project with the same configuration:
+## Framework
 
-```sh
-# recreate this project
-npx sv create --template minimal --types ts --add prettier eslint sveltekit-adapter="adapter:static" vitest="usages:unit,component" --install npm frontend
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+Frontend uses [shadcn](https://shadcn-svelte.com/docs/components) and [tailwind](https://tailwindcss.com/)
 
 ## Building
 
@@ -40,3 +26,12 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+
+## misc
+
+To recreate this project with the same configuration:
+
+```sh
+# recreate this project
+npx sv create --template minimal --types ts --add prettier eslint sveltekit-adapter="adapter:static" vitest="usages:unit,component" --install npm frontend
+```

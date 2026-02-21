@@ -14,11 +14,19 @@
 
   <h2>using raw tailwind</h2>
   <a
+<<<<<<< HEAD
           class="group inline-block rounded-full bg-linear-to-r from-pink-500 via-red-500 to-yellow-500 p-0.5 hover:text-white"
           href="#"
   >
     <span
             class="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent"
+=======
+    class="group inline-block rounded-full bg-linear-to-r from-pink-500 via-red-500 to-yellow-500 p-0.5 hover:text-white"
+    href="#"
+  >
+    <span
+      class="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent"
+>>>>>>> origin/main
     >
       raw tailwind btn
     </span>
@@ -77,4 +85,8 @@
   div {
     margin-bottom: 1rem;
   }
+<<<<<<< HEAD
 </style>
+=======
+</style>
+>>>>>>> origin/main
