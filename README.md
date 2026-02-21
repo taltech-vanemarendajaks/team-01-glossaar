@@ -12,7 +12,7 @@ Currently the server has docker running and serving the traffic via nginx contai
 
 ### frontend GHCR deploy
 
-#### should be done in the repository via GitHub action Build and publish Docker image
+Should be done in the repository via GitHub Action 'Build and publish Docker image'
 
 #### can be done locally as well
 
