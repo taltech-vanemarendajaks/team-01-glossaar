@@ -4,24 +4,24 @@ Readmes can be found in frontend and backend directories
 
 ## infra setup
 
-### frontend
+### frontend manual deploy
 
 Build the files locally:
-`cd frontent && npm run dev`
+`cd frontend && npm run build`
 
-Move files to server:
-`scp -P 22 -r build ubuntu@193.40.157.84:~/temp-build`
+Move files to server(presumes ssh-agent/config is set up correctly, if not then add -i ~/.ssh/{keyname}):
+`scp -P 22 -r build/* ubuntu@193.40.157.84:~/temp-frontend-build`
 
 Move to the correct directory(this path is set in the nginx config):
-`sudo mv temp-build/* /var/www/glossaar/*`
+`sudo rsync -av ~/temp-frontend-build/ /var/www/glossaar/`
 
-### nginx
+### nginx manual deploy
 
-Move files to server
-`scp -P 22 -r infra/nginx/*  ubuntu@193.40.157.84:~/temp-nginx`
+Move files to server(presumes ssh-agent/config is set up correctly, if not then add -i ~/.ssh/{keyname}):
+`scp -P 22 -r infra/nginx/* ubuntu@193.40.157.84:~/temp-nginx`
 
-On the server, move the files to the correct directory:
-`sudo rm -rf /etc/nginx/sites-enabled &&  sudo mv temp-nginx/* /etc/nginx/`
+On the server, sync the files to the correct directory:
+`sudo rsync -av ~/temp-nginx/ /etc/nginx/`
 
-Tell nginx to reload the config:
-`sudo nginx -s reload`
+Tell nginx to test and reload the config:
+`sudo nginx -t && sudo nginx -s reload`
