@@ -4,6 +4,17 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
   plugins: [sveltekit()],
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://backend:8080',
+        changeOrigin: true
+      }
+    }
+  },
   test: {
     expect: { requireAssertions: true },
     projects: [
@@ -20,7 +31,6 @@ export default defineConfig({
           exclude: ['src/lib/server/**']
         }
       },
-
       {
         extends: './vite.config.ts',
         test: {
