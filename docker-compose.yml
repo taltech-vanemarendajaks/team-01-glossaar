@@ -4,7 +4,7 @@ services:
   frontend:
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar-frontend:latest
     ports:
-      - "80:80"
+      - "8080:80"
 
 # nginx:  TODO: setup
 # BE:  TODO: setup
