@@ -4,6 +4,8 @@ services:
   frontend:
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar-frontend:latest
     # No ports exposed, as nginx will proxy requests to its default port 80
+    restart: unless-stopped
+
   nginx:
     image: nginx:latest
     ports:
@@ -13,6 +15,17 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/sites-enabled:/etc/nginx/sites-enabled:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro # using the certs we have on the server
+    restart: unless-stopped
+
+  # handles pulling new images and restarting containers when updates are available.
+  # a simlple cron script could do the same but currenly docker in focus
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=60  # Check every 1 minute
+    restart: unless-stopped
 
 # BE:  TODO: setup
 # DB:  TODO: setup
