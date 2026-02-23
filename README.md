@@ -4,8 +4,6 @@ Readmes can be found in frontend and backend directories
 
 ## infra setup
 
-## Docker
-
 ### server
 
 Currently the server has docker running and serving the traffic via nginx container. The only other container we have currently is the `frontend` container which it servers via glossaar.href.ee. There is also `watchtower` container that handles pulling and instanciating the containers automatically. No manual deployments should be necessary.
@@ -14,7 +12,7 @@ Currently the server has docker running and serving the traffic via nginx contai
 
 Should be done in the repository via GitHub Action 'Build and publish Docker image'
 
-#### can be done locally as well
+#### FE deploy to GHCR can be done locally as well
 
 Commands presume you are in the `frontend` directory and that you have authenticated with your GitHub PAT(Personal Access Token).
 `echo <GH_PAT> | docker login ghcr.io -u <GH_USERNAME> --password-stdin`
@@ -57,3 +55,7 @@ On the server, sync the files to the correct directory:
 
 Tell nginx to test and reload the config:
 `sudo nginx -t && sudo nginx -s reload`
+
+#### Borsibaar setup
+
+<!-- TODO: -->
