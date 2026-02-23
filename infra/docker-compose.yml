@@ -19,13 +19,13 @@ services:
 
   # handles pulling new images and restarting containers when updates are available.
   # a simlple cron script could do the same but currenly docker in focus
-  watchtower:
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - WATCHTOWER_POLL_INTERVAL=60  # Check every 1 minute
-    restart: unless-stopped
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - WATCHTOWER_POLL_INTERVAL=60  # Check every 1 minute
+  #   restart: unless-stopped
 
 # BE:  TODO: setup
 # DB:  TODO: setup
