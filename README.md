@@ -6,7 +6,24 @@ Readmes can be found in frontend and backend directories
 
 ### server
 
-Currently the server has docker running and serving the traffic via nginx container. The only other container we have currently is the `frontend` container which it servers via glossaar.href.ee. There is also `watchtower` container that handles pulling and instanciating the containers automatically. No manual deployments should be necessary.
+Currently the server has docker running and serving the traffic via nginx.
+
+#### Generic overview of our nginx setup:
+
+NB! The following gets messed up via markdown parser. Look at the source itselt.
+
+entrypoint (nginx.conf)
+    -> glossaar subdomain (glossaar.href.ee.conf)
+        -> path / goes to glossaar frontend nginx docker container
+            -> Serves static files within the container
+        -> path /api/ goes to glossaar backend java docker container
+            -> Handles the remainign routes itself
+
+    -> borsibaar subdomain (borsibaar.href.ee.conf)
+        -> traffic is proxied to borsibaar nginx container
+            -> borsibaar nginx handles FE and BE paths itself
+
+
 
 ### FE and BE GHCR image deploy
 
