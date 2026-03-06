@@ -1,17 +1,15 @@
 name: Build and publish Docker image
 
-# TODO: if main branch gets a merge, check whether frontend and backend have changes, and only build and deploy the one that has changes
-
 on:
   workflow_dispatch:
     inputs:
       component:
-        description: Component to build and deploy
+        description: Application component to build and deploy to GHCR
         type: choice
         required: true
         options:
           - frontend
-          # - backend
+          - backend
 
 permissions:
   contents: read
