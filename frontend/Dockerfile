@@ -16,8 +16,6 @@ FROM nginx:stable-alpine
 # target is default nginx html directory
 COPY --from=build-step /app/build /usr/share/nginx/html
 
-# See lahendus peaks toimima.
-
 # SPA fallback: serve index.html for all unknown routes
 RUN rm /etc/nginx/conf.d/default.conf
 RUN cat <<'EOF' > /etc/nginx/conf.d/default.conf
