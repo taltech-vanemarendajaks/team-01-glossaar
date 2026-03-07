@@ -25,11 +25,15 @@ entrypoint (nginx.conf)
 
 
 
-### FE and BE GHCR image deploy
+### FE/BE GHCR image deploy
 
-Should be done in the repository via GitHub Action 'Build and publish Docker image'.
+After deploying the image to GHCR registry, you should ssh into the server, navigate to ./team-01-glossaar/infra and pull the new images and create new containers.
 
-#### GHCR deploy can be done locally as well
+#### Deploy to GHCR via GH Action "Build and publish Docker image" (preferred method)
+
+Choose the correct application component and see the magic happening.
+
+#### GHCR deploy can also be done locally
 
 NB! {component} can be either `frontend` or `backend` and should be replaced before running the commands.
 
