@@ -1,17 +1,16 @@
 
-# presumes creating the network with `docker network create shared-proxy` beforehand
+# !!! presumes creating the network with `docker network create shared-proxy` beforehand (necessary for nginx to be able to communicate with borsibaar containers) !!!
 networks:
   shared-proxy:
     external: true
 
 services:
   frontend:
-    # No ports exposed, as nginx will proxy requests to its default port 8
-    image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar-frontend:latest
+    # No ports exposed, as nginx will proxy requests to its default port 80
+    image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/frontend:latest
     restart: unless-stopped
 
   # frontend:
-  #   # No ports exposed, as nginx will proxy requests to its default port 80
   #   build:
   #     context: ../frontend
   #     dockerfile: Dockerfile
@@ -19,11 +18,10 @@ services:
 
   backend:
     # No ports exposed, as nginx will proxy requests to its default port 8080
-    image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar-backend:latest
+    image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
     restart: unless-stopped
 
   # backend:
-  #   # No ports exposed, as nginx will proxy requests to its default port 8080
   #   build:
   #     context: ../backend
   #     dockerfile: Dockerfile

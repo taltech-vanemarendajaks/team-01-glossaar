@@ -37,15 +37,15 @@ Commands presume you are in the {component} directory and that you have authenti
 `shell echo <GH_PAT> | docker login ghcr.io -u <GH_USERNAME> --password-stdin`
 
 Build the {component} image(glossaar-{component}:latest tag is added automatically):
-`docker build --platform linux/amd64 --tag glossaar-{component} .`
+`docker build --platform linux/amd64 --tag glossaar/{component} .`
 
 Tag the image with artifactory - necessary for pushing to GHCR
-`docker tag glossaar-{component}:latest ghcr.io/taltech-vanemarendajaks/team-01-glossaar-{component}:latest`
+`docker tag glossaar/{component}:latest ghcr.io/taltech-vanemarendajaks/team-01-glossaar/{component}:latest`
 
 Push image to GHCR
-`docker push ghcr.io/taltech-vanemarendajaks/team-01-glossaar-{component}:latest`
+`docker push ghcr.io/taltech-vanemarendajaks/team-01-glossaar/{component}:latest`
 
-Then the image can be found at ghcr.io/taltech-vanemarendajaks/team-01-glossaar-{component}
+Then the image can be found at ghcr.io/taltech-vanemarendajaks/team-01-glossaar/{component}
 
 The image also should pop up at out repo page.
 
