@@ -1,17 +1,15 @@
 name: Build and publish Docker image
 
-# TODO: if main branch gets a merge, check whether frontend and backend have changes, and only build and deploy the one that has changes
-
 on:
   workflow_dispatch:
     inputs:
       component:
-        description: Component to build and deploy
+        description: Application component to build and deploy to GHCR
         type: choice
         required: true
         options:
           - frontend
-          # - backend
+          - backend
 
 permissions:
   contents: read
@@ -39,3 +37,5 @@ jobs:
           tags: |
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:latest
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:${{ github.sha }}
+
+# TODO: Add a step to trigger deployment on the server after pushing the image, e.g., via SSH or some webhook solution
