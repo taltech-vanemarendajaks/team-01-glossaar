@@ -23,7 +23,6 @@ jobs:
 
     steps:
       - name: Trigger component pull and restart on the server
-        id: ssh
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOST_IP }}
