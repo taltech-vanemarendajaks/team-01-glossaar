@@ -1,8 +1,9 @@
 
-# !!! presumes creating the network with `docker network create shared-proxy` beforehand (necessary for nginx to be able to communicate with borsibaar containers) !!!
-networks:
-  shared-proxy:
-    external: true
+# necessary for nginx to be able to communicate with borsibaar containers (currently disabled)
+# presumes creating the network with `docker network create shared-proxy` beforehand
+# networks:
+#   shared-proxy:
+#     external: true
 
 services:
   frontend:
@@ -39,7 +40,7 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - shared-proxy
+      # - shared-proxy
 
 # TODO: DB setup
 # postgres:
