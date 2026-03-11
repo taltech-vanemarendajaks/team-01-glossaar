@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: Application component to do a pull and restart on the server
+        type: choice
+        required: true
+        options:
+          - frontend
+          - backend
+
+  workflow_call:
+    inputs:
+      component:
+        description: Application component to do a pull and restart on the server
+        type: string
+        required: true
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger component pull and restart on the server
+        id: ssh
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.HOST_USERNAME }}
+          key: ${{ secrets.HOST_PRIVATE_KEY }}
+          port: ${{ secrets.HOST_PORT }}
+          script: |
+            cd /home/ubuntu/team-01-glossaar/infra
+
+            docker compose pull ${{ inputs.component }}
+            docker compose up -d ${{ inputs.component }}
+

@@ -24,3 +24,4 @@ A PR requires a minimum of 1 review from a team member. If anyone requests chang
 - GHCR - GitHub Container Registry
 - FE - Frontend
 - BE - Backend
+- Application component - 'frontend' or 'backend', an independent unit of our application
