@@ -10,14 +10,14 @@ Currently the server has docker running and serving the traffic via nginx.
 
 #### Generic overview of our nginx setup:
 
-NB! The following gets messed up via markdown parser. Look at the source itselt.
+NB! The following gets messed up via markdown parser. Look at the source itself.
 
 entrypoint (nginx.conf)
-    -> glossaar subdomain (glossaar.href.ee.conf)
-        -> path / goes to glossaar frontend nginx docker container
-            -> Serves static files within the container
-        -> path /api/ goes to glossaar backend java docker container
-            -> Handles the remainign routes itself
+-> glossaar subdomain (glossaar.href.ee.conf)
+-> path / goes to glossaar frontend nginx docker container
+-> Serves static files within the container
+-> path /api/ goes to glossaar backend java docker container
+-> Handles the remaining routes itself
 
     -> borsibaar subdomain (borsibaar.href.ee.conf)
         -> traffic is proxied to borsibaar nginx container
@@ -78,3 +78,51 @@ On the server, sync the files to the correct directory:
 
 Tell nginx to test and reload the config:
 `sudo nginx -t && sudo nginx -s reload` -->
+
+---
+### Development Database (Dev Only)
+
+We run a **PostgreSQL dev database** via Docker for local development.
+
+Before starting, make sure:
+- Docker is installed and running: 
+    `docker --version`
+- You are logged into GHCR if pulling private images:
+    `echo <GH_PAT> | docker login ghcr.io -u <GH_USERNAME> --password-stdin`
+- Your PAT needs at least the read:packages scope.
+The shared Docker network exists (run once per machine):
+   `docker network create shared-proxy`
+
+From the `infra` directory, follow these steps:
+
+# 1. Start all services (frontend, backend, nginx, and dev DB)
+`docker compose up -d`
+
+# 2. Check logs if needed
+`docker compose logs -f backend`   # view backend logs
+`docker compose logs -f db`        # view database logs
+
+# 3. Stop or restart containers as needed
+`docker compose stop db`        # stop only the dev database
+`docker compose restart backend`    # restart backend service
+`docker compose down`               # stop all containers
+
+## --- Notes / Tips ---
+
+### GHCR Authentication:
+ If you see "unauthorized" while pulling images, ensure your PAT is valid and has 'read:packages' scope.
+
+ Docker Network:
+ docker-compose.yml uses external network 'shared-proxy'. Create it once per machine.
+
+ Platform Mismatch (ARM64 / Apple Silicon):
+ You may see warnings like:
+   "The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8)"
+ This is normal; Docker will emulate AMD64 images on ARM64 hosts. Safe to ignore for dev purposes.
+ Optionally, specify platform in docker-compose.yml if desired:
+ frontend:
+   image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/frontend:latest
+   platform: linux/amd64
+ backend:
+   image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
+   platform: linux/amd64er will emulate AMD64 images on ARM64 hosts. Safe to ignore for dev purposes. 

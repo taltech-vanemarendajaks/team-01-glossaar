@@ -41,5 +41,15 @@ services:
       - default
       - shared-proxy
 
-# TODO: DB setup
-# postgres:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: glossaar_dev
+      POSTGRES_USER: glossaar
+      POSTGRES_PASSWORD: glossaar_dev_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
