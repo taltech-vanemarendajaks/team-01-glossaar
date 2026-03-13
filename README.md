@@ -19,11 +19,6 @@ entrypoint (nginx.conf)
         -> path /api/ goes to glossaar backend java docker container
             -> Handles the remainign routes itself
 
-    -> borsibaar subdomain (borsibaar.href.ee.conf)
-        -> traffic is proxied to borsibaar nginx container
-            -> borsibaar nginx handles FE and BE paths itself
-
-
 
 ### FE/BE GHCR image deploy
 

@@ -37,9 +37,9 @@ Plaani puhul prioritiseerime vastavalt Glossaar.md roadmap failis kirjeldatud pe
 
 - [x] 1. Serverise docker (#23)
 - [x] 2. Serverisse nginx (#24)
-- [ ] 3. Serverisse andmebaas püsti panna (saab sama psql instance kasutada mis borsibaar) (#25)
-- [x] FE build + ghrc FE deploy action + secretid (server + vajadusel GH) (#26)
-- [x] BE build + ghrc BE deploy action + secretid (server + vajadusel GH) (#27)
+- [ ] 3. Serverisse andmebaas püsti panna (eraldi konteiner) (#25)
+- [ ] FE build + ghrc deploy action + secretid (server + vajadusel GH) (#26)
+- [ ] BE build + ghrc BE deploy action + secretid (server + vajadusel GH) (#27)
 - [ ] Testide jooksutamine PRi avades, edukas run saab olema eeldus mergemiseks (#28)
 
 ## Design
