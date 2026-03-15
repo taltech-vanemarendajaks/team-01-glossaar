@@ -20,6 +20,7 @@ services:
     # No ports exposed, as nginx will proxy requests to its default port 8080
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
     restart: unless-stopped
+    env_file: ../backend/.env
 
   # backend:
   #   build:
@@ -44,10 +45,7 @@ services:
   db:
     image: postgres:16
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: glossaar_dev
-      POSTGRES_USER: glossaar
-      POSTGRES_PASSWORD: glossaar_dev_password
+    env_file: ../backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
