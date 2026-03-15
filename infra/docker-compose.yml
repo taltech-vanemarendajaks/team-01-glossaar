@@ -5,23 +5,11 @@ services:
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/frontend:latest
     restart: unless-stopped
 
-  # frontend:
-  #   build:
-  #     context: ../frontend
-  #     dockerfile: Dockerfile
-  #   restart: unless-stopped
-
   backend:
     # No ports exposed, as nginx will proxy requests to its default port 8080
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
     restart: unless-stopped
     env_file: ../backend/.env
-
-  # backend:
-  #   build:
-  #     context: ../backend
-  #     dockerfile: Dockerfile
-  #   restart: unless-stopped
 
   nginx:
     image: nginx:latest
@@ -37,7 +25,7 @@ services:
       - default
 
   db:
-    image: postgres:16
+    image: postgres:18
     restart: unless-stopped
     env_file: ../backend/.env
     volumes:
