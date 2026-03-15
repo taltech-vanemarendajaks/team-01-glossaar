@@ -8,22 +8,6 @@ Readmes can be found in frontend and backend directories
 
 Currently the server has docker running and serving the traffic via nginx.
 
-#### Generic overview of our nginx setup:
-
-NB! The following gets messed up via markdown parser. Look at the source itself.
-
-entrypoint (nginx.conf)
--> glossaar subdomain (glossaar.href.ee.conf)
--> path / goes to glossaar frontend nginx docker container
--> Serves static files within the container
--> path /api/ goes to glossaar backend java docker container
--> Handles the remaining routes itself
-
-    -> borsibaar subdomain (borsibaar.href.ee.conf)
-        -> traffic is proxied to borsibaar nginx container
-            -> borsibaar nginx handles FE and BE paths itself
-
-
 
 ### FE/BE GHCR image deploy
 
@@ -85,7 +69,7 @@ Tell nginx to test and reload the config:
 We run a **PostgreSQL dev database** via Docker for local development.
 
 Before starting, make sure:
-- Docker is installed and running: 
+- Docker is installed and running:
     `docker --version`
 - You are logged into GHCR if pulling private images:
     `echo <GH_PAT> | docker login ghcr.io -u <GH_USERNAME> --password-stdin`
@@ -125,4 +109,4 @@ From the `infra` directory, follow these steps:
    platform: linux/amd64
  backend:
    image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
-   platform: linux/amd64er will emulate AMD64 images on ARM64 hosts. Safe to ignore for dev purposes. 
+   platform: linux/amd64er will emulate AMD64 images on ARM64 hosts. Safe to ignore for dev purposes.
