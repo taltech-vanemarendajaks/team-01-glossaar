@@ -13,7 +13,7 @@ public class HealthController {
 
     @GetMapping("/api/hello")
     public String hello() {
-        return "Hello Estonia";
+        return "Hello World";
     }
 
     @GetMapping("/api/user")
