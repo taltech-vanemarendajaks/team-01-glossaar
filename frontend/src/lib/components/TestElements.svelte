@@ -1,237 +1,329 @@
 <script lang="ts">
     import { onMount } from 'svelte';
 
-    let status = 'Checking...';
-    let hello = 'Checking...';
-    let user = 'Checking...';
-    let error: string | null = null;
-
-    type DbUser = {
+    type Word = {
         id: number;
-        username: string;
-        displayName: string;
+        word: string;
+        explanation: string | null;
     };
 
-    let users: DbUser[] = [];
-    let username = '';
-    let displayName = '';
-    let saving = false;
-    let usersLoading = false;
+    type DeleteWordResponse = {
+        message: string;
+        id: number;
+    };
 
-    async function loadUsers() {
-        usersLoading = true;
+    type GetWordsResponse = {
+        items: Word[];
+        totalItems: number;
+        totalPages: number;
+        page: number;
+        size: number;
+        hasNext: boolean;
+        hasPrevious: boolean;
+        search: string;
+        sortBy: string;
+        sortDir: string;
+    };
+
+    let words: Word[] = [];
+    let wordsLoading = false;
+    let busy = false;
+    let filterLoading = false;
+
+    let error: string | null = null;
+    let success: string | null = null;
+
+    let newWord = '';
+    let newExplanation = '';
+
+    let patchId = '';
+    let patchWord = '';
+    let patchExplanation = '';
+
+    let deleteId = '';
+    let listSearch = '';
+    let page = 0;
+    let size = 10;
+    let totalItems = 0;
+    let totalPages = 0;
+    let hasNext = false;
+    let hasPrevious = false;
+    let sortBy = 'word';
+    let sortDir = 'asc';
+
+    function clearMessages() {
+        error = null;
+        success = null;
+    }
+
+    async function loadWords(targetPage = page) {
+        clearMessages();
+        wordsLoading = true;
         try {
-            const res = await fetch('/api/users');
-            if (!res.ok) throw new Error(`Users HTTP ${res.status}`);
-            users = await res.json();
+            const params = new URLSearchParams({
+                search: listSearch.trim(),
+                page: String(targetPage),
+                size: String(size),
+                sortBy,
+                sortDir
+            });
+            const res = await fetch(`/api/words?${params.toString()}`);
+            if (!res.ok) throw new Error(`GET /api/words -> HTTP ${res.status}`);
+            const payload = (await res.json()) as GetWordsResponse;
+            words = payload.items;
+            totalItems = payload.totalItems;
+            totalPages = payload.totalPages;
+            page = payload.page;
+            hasNext = payload.hasNext;
+            hasPrevious = payload.hasPrevious;
+            sortBy = payload.sortBy || sortBy;
+            sortDir = payload.sortDir || sortDir;
         } catch (e) {
             error = e instanceof Error ? e.message : String(e);
         } finally {
-            usersLoading = false;
+            wordsLoading = false;
         }
     }
 
-    async function addUser() {
-        error = null;
+    async function applyFilter() {
+        filterLoading = true;
+        try {
+            await loadWords(0);
+        } finally {
+            filterLoading = false;
+        }
+    }
 
-        const u = username.trim();
-        const d = displayName.trim();
+    async function nextPage() {
+        if (hasNext) {
+            await loadWords(page + 1);
+        }
+    }
 
-        if (!u || !d) {
-            error = 'Please fill in both username and display name.';
+    async function previousPage() {
+        if (hasPrevious) {
+            await loadWords(page - 1);
+        }
+    }
+
+    async function createWord() {
+        clearMessages();
+        const word = newWord.trim();
+        const explanation = newExplanation.trim();
+
+        if (!word) {
+            error = 'Word is required.';
             return;
         }
 
-        saving = true;
+        busy = true;
         try {
-            const res = await fetch('/api/users', {
+            const res = await fetch('/api/words', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: u, displayName: d })
+                body: JSON.stringify({ word, explanation })
             });
 
             if (!res.ok) {
                 const text = await res.text().catch(() => '');
-                throw new Error(text || `Create HTTP ${res.status}`);
+                throw new Error(text || `POST /api/words -> HTTP ${res.status}`);
             }
 
-            const created = (await res.json().catch(() => null)) as DbUser | null;
-
-            if (created) {
-                users = [created, ...users];
-            } else {
-                await loadUsers();
-            }
-
-            username = '';
-            displayName = '';
+            const created = (await res.json()) as Word;
+            success = `Created #${created.id}: ${created.word}`;
+            newWord = '';
+            newExplanation = '';
+            await loadWords(page);
         } catch (e) {
             error = e instanceof Error ? e.message : String(e);
         } finally {
-            saving = false;
+            busy = false;
         }
     }
 
-    onMount(async () => {
-        try {
-            const res = await fetch('/api/health');
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            status = await res.text();
-        } catch (e) {
-            error = e instanceof Error ? e.message : String(e);
-            status = 'Failed';
+    async function patchWordById() {
+        clearMessages();
+        const id = Number(patchId);
+        const payload: { word?: string; explanation?: string } = {};
+
+        if (!Number.isInteger(id) || id <= 0) {
+            error = 'Patch ID must be a positive number.';
+            return;
         }
 
-        try {
-            const res = await fetch('/api/hello');
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            hello = await res.text();
-        } catch (e) {
-            error = e instanceof Error ? e.message : String(e);
-            hello = 'Failed';
+        if (patchWord.trim()) payload.word = patchWord.trim();
+        if (patchExplanation.trim()) payload.explanation = patchExplanation.trim();
+
+        if (Object.keys(payload).length === 0) {
+            error = 'Provide at least one field to patch.';
+            return;
         }
 
+        busy = true;
         try {
-            const res = await fetch('/api/user');
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            user = await res.text();
+            const res = await fetch(`/api/words/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const text = await res.text().catch(() => '');
+                throw new Error(text || `PATCH /api/words/${id} -> HTTP ${res.status}`);
+            }
+
+            const updated = (await res.json()) as Word;
+            success = `Updated #${updated.id}: ${updated.word}`;
+            patchId = '';
+            patchWord = '';
+            patchExplanation = '';
+            await loadWords(page);
         } catch (e) {
             error = e instanceof Error ? e.message : String(e);
-            user = 'Failed';
+        } finally {
+            busy = false;
+        }
+    }
+
+    async function deleteWordById() {
+        clearMessages();
+        const id = Number(deleteId);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            error = 'Delete ID must be a positive number.';
+            return;
         }
 
-        await loadUsers();
-    });
+        busy = true;
+        try {
+            const res = await fetch(`/api/words/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const text = await res.text().catch(() => '');
+                throw new Error(text || `DELETE /api/words/${id} -> HTTP ${res.status}`);
+            }
+
+            const payload = (await res.json()) as DeleteWordResponse;
+            success = `${payload.message} (#${payload.id})`;
+            deleteId = '';
+            await loadWords(page);
+        } catch (e) {
+            error = e instanceof Error ? e.message : String(e);
+        } finally {
+            busy = false;
+        }
+    }
+
+    onMount(() => loadWords(0));
 </script>
 
-<div class="mx-auto w-full max-w-xl px-4 py-6 sm:py-10">
-    <!-- Header -->
+<div class="mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
     <div class="mb-6">
-        <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">Backend status</h1>
+        <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">Words API tester</h1>
         <p class="mt-1 text-sm text-zinc-600">
-            Health check + simple endpoints + users stored in Postgres.
+            Test <code>POST/GET/PATCH/DELETE /api/words</code> from frontend proxy.
         </p>
     </div>
 
-    <!-- Error -->
     {#if error}
-        <div class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            <div class="font-medium">Error</div>
-            <div class="mt-1 break-words">{error}</div>
-        </div>
+        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
     {/if}
 
-    <!-- Status cards -->
-    <div class="grid gap-3 sm:grid-cols-3">
-        <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <div class="text-xs font-medium uppercase tracking-wide text-zinc-500">Health</div>
-            <div class="mt-2 text-sm font-semibold text-zinc-900">{status}</div>
-        </div>
+    {#if success}
+        <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
+    {/if}
 
-        <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <div class="text-xs font-medium uppercase tracking-wide text-zinc-500">Hello</div>
-            <div class="mt-2 text-sm font-semibold text-zinc-900">{hello}</div>
-        </div>
-
-        <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <div class="text-xs font-medium uppercase tracking-wide text-zinc-500">User</div>
-            <div class="mt-2 text-sm font-semibold text-zinc-900">{user}</div>
-        </div>
-    </div>
-
-    <div class="my-6 h-px w-full bg-zinc-200"></div>
-
-    <!-- Add user -->
-    <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6">
-        <div class="mb-4">
-            <h2 class="text-lg font-semibold tracking-tight">Add user</h2>
-            <p class="mt-1 text-sm text-zinc-600">Create a new user and refresh the list.</p>
-        </div>
-
-        <form on:submit|preventDefault={addUser} class="grid gap-4">
-            <div class="grid gap-1.5">
-                <label for="username" class="text-sm font-medium text-zinc-900">Username</label>
-                <input
-                        id="username"
-                        bind:value={username}
-                        placeholder="robot1"
-                        autocomplete="off"
-                        class="h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
-                />
-            </div>
-
-            <div class="grid gap-1.5">
-                <label for="displayName" class="text-sm font-medium text-zinc-900">Display name</label>
-                <input
-                        id="displayName"
-                        bind:value={displayName}
-                        placeholder="I am Robot"
-                        autocomplete="off"
-                        class="h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
-                />
-            </div>
-
-            <button
-                    type="submit"
-                    disabled={saving}
-                    class="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-900 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-                {#if saving}
-          <span class="inline-flex items-center gap-2">
-            <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
-            Saving...
-          </span>
-                {:else}
-                    Add user
-                {/if}
+    <form on:submit|preventDefault={applyFilter} class="mb-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <h2 class="mb-3 text-base font-semibold">Get words options</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+            <input bind:value={listSearch} placeholder="search by word/explanation" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2" />
+            <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                <option value={5}>5 per page</option>
+                <option value={10}>10 per page</option>
+                <option value={20}>20 per page</option>
+                <option value={50}>50 per page</option>
+            </select>
+            <select bind:value={sortBy} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                <option value="word">Sort by word</option>
+                <option value="explanation">Sort by explanation</option>
+            </select>
+            <select bind:value={sortDir} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                <option value="asc">Ascending (ASC)</option>
+                <option value="desc">Descending (DESC)</option>
+            </select>
+            <button type="submit" disabled={filterLoading || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
+                GET /api/words
             </button>
+        </div>
+    </form>
+
+    <div class="grid gap-4">
+        <form on:submit|preventDefault={createWord} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <h2 class="mb-3 text-base font-semibold">Create word</h2>
+            <div class="grid gap-3">
+                <input bind:value={newWord} placeholder="word" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm" />
+                <textarea bind:value={newExplanation} placeholder="explanation" class="min-h-24 rounded-lg border border-zinc-300 px-3 py-2 text-sm"></textarea>
+                <button type="submit" disabled={busy} class="h-10 rounded-lg bg-zinc-900 text-sm font-semibold text-white disabled:opacity-60">POST /api/words</button>
+            </div>
+        </form>
+
+        <form on:submit|preventDefault={patchWordById} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <h2 class="mb-3 text-base font-semibold">Patch word</h2>
+            <div class="grid gap-3">
+                <input bind:value={patchId} placeholder="id (required)" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm" />
+                <input bind:value={patchWord} placeholder="new word (optional)" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm" />
+                <textarea bind:value={patchExplanation} placeholder="new explanation (optional)" class="min-h-24 rounded-lg border border-zinc-300 px-3 py-2 text-sm"></textarea>
+                <button type="submit" disabled={busy} class="h-10 rounded-lg bg-zinc-900 text-sm font-semibold text-white disabled:opacity-60">PATCH /api/words/:id</button>
+            </div>
+        </form>
+
+        <form on:submit|preventDefault={deleteWordById} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <h2 class="mb-3 text-base font-semibold">Delete word</h2>
+            <div class="grid gap-3">
+                <input bind:value={deleteId} placeholder="id (required)" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm" />
+                <button type="submit" disabled={busy} class="h-10 rounded-lg bg-red-600 text-sm font-semibold text-white disabled:opacity-60">DELETE /api/words/:id</button>
+                <button type="button" on:click={() => loadWords(page)} disabled={wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium">Refresh current page</button>
+            </div>
         </form>
     </div>
 
-    <!-- Users -->
-    <div class="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6">
-        <div class="mb-4 flex items-center justify-between gap-3">
-            <div>
-                <h2 class="text-lg font-semibold tracking-tight">Users</h2>
-                <p class="mt-1 text-sm text-zinc-600">
-                    {usersLoading ? 'Loading...' : `${users.length} total`}
-                </p>
-            </div>
-
-            <button
-                    type="button"
-                    on:click={loadUsers}
-                    disabled={usersLoading}
-                    class="inline-flex h-10 items-center justify-center rounded-xl border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-900 shadow-sm transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-                Refresh
-            </button>
+    <div class="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div class="mb-3 flex items-center justify-between">
+            <h2 class="text-base font-semibold">Words</h2>
+            <span class="text-sm text-zinc-600">
+                {#if wordsLoading}
+                    Loading...
+                {:else}
+                    {totalItems} total | page {page + 1} / {Math.max(totalPages, 1)}
+                {/if}
+            </span>
         </div>
 
-        {#if usersLoading}
-            <div class="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">
-                <span class="h-4 w-4 animate-spin rounded-full border-2 border-zinc-400/30 border-t-zinc-700"></span>
-                Loading users...
-            </div>
-        {:else if users.length === 0}
-            <div class="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">
-                No users yet. Add one above.
-            </div>
+        {#if wordsLoading}
+            <div class="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">Loading words...</div>
+        {:else if words.length === 0}
+            <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">No words yet.</div>
         {:else}
-
             <ul class="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200">
-                {#each users as u (u.id)}
-                    <li class="flex items-start justify-between gap-3 px-4 py-3">
-                        <div class="min-w-0">
-                            <div class="truncate text-sm font-semibold text-zinc-900">{u.username}</div>
-                            <div class="truncate text-sm text-zinc-600">{u.displayName}</div>
+                {#each words as item (item.id)}
+                    <li class="px-4 py-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="text-sm font-semibold text-zinc-900">{item.word}</div>
+                            <span class="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">#{item.id}</span>
                         </div>
-                        <span class="shrink-0 rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">
-              #{u.id}
-            </span>
+                        <div class="mt-1 text-sm text-zinc-600">{item.explanation || 'No explanation'}</div>
                     </li>
                 {/each}
             </ul>
+
+            <div class="mt-4 flex items-center justify-between gap-3">
+                <button type="button" on:click={previousPage} disabled={!hasPrevious || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium disabled:opacity-50">
+                    Prev
+                </button>
+                <div class="text-sm text-zinc-600">Showing {words.length} item(s)</div>
+                <button type="button" on:click={nextPage} disabled={!hasNext || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium disabled:opacity-50">
+                    Next
+                </button>
+            </div>
         {/if}
     </div>
 </div>
