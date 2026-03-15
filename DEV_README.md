@@ -2,6 +2,16 @@
 
 This guide is based on `docker-compose.yml` in the project root.
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Services](#services)
+- [Start the stack](#start-the-stack)
+- [Run and use](#run-and-use)
+- [Logs (FR and BE)](#logs-fr-and-be)
+- [Swagger / OpenAPI](#swagger--openapi)
+- [Common commands](#common-commands)
+
 ## Prerequisites
 
 - Docker Desktop or Docker Engine + Docker Compose v2
