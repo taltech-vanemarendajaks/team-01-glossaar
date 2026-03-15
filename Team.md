@@ -12,27 +12,39 @@
 ------------------------------------------------------------------------
 
 ## Team Workflow
-Our team uses feature branches for most changes, which are merged through PRs after review.
-Smaller changes can be merged directly to main if these are not behavioral changes (docs, comments, formatting, typo fixes) - this is also dependent on the GH roles.
+Our team uses feature branches for most changes, which are merged through PRs after review. Non-behavioral changes (docs, comments, formatting, typo fixes) can be merged directly to main, if the user role allows. A suitable merge strategy will be chosen by the PR author. Once a branch is merged, we should delete it.
 
-A PR requires a minimum of 1 review from a team member. If anyone requests changes to a PR, then a final green light for merge should be given by them as well. A suitable merge strategy will be chosen by the PR author. Once a branch is merged, we should delete it.
+Prerequesites for merging an PR:
+ - minimum 1 approve
+ - If changes are required, approval from the change requester is needed.
+
 
 ## Developmemnt practices
 
-- Issues are created by every team member
+- Issues are created by every team member.
 - Issues don't have to contain every information bit necessary, but only enough information to start developing.
-- Pull request are kept small
+- Pull request are kept small and should be self-reviewd before submitting.
+- Merge conflicts are resolved by the PR author.
 
 ### BE
 
 - Use Lombok annotations when possible to reduce boilerplate
-- TODO: ...
+- DTOs names should be suffixed with *Dto, e.g. WordResponseDto
+- DTOs should be placed under dto directory
 
 ### FE
 
 - API requests are made via Api client
 - API responses must be typed
 - TODO: ...
+
+## Testing plan
+
+Considering the limited time resource, writing automated tests is not a priority. This can and should still be done in some reasonable extent.
+
+Automated tests will be run:
+- Only for a specific Application component when a PR is opened against it (frontend | backend)
+- Run prior to creating an image
 
 ## Glossary
 
