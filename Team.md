@@ -25,7 +25,7 @@ If anyone requests changes to a PR, then a final green light for merge should be
 
 - Issues are created by every team member
 - Issues don't have to contain every information bit necessary, but only enough information to start developing.
-- Pull request are kept small
+- Pull request are kept small and should be self-reviewd before submitting.
 
 ### BE
 
