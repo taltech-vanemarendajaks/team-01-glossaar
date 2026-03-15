@@ -12,10 +12,14 @@
 ------------------------------------------------------------------------
 
 ## Team Workflow
-Our team uses feature branches for most changes, which are merged through PRs after review.
-Smaller changes can be merged directly to main if these are not behavioral changes (docs, comments, formatting, typo fixes) - this is also dependent on the GH roles.
+Our team uses feature branches for most changes, which are merged through PRs after review. Non-behavioral changes (docs, comments, formatting, typo fixes) can be merged directly to main, if the user role allows
 
-A PR requires a minimum of 1 review from a team member. If anyone requests changes to a PR, then a final green light for merge should be given by them as well. A suitable merge strategy will be chosen by the PR author. Once a branch is merged, we should delete it.
+Prerequesites for merging an PR:
+ - minimum 1 approve
+ - if changes are requried, an approve from change requiree is needed
+
+
+If anyone requests changes to a PR, then a final green light for merge should be given by them as well. A suitable merge strategy will be chosen by the PR author. Once a branch is merged, we should delete it.
 
 ## Developmemnt practices
 
@@ -33,6 +37,14 @@ A PR requires a minimum of 1 review from a team member. If anyone requests chang
 - API requests are made via Api client
 - API responses must be typed
 - TODO: ...
+
+## Testing plan
+
+Considering the limited time resource, writing automated tests is not a priority. This can and should still be done in some reasonable extent.
+
+Automated tests will be run:
+- Only for a specific Application component when a PR is opened against it (frontend | backend)
+- Run prior to creating an image
 
 ## Glossary
 
