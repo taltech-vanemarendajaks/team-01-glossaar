@@ -21,14 +21,16 @@ Prerequesites for merging an PR:
 
 ## Developmemnt practices
 
-- Issues are created by every team member
+- Issues are created by every team member.
 - Issues don't have to contain every information bit necessary, but only enough information to start developing.
 - Pull request are kept small and should be self-reviewd before submitting.
+- Merge conflicts are resolved by the PR author.
 
 ### BE
 
 - Use Lombok annotations when possible to reduce boilerplate
-- TODO: ...
+- DTOs names should be suffixed with *Dto, e.g. WordResponseDto
+- DTOs should be placed under dto directory
 
 ### FE
 
