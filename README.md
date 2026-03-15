@@ -8,6 +8,7 @@ Readmes can be found in frontend and backend directories
 
 Currently the server has docker running and serving the traffic via nginx.
 
+
 ### FE/BE GHCR image deploy
 
 After deploying the image to GHCR registry, you should ssh into the server, navigate to ./team-01-glossaar/infra and pull the new images and create new containers.
@@ -35,4 +36,5 @@ Push image to GHCR
 Then the image can be found at ghcr.io/taltech-vanemarendajaks/team-01-glossaar/{component}
 
 The image also should pop up at out repo page.
+
 
