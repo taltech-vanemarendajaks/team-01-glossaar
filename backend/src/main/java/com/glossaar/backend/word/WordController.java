@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,13 +24,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/words")
+@RequiredArgsConstructor
 public class WordController {
 
     private final WordService service;
-
-    public WordController(WordService service) {
-        this.service = service;
-    }
 
     @GetMapping
     @Operation(summary = "Get words", description = "Returns paginated words with optional search and sorting.")

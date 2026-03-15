@@ -6,9 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "words")
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WordEntity {
 
     @Id
@@ -21,32 +28,8 @@ public class WordEntity {
     @Column(length = 1000)
     private String explanation;
 
-    protected WordEntity() {
-        // JPA
-    }
-
     public WordEntity(String word, String explanation) {
         this.word = word;
-        this.explanation = explanation;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getWord() {
-        return word;
-    }
-
-    public String getExplanation() {
-        return explanation;
-    }
-
-    public void setWord(String word) {
-        this.word = word;
-    }
-
-    public void setExplanation(String explanation) {
         this.explanation = explanation;
     }
 }

@@ -1,9 +1,16 @@
 package com.glossaar.backend.user;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity {
 
     @Id
@@ -16,17 +23,8 @@ public class UserEntity {
     @Column(nullable = false)
     private String displayName;
 
-    protected UserEntity() { } // JPA needs this
-
     public UserEntity(String username, String displayName) {
         this.username = username;
         this.displayName = displayName;
     }
-
-    public Long getId() { return id; }
-    public String getUsername() { return username; }
-    public String getDisplayName() { return displayName; }
-
-    public void setUsername(String username) { this.username = username; }
-    public void setDisplayName(String displayName) { this.displayName = displayName; }
 }

@@ -1,21 +1,19 @@
 package com.glossaar.backend.word;
 
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@RequiredArgsConstructor
 public class WordService {
 
     private final WordRepository repo;
-
-    public WordService(WordRepository repo) {
-        this.repo = repo;
-    }
 
     public Page<WordEntity> getAll(String search, int page, int size, String sortBy, String sortDir) {
         if (page < 0) {
