@@ -1,6 +1,7 @@
 # Glossaar
 
 Readmes can be found in frontend and backend directories
+Development setup with Docker Compose is documented in [DEV_README.md](DEV_README.md)
 
 ## infra setup
 
