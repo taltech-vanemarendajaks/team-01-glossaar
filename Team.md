@@ -12,14 +12,12 @@
 ------------------------------------------------------------------------
 
 ## Team Workflow
-Our team uses feature branches for most changes, which are merged through PRs after review. Non-behavioral changes (docs, comments, formatting, typo fixes) can be merged directly to main, if the user role allows
+Our team uses feature branches for most changes, which are merged through PRs after review. Non-behavioral changes (docs, comments, formatting, typo fixes) can be merged directly to main, if the user role allows. A suitable merge strategy will be chosen by the PR author. Once a branch is merged, we should delete it.
 
 Prerequesites for merging an PR:
  - minimum 1 approve
- - If changes are required, approval from the change requester is needed.”
+ - If changes are required, approval from the change requester is needed.
 
-
-If anyone requests changes to a PR, then a final green light for merge should be given by them as well. A suitable merge strategy will be chosen by the PR author. Once a branch is merged, we should delete it.
 
 ## Developmemnt practices
 
