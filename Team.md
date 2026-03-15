@@ -16,7 +16,7 @@ Our team uses feature branches for most changes, which are merged through PRs af
 
 Prerequesites for merging an PR:
  - minimum 1 approve
- - if changes are requried, an approve from change requiree is needed
+ - If changes are required, approval from the change requester is needed.”
 
 
 If anyone requests changes to a PR, then a final green light for merge should be given by them as well. A suitable merge strategy will be chosen by the PR author. Once a branch is merged, we should delete it.
