@@ -1,0 +1,4 @@
+FROM maven:3.9-eclipse-temurin-21
+WORKDIR /app
+# keep container alive even if watch is slow to sync at start
+CMD sh -lc 'until [ -f pom.xml ]; do echo "waiting for sync..."; sleep 0.5; done; mvn -q -DskipTests spring-boot:run -Dspring-boot.run.fork=false -Dspring-boot.run.profiles=dev'
