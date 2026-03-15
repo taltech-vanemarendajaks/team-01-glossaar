@@ -6,11 +6,25 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [tailwindcss(), sveltekit()],
+
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://backend:8080',
+        changeOrigin: true
+      }
+    }
+  },
+
   resolve: {
     alias: {
       $lib: path.resolve('./src/lib')
     }
   },
+
   test: {
     expect: { requireAssertions: true },
     projects: [
@@ -27,7 +41,6 @@ export default defineConfig({
           exclude: ['src/lib/server/**']
         }
       },
-
       {
         extends: './vite.config.ts',
         test: {
