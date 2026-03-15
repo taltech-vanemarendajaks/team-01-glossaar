@@ -1,22 +1,26 @@
-name: Build and publish Docker image
+name: Publish image to GHCR
 
 on:
   workflow_dispatch:
     inputs:
       component:
-        description: Application component to build and deploy to GHCR
+        description: Application component to build and publish to GHCR
         type: choice
         required: true
         options:
           - frontend
           - backend
+      deploy-to-server:
+        description: Whether to deploy the image to server as well
+        type: boolean
+        default: false
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build:
+  build-and-publish-to-ghcr:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,4 +42,10 @@ jobs:
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:latest
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:${{ github.sha }}
 
-# TODO: Add a step to trigger deployment on the server after pushing the image, e.g., via SSH or some webhook solution
+  deploy-to-server:
+    if: ${{ inputs.deploy-to-server }}
+    needs: build-and-publish-to-ghcr
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      component: ${{ inputs.component }}

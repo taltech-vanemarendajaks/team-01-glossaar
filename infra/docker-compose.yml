@@ -1,9 +1,4 @@
 
-# !!! presumes creating the network with `docker network create shared-proxy` beforehand (necessary for nginx to be able to communicate with borsibaar containers) !!!
-networks:
-  shared-proxy:
-    external: true
-
 services:
   frontend:
     # No ports exposed, as nginx will proxy requests to its default port 80
@@ -40,7 +35,6 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - shared-proxy
 
   db:
     image: postgres:16
