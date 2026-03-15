@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -70,6 +71,7 @@ public class WordService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id));
     }
 
+    @Transactional
     public WordEntity create(String word, String explanation) {
         return repo.save(new WordEntity(
                 requireNonBlank("word", word),
@@ -77,6 +79,7 @@ public class WordService {
         ));
     }
 
+    @Transactional
     public WordEntity patch(Long id, String word, String explanation) {
         WordEntity entity = getById(id);
 
@@ -90,6 +93,7 @@ public class WordService {
         return repo.save(entity);
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!repo.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id);

@@ -1,9 +1,10 @@
 package com.glossaar.backend.word;
 
-import com.glossaar.backend.word.WordController.CreateWordRequest;
-import com.glossaar.backend.word.WordController.DeleteWordResponse;
-import com.glossaar.backend.word.WordController.GetWordsResponse;
-import com.glossaar.backend.word.WordController.UpdateWordRequest;
+import com.glossaar.backend.word.dto.CreateWordRequestDto;
+import com.glossaar.backend.word.dto.GetWordsResponseDto;
+import com.glossaar.backend.word.dto.UpdateWordRequestDto;
+import com.glossaar.backend.word.dto.WordResponseDto;
+import com.glossaar.backend.word.mapper.WordMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,23 +25,31 @@ class WordControllerTest {
     @Mock
     private WordService service;
 
+    @Mock
+    private WordMapper mapper;
+
     private WordController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new WordController(service);
+        controller = new WordController(service, mapper);
     }
 
     @Test
     void getAll_mapsServicePageToResponse() {
         WordEntity word = new WordEntity("alpha", "first");
         Page<WordEntity> page = new PageImpl<>(List.of(word));
+        GetWordsResponseDto dto = new GetWordsResponseDto(
+                List.of(new WordResponseDto(1L, "alpha", "first")),
+                1L, 1, 0, 10, false, false, "alp", "word", "asc"
+        );
         when(service.getAll("alp", 0, 10, "word", "asc")).thenReturn(page);
+        when(mapper.toGetWordsResponseDto(page, "alp", "word", "asc")).thenReturn(dto);
 
-        GetWordsResponse response = controller.getAll("alp", 0, 10, "word", "asc");
+        GetWordsResponseDto response = controller.getAll("alp", 0, 10, "word", "asc");
 
         assertEquals(1, response.items().size());
-        assertEquals("alpha", response.items().getFirst().getWord());
+        assertEquals("alpha", response.items().getFirst().word());
         assertEquals("alp", response.search());
         assertEquals("word", response.sortBy());
         assertEquals("asc", response.sortDir());
@@ -49,31 +58,32 @@ class WordControllerTest {
     @Test
     void create_returnsCreatedWord() {
         WordEntity created = new WordEntity("lorem", "ipsum");
+        WordResponseDto dto = new WordResponseDto(1L, "lorem", "ipsum");
         when(service.create("lorem", "ipsum")).thenReturn(created);
+        when(mapper.toResponseDto(created)).thenReturn(dto);
 
-        WordEntity response = controller.create(new CreateWordRequest("lorem", "ipsum"));
+        WordResponseDto response = controller.create(new CreateWordRequestDto("lorem", "ipsum"));
 
-        assertEquals("lorem", response.getWord());
-        assertEquals("ipsum", response.getExplanation());
+        assertEquals("lorem", response.word());
+        assertEquals("ipsum", response.explanation());
     }
 
     @Test
     void patch_returnsUpdatedWord() {
         WordEntity updated = new WordEntity("updated", "changed");
+        WordResponseDto dto = new WordResponseDto(5L, "updated", "changed");
         when(service.patch(5L, "updated", "changed")).thenReturn(updated);
+        when(mapper.toResponseDto(updated)).thenReturn(dto);
 
-        WordEntity response = controller.patch(5L, new UpdateWordRequest("updated", "changed"));
+        WordResponseDto response = controller.patch(5L, new UpdateWordRequestDto("updated", "changed"));
 
-        assertEquals("updated", response.getWord());
-        assertEquals("changed", response.getExplanation());
+        assertEquals("updated", response.word());
+        assertEquals("changed", response.explanation());
     }
 
     @Test
-    void delete_returnsSuccessMessage() {
-        DeleteWordResponse response = controller.delete(9L);
-
-        assertEquals("Word deleted successfully", response.message());
-        assertEquals(9L, response.id());
+    void delete_callsService() {
+        controller.delete(9L);
         verify(service).delete(9L);
     }
 }

@@ -1,11 +1,19 @@
 package com.glossaar.backend.word;
 
-import com.glossaar.backend.ApiExceptionHandler.ApiErrorResponse;
+import com.glossaar.backend.word.dto.CreateWordRequestDto;
+import com.glossaar.backend.word.dto.GetWordsResponseDto;
+import com.glossaar.backend.word.dto.UpdateWordRequestDto;
+import com.glossaar.backend.word.dto.WordResponseDto;
+import com.glossaar.backend.word.docs.BadRequestApiResponse;
+import com.glossaar.backend.word.docs.InternalServerErrorApiResponse;
+import com.glossaar.backend.word.docs.NotFoundApiResponse;
+import com.glossaar.backend.word.mapper.WordMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
@@ -20,14 +28,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/words")
 @RequiredArgsConstructor
 public class WordController {
 
     private final WordService service;
+    private final WordMapper mapper;
 
     @GetMapping
     @Operation(summary = "Get words", description = "Returns paginated words with optional search and sorting.")
@@ -35,20 +42,12 @@ public class WordController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Words fetched successfully",
-                    content = @Content(schema = @Schema(implementation = GetWordsResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid query params",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Unexpected server error",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = GetWordsResponseDto.class))
             )
     })
-    public GetWordsResponse getAll(
+    @BadRequestApiResponse
+    @InternalServerErrorApiResponse
+    public GetWordsResponseDto getAll(
             @RequestParam(defaultValue = "") String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -56,18 +55,7 @@ public class WordController {
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
         Page<WordEntity> result = service.getAll(search, page, size, sortBy, sortDir);
-        return new GetWordsResponse(
-                result.getContent(),
-                result.getTotalElements(),
-                result.getTotalPages(),
-                result.getNumber(),
-                result.getSize(),
-                result.hasNext(),
-                result.hasPrevious(),
-                search == null ? "" : search,
-                sortBy == null ? "word" : sortBy,
-                sortDir == null ? "asc" : sortDir
-        );
+        return mapper.toGetWordsResponseDto(result, search, sortBy, sortDir);
     }
 
     @GetMapping("/{id}")
@@ -76,21 +64,13 @@ public class WordController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Word fetched successfully",
-                    content = @Content(schema = @Schema(implementation = WordEntity.class))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Word not found",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Unexpected server error",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = WordResponseDto.class))
             )
     })
-    public WordEntity getById(@PathVariable Long id) {
-        return service.getById(id);
+    @NotFoundApiResponse
+    @InternalServerErrorApiResponse
+    public WordResponseDto getById(@PathVariable Long id) {
+        return mapper.toResponseDto(service.getById(id));
     }
 
     @PostMapping
@@ -100,21 +80,13 @@ public class WordController {
             @ApiResponse(
                     responseCode = "201",
                     description = "Word created successfully",
-                    content = @Content(schema = @Schema(implementation = WordEntity.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid request body",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Unexpected server error",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = WordResponseDto.class))
             )
     })
-    public WordEntity create(@RequestBody CreateWordRequest req) {
-        return service.create(req.word(), req.explanation());
+    @BadRequestApiResponse
+    @InternalServerErrorApiResponse
+    public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req) {
+        return mapper.toResponseDto(service.create(req.word(), req.explanation()));
     }
 
     @PatchMapping("/{id}")
@@ -123,73 +95,29 @@ public class WordController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Word updated successfully",
-                    content = @Content(schema = @Schema(implementation = WordEntity.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid request body",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Word not found",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Unexpected server error",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = WordResponseDto.class))
             )
     })
-    public WordEntity patch(@PathVariable Long id, @RequestBody UpdateWordRequest req) {
-        return service.patch(id, req.word(), req.explanation());
+    @BadRequestApiResponse
+    @NotFoundApiResponse
+    @InternalServerErrorApiResponse
+    public WordResponseDto patch(@PathVariable Long id, @Valid @RequestBody UpdateWordRequestDto req) {
+        return mapper.toResponseDto(service.patch(id, req.word(), req.explanation()));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete word")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "204",
                     description = "Word deleted successfully",
-                    content = @Content(schema = @Schema(implementation = DeleteWordResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Word not found",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Unexpected server error",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content
             )
     })
-    public DeleteWordResponse delete(@PathVariable Long id) {
+    @NotFoundApiResponse
+    @InternalServerErrorApiResponse
+    public void delete(@PathVariable Long id) {
         service.delete(id);
-        return new DeleteWordResponse("Word deleted successfully", id);
-    }
-
-    public record CreateWordRequest(String word, String explanation) {
-    }
-
-    public record UpdateWordRequest(String word, String explanation) {
-    }
-
-    public record DeleteWordResponse(String message, Long id) {
-    }
-
-    public record GetWordsResponse(
-            List<WordEntity> items,
-            long totalItems,
-            int totalPages,
-            int page,
-            int size,
-            boolean hasNext,
-            boolean hasPrevious,
-            String search,
-            String sortBy,
-            String sortDir
-    ) {
     }
 }

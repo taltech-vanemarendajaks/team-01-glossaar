@@ -7,11 +7,6 @@
         explanation: string | null;
     };
 
-    type DeleteWordResponse = {
-        message: string;
-        id: number;
-    };
-
     type GetWordsResponse = {
         items: Word[];
         totalItems: number;
@@ -202,8 +197,7 @@
                 throw new Error(text || `DELETE /api/words/${id} -> HTTP ${res.status}`);
             }
 
-            const payload = (await res.json()) as DeleteWordResponse;
-            success = `${payload.message} (#${payload.id})`;
+            success = `Word #${id} deleted successfully`;
             deleteId = '';
             await loadWords(page);
         } catch (e) {
@@ -231,30 +225,6 @@
     {#if success}
         <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
     {/if}
-
-    <form on:submit|preventDefault={applyFilter} class="mb-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-        <h2 class="mb-3 text-base font-semibold">Get words options</h2>
-        <div class="grid gap-3 sm:grid-cols-2">
-            <input bind:value={listSearch} placeholder="search by word/explanation" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2" />
-            <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value={5}>5 per page</option>
-                <option value={10}>10 per page</option>
-                <option value={20}>20 per page</option>
-                <option value={50}>50 per page</option>
-            </select>
-            <select bind:value={sortBy} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value="word">Sort by word</option>
-                <option value="explanation">Sort by explanation</option>
-            </select>
-            <select bind:value={sortDir} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value="asc">Ascending (ASC)</option>
-                <option value="desc">Descending (DESC)</option>
-            </select>
-            <button type="submit" disabled={filterLoading || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
-                GET /api/words
-            </button>
-        </div>
-    </form>
 
     <div class="grid gap-4">
         <form on:submit|preventDefault={createWord} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
@@ -285,6 +255,30 @@
             </div>
         </form>
     </div>
+
+    <form on:submit|preventDefault={applyFilter} class="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <h2 class="mb-3 text-base font-semibold">Get words options</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+            <input bind:value={listSearch} placeholder="search by word/explanation" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2" />
+            <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                <option value={5}>5 per page</option>
+                <option value={10}>10 per page</option>
+                <option value={20}>20 per page</option>
+                <option value={50}>50 per page</option>
+            </select>
+            <select bind:value={sortBy} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                <option value="word">Sort by word</option>
+                <option value="explanation">Sort by explanation</option>
+            </select>
+            <select bind:value={sortDir} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                <option value="asc">Ascending (ASC)</option>
+                <option value="desc">Descending (DESC)</option>
+            </select>
+            <button type="submit" disabled={filterLoading || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
+                GET /api/words
+            </button>
+        </div>
+    </form>
 
     <div class="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
         <div class="mb-3 flex items-center justify-between">
