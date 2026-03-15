@@ -10,14 +10,4 @@ public class HealthController {
     public String health() {
         return "Working Test";
     }
-
-    @GetMapping("/api/hello")
-    public String hello() {
-        return "Hello World";
-    }
-
-    @GetMapping("/api/user")
-    public String user() {
-        return "I am Robot";
-    }
 }
