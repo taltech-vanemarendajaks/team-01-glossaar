@@ -10,10 +10,10 @@ This guide is based on `docker-compose.yml` in the project root.
 ## Services
 
 - `db`: Postgres 16 (`5432`)
-- `backend`: Spring Boot app (runs in dev profile, restarts on file changes)
+- `backend`: Spring Boot app (runs in dev profile; reloads via `docker compose watch`)
 - `frontend`: Vite dev server (`${FRONTEND_DEV_PORT:-5173}`)
 
-## Start the stack
+## Start and run
 
 From the project root:
 
@@ -27,22 +27,34 @@ To build/pull and start cleanly:
 docker compose up -d --build
 ```
 
+To run attached with watch mode in one command:
+
+```bash
+docker compose up --watch
+```
+
+This keeps logs in the current terminal and stops when you exit (`Ctrl+C`).
+
+For detached mode with watch, use two terminals:
+
+```bash
+docker compose up -d --build
+docker compose watch backend
+```
+
 Check service status:
 
 ```bash
 docker compose ps
 ```
 
-## Run and use
-
 - Frontend: `http://localhost:5173` (or your `FRONTEND_DEV_PORT` from `.env`)
 - Backend is consumed by frontend inside Docker network (`backend` service name).
 - Database is available on host `localhost:5432`.
 
-Because source folders are mounted as volumes:
+Because `frontend/` is mounted as a volume, Vite updates live when frontend files change.
 
-- Editing files in `frontend/` updates the Vite app live.
-- Editing files in `backend/src/main/java`, `backend/src/main/resources`, or `backend/pom.xml` triggers backend restart.
+This syncs `backend/src` and `backend/pom.xml` into the container and restarts backend when needed.
 
 ## Logs (FR and BE)
 
