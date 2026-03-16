@@ -1,0 +1,57 @@
+
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    # need to expose it directly so HMR would work. Traffic should still go through nginx
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend/src:/app/src
+      - node-modules:/app/node_modules
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.dev
+    # use only for debugging, traffic should go through nginx
+    # ports:
+    #   - "8080:8080"
+    volumes:
+      - ../backend/src:/app/src
+      - maven-cache:/root/.m2
+    env_file: ../backend/.env
+    environment:
+      MAVEN_OPTS: "-Dmaven.repo.local=/root/.m2/repository"
+    develop:
+      watch:
+        - action: rebuild
+          path: ../backend/src
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - default
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./nginx
+          target: /etc/nginx
+
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    env_file: ../backend/.env
+    volumes:
+      - pg_data:/var/lib/postgresql
+
+volumes:
+  maven-cache:
+  node-modules:
+  pg_data:
