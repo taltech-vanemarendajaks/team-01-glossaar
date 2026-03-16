@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    volumes:
+      - m2:/root/.m2
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8080:8080"
+    command: mvn -q -DskipTests spring-boot:run
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/src
+          target: /app/src
+          initial_sync: true
+        - action: sync+restart
+          path: ./backend/pom.xml
+          target: /app/pom.xml
+          initial_sync: true
+        - action: rebuild
+          path: ./backend/Dockerfile.dev
+
+  frontend:
+    image: node:lts-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "${FRONTEND_DEV_PORT:-5173}:5173"
+    depends_on:
+      - backend
+    command: sh -lc "npm ci && npm run dev -- --host 0.0.0.0"
+
+volumes:
+  pgdata:
+  m2:
+  frontend_node_modules:
