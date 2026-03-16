@@ -12,7 +12,9 @@
     { name: 'Index', href: '/' },
     { name: 'Add', href: '/add' },
     { name: 'List', href: '/list' },
-    { name: 'Quiz', href: '/quiz' }
+    { name: 'Quiz', href: '/quiz' },
+    {name: "Test", href: "/test"}
+
   ];
 
   type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
