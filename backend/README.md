@@ -7,9 +7,9 @@ Java backend service built with **Spring Boot**, managed by
 
 ## Requirements
 
--   **Java 21 (JDK 21)**
--   **Maven 3.9+**
--   (Optional) Git
+- **Java 21 (JDK 21)**
+- **Maven 3.9+**
+- (Optional) Git
 
 ### Verify Installation
 
@@ -22,7 +22,7 @@ Ensure Java version shows **21**.
 
 ------------------------------------------------------------------------
 
-##  Build the Project
+## Build the Project
 
 From the root directory (where `pom.xml` is located):
 
@@ -85,7 +85,7 @@ mvn test
 
 ------------------------------------------------------------------------
 
-##  Stop the Application
+## Stop the Application
 
 Press:
 
@@ -95,7 +95,7 @@ in the terminal where the app is running.
 
 ------------------------------------------------------------------------
 
-##  Lombok Configuration
+## Lombok Configuration
 
 This project uses Lombok for annotation processing.
 
@@ -104,7 +104,7 @@ plugin (if required)
 
 ------------------------------------------------------------------------
 
-##  Troubleshooting
+## Troubleshooting
 
 ### Port 8080 already in use
 
@@ -113,3 +113,11 @@ Change the port in `application.properties`.
 ### Wrong Java Version
 
 Make sure `JAVA_HOME` points to JDK 21.
+
+------------------------------------------------------------------------
+
+### Format-on-save
+
+To toggle format-on-save, go to
+`Settings → Tools → Actions on Save → Reformat code`
+
