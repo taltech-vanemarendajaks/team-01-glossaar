@@ -9,15 +9,13 @@
 - **Ivo** --- `ivovaliste`
 - **Anastasia** --- `asyawind`
 
-------------------------------------------------------------------------
-
 ## Team Workflow
+
 Our team uses feature branches for most changes, which are merged through PRs after review. Non-behavioral changes (docs, comments, formatting, typo fixes) can be merged directly to main, if the user role allows. A suitable merge strategy will be chosen by the PR author. Once a branch is merged, we should delete it.
 
 Prerequesites for merging an PR:
  - minimum 1 approve
  - If changes are required, approval from the change requester is needed.
-
 
 ## Developmemnt practices
 
@@ -45,6 +43,10 @@ Considering the limited time resource, writing automated tests is not a priority
 Automated tests will be run:
 - Only for a specific Application component when a PR is opened against it (frontend | backend)
 - Run prior to creating an image
+
+## Versioning
+
+Considering the limited time resource, versioning(semver tagging) code and/or docker images is not a priority.
 
 ## Glossary
 
