@@ -24,9 +24,16 @@ jobs:
     if: inputs.component == 'frontend'
     uses: ./.github/workflows/run-fe-tests.yml
 
+  run-be-tests:
+    if: inputs.component == 'backend'
+    uses: ./.github/workflows/backend-tests.yml
+
   build-and-publish-to-ghcr:
-    needs: [run-fe-tests]
-    if: always() && (needs.run-fe-tests.result == 'success' || needs.run-fe-tests.result == 'skipped')
+    needs: [run-fe-tests, run-be-tests]
+    if: |
+      always() &&
+      (needs.run-fe-tests.result == 'success' || needs.run-fe-tests.result == 'skipped') &&
+      (needs.run-be-tests.result == 'success' || needs.run-be-tests.result == 'skipped')
     runs-on: ubuntu-latest
 
     steps:
