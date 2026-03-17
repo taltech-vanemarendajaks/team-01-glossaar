@@ -1,9 +1,7 @@
 package com.glossaar.backend.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -23,6 +21,6 @@ public class UserService {
 
     public UserEntity getByUsername(String username) {
         return repo.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + username));
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 }

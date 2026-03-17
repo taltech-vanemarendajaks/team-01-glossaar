@@ -16,13 +16,12 @@ services:
       retries: 20
 
   backend:
-    image: maven:3.9-eclipse-temurin-21
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
     working_dir: /app
     volumes:
-      - ./backend:/app
       - m2:/root/.m2
-    ports:
-      - "${BACKEND_PORT:-8083}:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -31,13 +30,21 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_PROFILES_ACTIVE: dev
-    command: sh -lc '
-      apt-get update >/dev/null && apt-get install -y entr >/dev/null;
-      echo "Watching backend files and restarting Spring on change...";
-      find src/main/java src/main/resources pom.xml -type f | entr -n -r sh -lc "
-      mvn -q -DskipTests spring-boot:run -Dspring-boot.run.fork=false -Dspring-boot.run.profiles=dev
-      "
-      '
+    ports:
+      - "8080:8080"
+    command: mvn -q -DskipTests spring-boot:run
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/src
+          target: /app/src
+          initial_sync: true
+        - action: sync+restart
+          path: ./backend/pom.xml
+          target: /app/pom.xml
+          initial_sync: true
+        - action: rebuild
+          path: ./backend/Dockerfile.dev
 
   frontend:
     image: node:lts-alpine
