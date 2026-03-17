@@ -2,14 +2,16 @@
 
 ## Devloping on a local machine
 
-### Frontend
-
-Install the runtime and deps manually:
-    - Install some modern node.js LTS version (nvm or other version manager recommended)
+You can either:
+1. Install the runtime and deps manually:
+    - Install node.js LTS 24 version (nvm or other node version manager recommended)
     - run `npm install` to install projects dependencies
     - run `npm run dev` to start local development server
 
-Which ever one you choose, you'll have the frontend dev server running at [localhost:5173](http://localhost:5173/).
+2. Or just run the dev docker compose.
+
+As a result, the frontend dev server will be running. Concrete port will be printed out to stdout.
+
 
 ## Framework
 
@@ -25,13 +27,4 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-## misc
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv create --template minimal --types ts --add prettier eslint sveltekit-adapter="adapter:static" vitest="usages:unit,component" --install npm frontend
-```
+To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
