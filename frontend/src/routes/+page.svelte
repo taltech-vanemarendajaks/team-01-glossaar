@@ -66,7 +66,7 @@
       <Tabs.Content value="add">Add a word</Tabs.Content>
       <Tabs.Content value="list">List words</Tabs.Content>
       <Tabs.Content value="quiz">Take a quiz</Tabs.Content>
-      <Tabs.Content value="testPage"><TestElements /></Tabs.Content>
+      <Tabs.Content value="testPage"><TestElements/></Tabs.Content>
     </Tabs.Root>
   </div>
 </div>
