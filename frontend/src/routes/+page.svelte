@@ -9,7 +9,6 @@
 
 <div>
 
-
   <h2>using raw tailwind</h2>
   <a
           class="group inline-block rounded-full bg-linear-to-r from-pink-500 via-red-500 to-yellow-500 p-0.5 hover:text-white"
@@ -66,7 +65,7 @@
       <Tabs.Content value="add">Add a word</Tabs.Content>
       <Tabs.Content value="list">List words</Tabs.Content>
       <Tabs.Content value="quiz">Take a quiz</Tabs.Content>
-      <Tabs.Content value="testPage"><TestElements /></Tabs.Content>
+      <Tabs.Content value="testPage"><TestElements/></Tabs.Content>
     </Tabs.Root>
   </div>
 </div>
