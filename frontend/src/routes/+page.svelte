@@ -9,7 +9,6 @@
 
 <div>
 
-
   <h2>using raw tailwind</h2>
   <a
           class="group inline-block rounded-full bg-linear-to-r from-pink-500 via-red-500 to-yellow-500 p-0.5 hover:text-white"
