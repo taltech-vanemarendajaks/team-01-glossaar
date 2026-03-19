@@ -1,0 +1,106 @@
+# Development with Docker Compose
+
+This guide is based on `docker-compose.yml` in the project root.
+
+## Prerequisites
+
+- Docker Desktop or Docker Engine + Docker Compose v2
+- `.env` file in project root (you can copy from `.env.example`)
+
+## Services
+
+- `db`: Postgres 16 (`5432`)
+- `backend`: Spring Boot app (runs in dev profile; reloads via `docker compose watch`)
+- `frontend`: Vite dev server (`${FRONTEND_DEV_PORT:-5173}`)
+
+## Start and run
+
+From the project root:
+
+```bash
+docker compose up -d
+```
+
+To build/pull and start cleanly:
+
+```bash
+docker compose up -d --build
+```
+
+To run attached with watch mode in one command:
+
+```bash
+docker compose up --watch
+```
+
+This keeps logs in the current terminal and stops when you exit (`Ctrl+C`).
+
+For detached mode with watch, use two terminals:
+
+```bash
+docker compose up -d --build
+docker compose watch backend
+```
+
+Check service status:
+
+```bash
+docker compose ps
+```
+
+- Frontend: `http://localhost:5173` (or your `FRONTEND_DEV_PORT` from `.env`)
+- Backend is consumed by frontend inside Docker network (`backend` service name).
+- Database is available on host `localhost:5432`.
+
+Because `frontend/` is mounted as a volume, Vite updates live when frontend files change.
+
+This syncs `backend/src` and `backend/pom.xml` into the container and restarts backend when needed.
+
+## Logs (FR and BE)
+
+Show recent logs:
+
+```bash
+docker compose logs --tail=200 frontend
+docker compose logs --tail=200 backend
+```
+
+Follow live logs:
+
+```bash
+docker compose logs -f frontend
+docker compose logs -f backend
+```
+
+Follow both at once:
+
+```bash
+docker compose logs -f frontend backend
+```
+
+## Common commands
+
+Stop services:
+
+```bash
+docker compose stop
+```
+
+Stop and remove containers/network:
+
+```bash
+docker compose down
+```
+
+Stop and also remove volumes (deletes DB data and cached dependencies):
+
+```bash
+docker compose down -v
+```
+
+Restart a single service:
+
+```bash
+docker compose restart frontend
+docker compose restart backend
+```
