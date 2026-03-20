@@ -2,6 +2,16 @@
 
 This guide is based on `docker-compose.yml` in the project root.
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Services](#services)
+- [Start the stack](#start-the-stack)
+- [Run and use](#run-and-use)
+- [Logs (FR and BE)](#logs-fr-and-be)
+- [Swagger / OpenAPI](#swagger--openapi)
+- [Common commands](#common-commands)
+
 ## Prerequisites
 
 - Docker Desktop or Docker Engine + Docker Compose v2
@@ -76,6 +86,21 @@ Follow both at once:
 
 ```bash
 docker compose logs -f frontend backend
+```
+
+## Swagger / OpenAPI
+
+After backend is running, open:
+
+- Swagger UI: `http://localhost:8083/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8083/v3/api-docs`
+
+If you only exposed frontend port in Docker, add backend port mapping in `docker-compose.yml`:
+
+```yaml
+backend:
+  ports:
+    - "${BACKEND_PORT:-8083}:8080"
 ```
 
 ## Common commands

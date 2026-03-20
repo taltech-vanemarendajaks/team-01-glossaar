@@ -3,7 +3,6 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
   import * as Tabs from '$lib/components/ui/tabs/index.js';
   import Input from '$lib/components/ui/input/input.svelte';
-  import TestElements from '$lib/components/TestElements.svelte';
   import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 </script>
 
@@ -59,13 +58,11 @@
         <Tabs.Trigger value="add">Add</Tabs.Trigger>
         <Tabs.Trigger value="list">List</Tabs.Trigger>
         <Tabs.Trigger value="quiz">Quiz</Tabs.Trigger>
-        <Tabs.Trigger value="testPage">Test backend and db</Tabs.Trigger>
       </Tabs.List>
 
       <Tabs.Content value="add">Add a word</Tabs.Content>
       <Tabs.Content value="list">List words</Tabs.Content>
       <Tabs.Content value="quiz">Take a quiz</Tabs.Content>
-      <Tabs.Content value="testPage"><TestElements/></Tabs.Content>
     </Tabs.Root>
   </div>
 </div>
