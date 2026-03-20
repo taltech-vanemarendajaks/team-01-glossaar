@@ -1,4 +1,4 @@
-name: PR Tests
+name: Backend Tests
 
 on:
   workflow_dispatch:
@@ -26,6 +26,6 @@ jobs:
           cache: maven
 
 
-      - name: Build and Run Backend Tests
+      - name: Run tests
         working-directory: backend
         run: mvn clean test
