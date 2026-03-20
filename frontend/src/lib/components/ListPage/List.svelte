@@ -1,5 +1,8 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { Pencil, Trash2 } from '@lucide/svelte';
+    import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+    import EditWordModal from '$lib/components/EditWordModal.svelte';
 
     type Word = {
         id: number;
@@ -22,20 +25,14 @@
 
     let words: Word[] = [];
     let wordsLoading = false;
-    let busy = false;
     let filterLoading = false;
-
     let error: string | null = null;
     let success: string | null = null;
+    let deleteLoading = false;
+    let deleteTarget: Word | null = null;
+    let editLoading = false;
+    let editTarget: Word | null = null;
 
-    let newWord = '';
-    let newExplanation = '';
-
-    let patchId = '';
-    let patchWord = '';
-    let patchExplanation = '';
-
-    let deleteId = '';
     let listSearch = '';
     let page = 0;
     let size = 10;
@@ -46,13 +43,8 @@
     let sortBy = 'word';
     let sortDir = 'asc';
 
-    function clearMessages() {
-        error = null;
-        success = null;
-    }
-
     async function loadWords(targetPage = page) {
-        clearMessages();
+        error = null;
         wordsLoading = true;
         try {
             const params = new URLSearchParams({
@@ -65,6 +57,7 @@
             const res = await fetch(`/api/words?${params.toString()}`);
             if (!res.ok) throw new Error(`GET /api/words -> HTTP ${res.status}`);
             const payload = (await res.json()) as GetWordsResponse;
+
             words = payload.items;
             totalItems = payload.totalItems;
             totalPages = payload.totalPages;
@@ -101,109 +94,83 @@
         }
     }
 
-    async function createWord() {
-        clearMessages();
-        const word = newWord.trim();
-        const explanation = newExplanation.trim();
+    function openDeleteModal(item: Word) {
+        deleteTarget = item;
+    }
 
-        if (!word) {
-            error = 'Word is required.';
-            return;
-        }
-
-        busy = true;
-        try {
-            const res = await fetch('/api/words', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ word, explanation })
-            });
-
-            if (!res.ok) {
-                const text = await res.text().catch(() => '');
-                throw new Error(text || `POST /api/words -> HTTP ${res.status}`);
-            }
-
-            const created = (await res.json()) as Word;
-            success = `Created #${created.id}: ${created.word}`;
-            newWord = '';
-            newExplanation = '';
-            await loadWords(page);
-        } catch (e) {
-            error = e instanceof Error ? e.message : String(e);
-        } finally {
-            busy = false;
+    function closeDeleteModal() {
+        if (!deleteLoading) {
+            deleteTarget = null;
         }
     }
 
-    async function patchWordById() {
-        clearMessages();
-        const id = Number(patchId);
-        const payload: { word?: string; explanation?: string } = {};
+    async function confirmDelete() {
+        if (!deleteTarget) return;
 
-        if (!Number.isInteger(id) || id <= 0) {
-            error = 'Patch ID must be a positive number.';
-            return;
-        }
+        error = null;
+        success = null;
+        deleteLoading = true;
+        const target = deleteTarget;
+        const fallbackPage = words.length === 1 && page > 0 ? page - 1 : page;
 
-        if (patchWord.trim()) payload.word = patchWord.trim();
-        if (patchExplanation.trim()) payload.explanation = patchExplanation.trim();
-
-        if (Object.keys(payload).length === 0) {
-            error = 'Provide at least one field to patch.';
-            return;
-        }
-
-        busy = true;
         try {
-            const res = await fetch(`/api/words/${id}`, {
+            const res = await fetch(`/api/words/${target.id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const text = await res.text().catch(() => '');
+                throw new Error(text || `DELETE /api/words/${target.id} -> HTTP ${res.status}`);
+            }
+
+            deleteTarget = null;
+            success = `Deleted "${target.word}"`;
+            await loadWords(fallbackPage);
+        } catch (e) {
+            error = e instanceof Error ? e.message : String(e);
+        } finally {
+            deleteLoading = false;
+        }
+    }
+
+    function openEditModal(item: Word) {
+        editTarget = item;
+    }
+
+    function closeEditModal() {
+        if (!editLoading) {
+            editTarget = null;
+        }
+    }
+
+    async function saveEdit(event: CustomEvent<{ word: string; explanation: string }>) {
+        if (!editTarget) return;
+
+        error = null;
+        success = null;
+        editLoading = true;
+        const target = editTarget;
+        const payload = event.detail;
+
+        try {
+            const res = await fetch(`/api/words/${target.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({
+                    word: payload.word,
+                    explanation: payload.explanation
+                })
             });
 
             if (!res.ok) {
                 const text = await res.text().catch(() => '');
-                throw new Error(text || `PATCH /api/words/${id} -> HTTP ${res.status}`);
+                throw new Error(text || `PATCH /api/words/${target.id} -> HTTP ${res.status}`);
             }
 
-            const updated = (await res.json()) as Word;
-            success = `Updated #${updated.id}: ${updated.word}`;
-            patchId = '';
-            patchWord = '';
-            patchExplanation = '';
+            editTarget = null;
+            success = `Updated "${payload.word}"`;
             await loadWords(page);
         } catch (e) {
             error = e instanceof Error ? e.message : String(e);
         } finally {
-            busy = false;
-        }
-    }
-
-    async function deleteWordById() {
-        clearMessages();
-        const id = Number(deleteId);
-
-        if (!Number.isInteger(id) || id <= 0) {
-            error = 'Delete ID must be a positive number.';
-            return;
-        }
-
-        busy = true;
-        try {
-            const res = await fetch(`/api/words/${id}`, { method: 'DELETE' });
-            if (!res.ok) {
-                const text = await res.text().catch(() => '');
-                throw new Error(text || `DELETE /api/words/${id} -> HTTP ${res.status}`);
-            }
-
-            success = `Word #${id} deleted successfully`;
-            deleteId = '';
-            await loadWords(page);
-        } catch (e) {
-            error = e instanceof Error ? e.message : String(e);
-        } finally {
-            busy = false;
+            editLoading = false;
         }
     }
 
@@ -212,9 +179,9 @@
 
 <div class="mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
     <div class="mb-6">
-        <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">Words API tester</h1>
+        <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">Word list</h1>
         <p class="mt-1 text-sm text-zinc-600">
-            Test <code>POST/GET/PATCH/DELETE /api/words</code> from frontend proxy.
+            Browse words from <code>GET /api/words</code>.
         </p>
     </div>
 
@@ -226,37 +193,7 @@
         <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
     {/if}
 
-    <div class="grid gap-4">
-        <form on:submit|preventDefault={createWord} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <h2 class="mb-3 text-base font-semibold">Create word</h2>
-            <div class="grid gap-3">
-                <input bind:value={newWord} placeholder="word" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm" />
-                <textarea bind:value={newExplanation} placeholder="explanation" class="min-h-24 rounded-lg border border-zinc-300 px-3 py-2 text-sm"></textarea>
-                <button type="submit" disabled={busy} class="h-10 rounded-lg bg-zinc-900 text-sm font-semibold text-white disabled:opacity-60">POST /api/words</button>
-            </div>
-        </form>
-
-        <form on:submit|preventDefault={patchWordById} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <h2 class="mb-3 text-base font-semibold">Patch word</h2>
-            <div class="grid gap-3">
-                <input bind:value={patchId} placeholder="id (required)" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm" />
-                <input bind:value={patchWord} placeholder="new word (optional)" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm" />
-                <textarea bind:value={patchExplanation} placeholder="new explanation (optional)" class="min-h-24 rounded-lg border border-zinc-300 px-3 py-2 text-sm"></textarea>
-                <button type="submit" disabled={busy} class="h-10 rounded-lg bg-zinc-900 text-sm font-semibold text-white disabled:opacity-60">PATCH /api/words/:id</button>
-            </div>
-        </form>
-
-        <form on:submit|preventDefault={deleteWordById} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <h2 class="mb-3 text-base font-semibold">Delete word</h2>
-            <div class="grid gap-3">
-                <input bind:value={deleteId} placeholder="id (required)" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm" />
-                <button type="submit" disabled={busy} class="h-10 rounded-lg bg-red-600 text-sm font-semibold text-white disabled:opacity-60">DELETE /api/words/:id</button>
-                <button type="button" on:click={() => loadWords(page)} disabled={wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium">Refresh current page</button>
-            </div>
-        </form>
-    </div>
-
-    <form on:submit|preventDefault={applyFilter} class="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <form on:submit|preventDefault={applyFilter} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
         <h2 class="mb-3 text-base font-semibold">Get words options</h2>
         <div class="grid gap-3 sm:grid-cols-2">
             <input bind:value={listSearch} placeholder="search by word/explanation" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2" />
@@ -302,7 +239,24 @@
                     <li class="px-4 py-3">
                         <div class="flex items-center justify-between gap-3">
                             <div class="text-sm font-semibold text-zinc-900">{item.word}</div>
-                            <span class="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">#{item.id}</span>
+                            <div class="flex items-center gap-1">
+                                <button
+                                    type="button"
+                                    class="rounded-lg p-2 text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800"
+                                    aria-label={`Edit word ${item.word}`}
+                                    on:click={() => openEditModal(item)}
+                                >
+                                    <Pencil class="h-4 w-4" />
+                                </button>
+                                <button
+                                    type="button"
+                                    class="rounded-lg p-2 text-zinc-500 transition hover:bg-red-50 hover:text-red-600"
+                                    aria-label={`Delete word ${item.word}`}
+                                    on:click={() => openDeleteModal(item)}
+                                >
+                                    <Trash2 class="h-4 w-4" />
+                                </button>
+                            </div>
                         </div>
                         <div class="mt-1 text-sm text-zinc-600">{item.explanation || 'No explanation'}</div>
                     </li>
@@ -321,3 +275,24 @@
         {/if}
     </div>
 </div>
+
+<ConfirmModal
+    open={deleteTarget !== null}
+    title="Delete word"
+    message={`Are you sure you want to delete word: "${deleteTarget?.word ?? ''}"?`}
+    confirmText="Delete"
+    cancelText="Cancel"
+    loading={deleteLoading}
+    on:cancel={closeDeleteModal}
+    on:confirm={confirmDelete}
+/>
+
+<EditWordModal
+    open={editTarget !== null}
+    title="Edit word"
+    initialWord={editTarget?.word ?? ''}
+    initialExplanation={editTarget?.explanation ?? ''}
+    loading={editLoading}
+    on:cancel={closeEditModal}
+    on:save={saveEdit}
+/>
