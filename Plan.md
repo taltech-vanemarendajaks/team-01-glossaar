@@ -8,11 +8,11 @@ Plaani puhul prioritiseerime vastavalt Glossaar.md roadmap failis kirjeldatud pe
 - [x] Svelte starter project (#2)
 - [x] Java Spring starter project (#3)
 - [ ] ise nullist authi ei teeks - oauth2 integratsioon BE (kas FE tahab ka midagi?) (#4)
-- [ ] mingisugune ORM lahendus üles seada (Java maailma standard on JPA?) (#5)
+- [x] mingisugune ORM lahendus üles seada (Java maailma standard on JPA?) (#5)
 - [x] mingisugun svelte komponentide raamistik üles seada (btn, card, textfield, mida veel vaja?) bootstrap / tailwind / miski muu? (#6)
-- [ ] võiks mingi automaatne format-on-save lahendus olla BE (#7)
+- [x] võiks mingi automaatne format-on-save lahendus olla BE (#7)
 - [x] võiks mingi automaatne format-on-save lahendus olla FE (eslint + prettier? miskit tuleb ehk automaatselt kaasa) (#8)
-- [ ] kuidas lokaalselt jooksutame? (ka docker?) (#9)
+- [x] kuidas lokaalselt jooksutame? (ka docker?) (#9)
 
 ## developemnt
 
@@ -37,10 +37,10 @@ Plaani puhul prioritiseerime vastavalt Glossaar.md roadmap failis kirjeldatud pe
 
 - [x] 1. Serverise docker (#23)
 - [x] 2. Serverisse nginx (#24)
-- [ ] 3. Serverisse andmebaas püsti panna (eraldi konteiner) (#25)
-- [ ] FE build + ghrc deploy action + secretid (server + vajadusel GH) (#26)
-- [ ] BE build + ghrc BE deploy action + secretid (server + vajadusel GH) (#27)
-- [ ] Testide jooksutamine PRi avades, edukas run saab olema eeldus mergemiseks (#28)
+- [x] 3. Serverisse andmebaas püsti panna (eraldi konteiner) (#25)
+- [x] FE build + ghrc deploy action + secretid (server + vajadusel GH) (#26)
+- [x] BE build + ghrc BE deploy action + secretid (server + vajadusel GH) (#27)
+- [x] Testide jooksutamine PRi avades, edukas run saab olema eeldus mergemiseks (#28)
 
 ## Design
 
