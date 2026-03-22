@@ -11,7 +11,7 @@ on:
           - frontend
           - backend
       deploy-to-server:
-        description: Whether to deploy the image to server as well
+        description: Deploy the server
         type: boolean
         default: false
 
