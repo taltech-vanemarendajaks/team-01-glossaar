@@ -35,6 +35,7 @@
 - Priviligeeritud admin roll
 - Võiks saada vaadete vahel liikuda lohistades vasakule-paremale.
 - dark mode / light mode võimekus + switch?
+- Isikliku sõnapakki jagamine teistega. A la 'tehnilised terminid nooremarendajale'.
 
 ---
 
