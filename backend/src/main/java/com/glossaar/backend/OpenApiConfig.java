@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
                 contact = @Contact(name = "Glossaar Team")
         ),
         servers = {
-                @Server(url = "http://localhost:8083", description = "Local backend direct access"),
+                @Server(url = "http://localhost:8080", description = "Local backend direct access"),
                 @Server(url = "http://localhost:5173", description = "Frontend dev proxy access")
         }
 )
