@@ -57,7 +57,7 @@ public class QuizController {
     }
 
     @PostMapping
-    @Operation(summary = "Submit quiz answers", description = "Updates user quiz scores from one or more answer items and returns success status.")
+    @Operation(summary = "Submit quiz answers", description = "Updates user quiz scores from one or more answer items (by wordId) and returns success status.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -67,7 +67,7 @@ public class QuizController {
     })
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Batch of one or more submitted answers for one user.",
+            description = "Batch of one or more submitted answers for one user. Each answer references wordId.",
             content = @Content(schema = @Schema(implementation = QuizBatchAnswerRequestDto.class))
     )
     @BadRequestApiResponse

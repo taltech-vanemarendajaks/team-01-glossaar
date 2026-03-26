@@ -7,6 +7,11 @@ import java.util.List;
 
 public record QuizQuestionResponseDto(
         @Schema(
+                description = "Word ID used for answer submission.",
+                example = "42"
+        )
+        Long wordId,
+        @Schema(
                 description = "Word that should be matched with the correct explanation.",
                 example = "cillum-2"
         )

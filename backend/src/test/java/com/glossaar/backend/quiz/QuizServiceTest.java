@@ -15,7 +15,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,6 +28,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class QuizServiceTest {
     private static final long USER_ID = 1L;
+    private static final long WORD_A_ID = 101L;
+    private static final long WORD_B_ID = 102L;
+    private static final long WORD_C_ID = 103L;
+    private static final long WORD_D_ID = 104L;
+    private static final long WORD_E_ID = 105L;
+    private static final long WORD_F_ID = 106L;
+    private static final long WORD_G_ID = 107L;
+    private static final long WORD_H_ID = 108L;
 
     @Mock
     private QuizRepository quizRepository;
@@ -43,20 +53,21 @@ class QuizServiceTest {
     void getQuestionSetReturnsFourQuestionsEachWithFourOptionsAndValidCorrectIndex() {
         when(userRepository.existsById(USER_ID)).thenReturn(true);
         when(quizRepository.findLowestScoreQuizWordsByUserId(USER_ID, 8)).thenReturn(List.of(
-                new WordEntity("Word A", "Explanation A"),
-                new WordEntity("Word B", "Explanation B"),
-                new WordEntity("Word C", "Explanation C"),
-                new WordEntity("Word D", "Explanation D"),
-                new WordEntity("Word E", "Explanation E"),
-                new WordEntity("Word F", "Explanation F"),
-                new WordEntity("Word G", "Explanation G"),
-                new WordEntity("Word H", "Explanation H")
+                word(WORD_A_ID, "Word A", "Explanation A"),
+                word(WORD_B_ID, "Word B", "Explanation B"),
+                word(WORD_C_ID, "Word C", "Explanation C"),
+                word(WORD_D_ID, "Word D", "Explanation D"),
+                word(WORD_E_ID, "Word E", "Explanation E"),
+                word(WORD_F_ID, "Word F", "Explanation F"),
+                word(WORD_G_ID, "Word G", "Explanation G"),
+                word(WORD_H_ID, "Word H", "Explanation H")
         ));
 
         List<QuizQuestionResponseDto> result = quizService.getQuestionSet(USER_ID);
 
         assertThat(result).hasSize(4);
         for (QuizQuestionResponseDto question : result) {
+            assertThat(question.wordId()).isNotNull();
             assertThat(question.word()).isNotBlank();
             assertThat(question.options()).hasSize(4);
             assertThat(question.correctIndex()).isBetween(0, 3);
@@ -68,13 +79,13 @@ class QuizServiceTest {
     void getQuestionSetFailsWhenThereAreFewerThanEightCandidates() {
         when(userRepository.existsById(USER_ID)).thenReturn(true);
         when(quizRepository.findLowestScoreQuizWordsByUserId(USER_ID, 8)).thenReturn(List.of(
-                new WordEntity("Word A", "Explanation A"),
-                new WordEntity("Word B", "Explanation B"),
-                new WordEntity("Word C", "Explanation C"),
-                new WordEntity("Word D", "Explanation D"),
-                new WordEntity("Word E", "Explanation E"),
-                new WordEntity("Word F", "Explanation F"),
-                new WordEntity("Word G", "Explanation G")
+                word(WORD_A_ID, "Word A", "Explanation A"),
+                word(WORD_B_ID, "Word B", "Explanation B"),
+                word(WORD_C_ID, "Word C", "Explanation C"),
+                word(WORD_D_ID, "Word D", "Explanation D"),
+                word(WORD_E_ID, "Word E", "Explanation E"),
+                word(WORD_F_ID, "Word F", "Explanation F"),
+                word(WORD_G_ID, "Word G", "Explanation G")
         ));
 
         assertThatThrownBy(() -> quizService.getQuestionSet(USER_ID))
@@ -86,19 +97,41 @@ class QuizServiceTest {
     void getQuestionSetFailsWhenThereAreNotEnoughUniqueExplanations() {
         when(userRepository.existsById(USER_ID)).thenReturn(true);
         when(quizRepository.findLowestScoreQuizWordsByUserId(USER_ID, 8)).thenReturn(List.of(
-                new WordEntity("Word A", "Same explanation"),
-                new WordEntity("Word B", "Same explanation"),
-                new WordEntity("Word C", "Same explanation"),
-                new WordEntity("Word D", "Same explanation"),
-                new WordEntity("Word E", "Same explanation"),
-                new WordEntity("Word F", "Same explanation"),
-                new WordEntity("Word G", "Same explanation"),
-                new WordEntity("Word H", "Same explanation")
+                word(WORD_A_ID, "Word A", "Same explanation"),
+                word(WORD_B_ID, "Word B", "Same explanation"),
+                word(WORD_C_ID, "Word C", "Same explanation"),
+                word(WORD_D_ID, "Word D", "Same explanation"),
+                word(WORD_E_ID, "Word E", "Same explanation"),
+                word(WORD_F_ID, "Word F", "Same explanation"),
+                word(WORD_G_ID, "Word G", "Same explanation"),
+                word(WORD_H_ID, "Word H", "Same explanation")
         ));
 
         assertThatThrownBy(() -> quizService.getQuestionSet(USER_ID))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("At least 4 unique explanations are required for quiz");
+    }
+
+    @Test
+    void getQuestionSetSucceedsWhenPoolHasDuplicatesButEnoughUniqueExplanations() {
+        when(userRepository.existsById(USER_ID)).thenReturn(true);
+        when(quizRepository.findLowestScoreQuizWordsByUserId(USER_ID, 8)).thenReturn(List.of(
+                word(WORD_A_ID, "Word A", "Explanation A"),
+                word(WORD_B_ID, "Word B", "Explanation B"),
+                word(WORD_C_ID, "Word C", "Explanation C"),
+                word(WORD_D_ID, "Word D", "Explanation D"),
+                word(WORD_E_ID, "Word E", "Explanation A"),
+                word(WORD_F_ID, "Word F", "Explanation B"),
+                word(WORD_G_ID, "Word G", "Explanation C"),
+                word(WORD_H_ID, "Word H", "Explanation D")
+        ));
+
+        List<QuizQuestionResponseDto> result = quizService.getQuestionSet(USER_ID);
+
+        assertThat(result).hasSize(4);
+        for (QuizQuestionResponseDto question : result) {
+            assertThat(question.options()).hasSize(4);
+        }
     }
 
     @Test
@@ -114,27 +147,27 @@ class QuizServiceTest {
     void submitAnswersUpdatesAllFiveAndReturnsOk() {
         UserEntity user = new UserEntity("TestUser");
         user.setId(USER_ID);
-        UserWordScoreEntity scoreA = new UserWordScoreEntity(user, new WordEntity("Word A", "Explanation A"), 3);
-        UserWordScoreEntity scoreB = new UserWordScoreEntity(user, new WordEntity("Word B", "Explanation B"), 2);
-        UserWordScoreEntity scoreC = new UserWordScoreEntity(user, new WordEntity("Word C", "Explanation C"), 1);
-        UserWordScoreEntity scoreD = new UserWordScoreEntity(user, new WordEntity("Word D", "Explanation D"), 0);
-        UserWordScoreEntity scoreE = new UserWordScoreEntity(user, new WordEntity("Word E", "Explanation E"), -1);
+        UserWordScoreEntity scoreA = new UserWordScoreEntity(user, word(WORD_A_ID, "Word A", "Explanation A"), 3);
+        UserWordScoreEntity scoreB = new UserWordScoreEntity(user, word(WORD_B_ID, "Word B", "Explanation B"), 2);
+        UserWordScoreEntity scoreC = new UserWordScoreEntity(user, word(WORD_C_ID, "Word C", "Explanation C"), 1);
+        UserWordScoreEntity scoreD = new UserWordScoreEntity(user, word(WORD_D_ID, "Word D", "Explanation D"), 0);
+        UserWordScoreEntity scoreE = new UserWordScoreEntity(user, word(WORD_E_ID, "Word E", "Explanation E"), -1);
 
         when(userRepository.existsById(USER_ID)).thenReturn(true);
-        when(userWordScoreRepository.findByUserIdAndWordWordIgnoreCase(USER_ID, "Word A")).thenReturn(java.util.Optional.of(scoreA));
-        when(userWordScoreRepository.findByUserIdAndWordWordIgnoreCase(USER_ID, "Word B")).thenReturn(java.util.Optional.of(scoreB));
-        when(userWordScoreRepository.findByUserIdAndWordWordIgnoreCase(USER_ID, "Word C")).thenReturn(java.util.Optional.of(scoreC));
-        when(userWordScoreRepository.findByUserIdAndWordWordIgnoreCase(USER_ID, "Word D")).thenReturn(java.util.Optional.of(scoreD));
-        when(userWordScoreRepository.findByUserIdAndWordWordIgnoreCase(USER_ID, "Word E")).thenReturn(java.util.Optional.of(scoreE));
+        when(userWordScoreRepository.findByUserIdAndWordId(USER_ID, WORD_A_ID)).thenReturn(java.util.Optional.of(scoreA));
+        when(userWordScoreRepository.findByUserIdAndWordId(USER_ID, WORD_B_ID)).thenReturn(java.util.Optional.of(scoreB));
+        when(userWordScoreRepository.findByUserIdAndWordId(USER_ID, WORD_C_ID)).thenReturn(java.util.Optional.of(scoreC));
+        when(userWordScoreRepository.findByUserIdAndWordId(USER_ID, WORD_D_ID)).thenReturn(java.util.Optional.of(scoreD));
+        when(userWordScoreRepository.findByUserIdAndWordId(USER_ID, WORD_E_ID)).thenReturn(java.util.Optional.of(scoreE));
 
         QuizBatchAnswerRequestDto request = new QuizBatchAnswerRequestDto(
                 USER_ID,
                 List.of(
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word A", true),
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word B", false),
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word C", true),
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word D", false),
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word E", true)
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_A_ID, true),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_B_ID, false),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_C_ID, true),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_D_ID, false),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_E_ID, true)
                 )
         );
 
@@ -152,21 +185,59 @@ class QuizServiceTest {
     @Test
     void submitAnswersFailsWhenUserWordScoreRowDoesNotExist() {
         when(userRepository.existsById(USER_ID)).thenReturn(true);
-        when(userWordScoreRepository.findByUserIdAndWordWordIgnoreCase(USER_ID, "Word X")).thenReturn(java.util.Optional.empty());
+        when(userWordScoreRepository.findByUserIdAndWordId(USER_ID, WORD_A_ID)).thenReturn(java.util.Optional.empty());
 
         QuizBatchAnswerRequestDto request = new QuizBatchAnswerRequestDto(
                 USER_ID,
                 List.of(
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word X", true),
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word A", false),
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word B", true),
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word C", false),
-                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto("Word D", true)
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_A_ID, true),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_B_ID, false),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_C_ID, true),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_D_ID, false),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_E_ID, true)
                 )
         );
 
         assertThatThrownBy(() -> quizService.submitAnswers(request))
                 .isInstanceOf(ResponseStatusException.class)
-                .hasMessageContaining("User-word score not found for userId=" + USER_ID + ", word=Word X");
+                .hasMessageContaining("User-word score not found for userId=" + USER_ID + ", wordId=" + WORD_A_ID);
+    }
+
+    @Test
+    void submitAnswersFailsWhenDuplicateWordIdsProvided() {
+        when(userRepository.existsById(USER_ID)).thenReturn(true);
+
+        QuizBatchAnswerRequestDto request = new QuizBatchAnswerRequestDto(
+                USER_ID,
+                List.of(
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_A_ID, true),
+                        new QuizBatchAnswerRequestDto.QuizAnswerItemDto(WORD_A_ID, false)
+                )
+        );
+
+        assertThatThrownBy(() -> quizService.submitAnswers(request))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("answers must not contain duplicate wordId values");
+    }
+
+    @Test
+    void submitAnswersFailsWhenBatchSizeExceedsMaxLimit() {
+        when(userRepository.existsById(USER_ID)).thenReturn(true);
+
+        List<QuizBatchAnswerRequestDto.QuizAnswerItemDto> answers = new ArrayList<>();
+        IntStream.rangeClosed(1, 101).forEach(i ->
+                answers.add(new QuizBatchAnswerRequestDto.QuizAnswerItemDto((long) i, true))
+        );
+        QuizBatchAnswerRequestDto request = new QuizBatchAnswerRequestDto(USER_ID, answers);
+
+        assertThatThrownBy(() -> quizService.submitAnswers(request))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("answers must contain at most 100 items");
+    }
+
+    private static WordEntity word(Long id, String word, String explanation) {
+        WordEntity entity = new WordEntity(word, explanation);
+        entity.setId(id);
+        return entity;
     }
 }

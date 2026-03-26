@@ -15,7 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class QuizService {
     private static final int CANDIDATE_POOL_MULTIPLIER = 2;
     private static final int CANDIDATE_POOL_SIZE = QUIZ_SET_SIZE * CANDIDATE_POOL_MULTIPLIER;
     private static final int OPTIONS_PER_QUESTION = 4;
+    private static final int MAX_SUBMIT_BATCH_SIZE = 100;
 
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
@@ -43,7 +46,23 @@ public class QuizService {
         }
 
         Collections.shuffle(candidateWords);
-        List<WordEntity> quizWords = new ArrayList<>(candidateWords.subList(0, QUIZ_SET_SIZE));
+        List<WordEntity> quizWords = new ArrayList<>(QUIZ_SET_SIZE);
+        Set<String> usedExplanations = new HashSet<>();
+        for (WordEntity candidate : candidateWords) {
+            if (usedExplanations.add(candidate.getExplanation())) {
+                quizWords.add(candidate);
+            }
+            if (quizWords.size() == QUIZ_SET_SIZE) {
+                break;
+            }
+        }
+
+        if (quizWords.size() < QUIZ_SET_SIZE) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "At least " + QUIZ_SET_SIZE + " unique explanations are required for quiz"
+            );
+        }
 
         List<QuizQuestionResponseDto> questionSet = new ArrayList<>(QUIZ_SET_SIZE);
 
@@ -79,7 +98,7 @@ public class QuizService {
 
             Collections.shuffle(options);
             int correctIndex = options.indexOf(question.getExplanation());
-            questionSet.add(new QuizQuestionResponseDto(question.getWord(), options, correctIndex));
+            questionSet.add(new QuizQuestionResponseDto(question.getId(), question.getWord(), options, correctIndex));
         }
 
         return questionSet;
@@ -91,12 +110,29 @@ public class QuizService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + request.userId());
         }
 
+        if (request.answers().size() > MAX_SUBMIT_BATCH_SIZE) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "answers must contain at most " + MAX_SUBMIT_BATCH_SIZE + " items"
+            );
+        }
+
+        Set<Long> seenWordIds = new HashSet<>();
+        for (QuizBatchAnswerRequestDto.QuizAnswerItemDto answer : request.answers()) {
+            if (!seenWordIds.add(answer.wordId())) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "answers must not contain duplicate wordId values"
+                );
+            }
+        }
+
         for (QuizBatchAnswerRequestDto.QuizAnswerItemDto answer : request.answers()) {
             UserWordScoreEntity userWordScore = userWordScoreRepository
-                    .findByUserIdAndWordWordIgnoreCase(request.userId(), answer.word())
+                    .findByUserIdAndWordId(request.userId(), answer.wordId())
                     .orElseThrow(() -> new ResponseStatusException(
                             HttpStatus.NOT_FOUND,
-                            "User-word score not found for userId=" + request.userId() + ", word=" + answer.word()
+                            "User-word score not found for userId=" + request.userId() + ", wordId=" + answer.wordId()
                     ));
 
             int delta = answer.correct() ? 1 : -1;
