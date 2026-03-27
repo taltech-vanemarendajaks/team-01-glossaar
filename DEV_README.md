@@ -25,7 +25,7 @@ This guide is based on `docker-compose.yml` in the project root.
 
 ## Database migrations
 
-Modifications to the database are done via migrations. A modification can be an alteration to a single column or creating multiple related tables(e.g. user and user_group, group table should be separate). New migrations should be made in `backend/src/main/resources/db/migrations` and these will be applied when the application starts.
+Modifications to the database are done via migrations. A modification can be an alteration to a single column or creating multiple related tables(e.g. user and user_group, group table should be separate). New migrations should be made in `backend/src/main/resources/db/migrations` and these will be applied when the application starts. The migrations should also be compatible to run on H2 in-memory DB, that our tests use.
 To preserve the sequence how migrations are applied, the file name should start with the migration sequence number e.g. `V122__migration_name`.
 
 This is not encouraged but if there is a wish to not write the migration manually:
