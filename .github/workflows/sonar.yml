@@ -7,8 +7,6 @@ on:
       - backend/**
       - frontend/**
 
-
-
 jobs:
   backend-sonarqube:
     runs-on: ubuntu-latest
@@ -21,10 +19,10 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v7
         with:
           projectBaseDir: ./backend
-        args: >
-          -Dsonar.organization=glossaar
-          -Dsonar.projectName=backend
-          -Dsonar.projectKey=glossaar_backend
+          args: >
+            -Dsonar.organization=glossaar
+            -Dsonar.projectName=backend
+            -Dsonar.projectKey=glossaar_backend
         env:
           SONAR_TOKEN: ${{ secrets.BACKEND_SONAR_TOKEN }}
 
@@ -39,9 +37,9 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v7
         with:
           projectBaseDir: ./frontend
-        args: >
-          -Dsonar.organization=glossaar
-          -Dsonar.projectName=frontend
-          -Dsonar.projectKey=glossaar_frontend
+          args: >
+            -Dsonar.organization=glossaar
+            -Dsonar.projectName=frontend
+            -Dsonar.projectKey=glossaar_frontend
         env:
           SONAR_TOKEN: ${{ secrets.FRONTEND_SONAR_TOKEN }}
