@@ -2,23 +2,46 @@ name: SonarCube static analysis
 
 on:
   workflow_dispatch:
-  # trigger when creating a pull request.
   pull_request:
-      types: [opened, synchronize, reopened]
+    paths:
+      - backend/**
+      - frontend/**
 
-name: Analize
+
+
 jobs:
-  sonarqube:
+  backend-sonarqube:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-      with:
-        # Disabling shallow clones is recommended for improving the relevancy of reporting
-        fetch-depth: 0
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-    - name: SonarQube Scan
-      uses: SonarSource/sonarqube-scan-action@v7
-      with:
-        projectBaseDir: ./backend
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarQube backend scan
+        uses: SonarSource/sonarqube-scan-action@v7
+        with:
+          projectBaseDir: ./backend
+        args: >
+          -Dsonar.organization=glossaar
+          -Dsonar.projectName=backend
+          -Dsonar.projectKey=glossaar_backend
+        env:
+          SONAR_TOKEN: ${{ secrets.BACKEND_SONAR_TOKEN }}
+
+  frontend-sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube frontend scan
+        uses: SonarSource/sonarqube-scan-action@v7
+        with:
+          projectBaseDir: ./frontend
+        args: >
+          -Dsonar.organization=glossaar
+          -Dsonar.projectName=frontend
+          -Dsonar.projectKey=glossaar_frontend
+        env:
+          SONAR_TOKEN: ${{ secrets.FRONTEND_SONAR_TOKEN }}
