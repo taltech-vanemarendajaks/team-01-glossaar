@@ -23,7 +23,7 @@ jobs:
           java-version: 21
           distribution: temurin
           cache: maven
-          cache-dependency-path: backend/pom.xml # added for explicityty, actually setup-java can automatically detect this
+          cache-dependency-path: backend/pom.xml # added for explicitness, setup-java can auto-detect this
 
       - name: Cache SonarQube packages
         uses: actions/cache@v5
