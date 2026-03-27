@@ -1,0 +1,24 @@
+name: SonarCube static analysis
+
+on:
+  workflow_dispatch:
+  # trigger when creating a pull request.
+  pull_request:
+      types: [opened, synchronize, reopened]
+
+name: Analize
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        # Disabling shallow clones is recommended for improving the relevancy of reporting
+        fetch-depth: 0
+
+    - name: SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v7
+      with:
+        projectBaseDir: ./backend
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
