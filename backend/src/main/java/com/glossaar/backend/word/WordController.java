@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -85,8 +86,10 @@ public class WordController {
     })
     @BadRequestApiResponse
     @InternalServerErrorApiResponse
+    @Transactional
     public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req) {
-        return mapper.toResponseDto(service.create(req.word(), req.explanation()));
+        WordEntity word = service.create(req.word(), req.explanation(), req.categoryName());
+        return mapper.toResponseDto(word);
     }
 
     @PatchMapping("/{id}")
