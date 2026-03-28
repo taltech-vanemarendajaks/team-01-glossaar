@@ -58,3 +58,16 @@ delombok/
 # Temporary files
 *.swp
 *.tmp
+
+#Katri specific setup
+# local docker overrides
+docker-compose.override.yml
+
+# local dockerfiles
+frontend/dockerfile.dev.katri
+backend/dockerfile.dev.katri
+
+# certs
+frontend/certs/
+backend/certs/
+certs/
