@@ -61,11 +61,23 @@
             />
         </div>
 
-        {#if word || explanation || selectedCategoryName || newCategoryName}
-            <div class="mb-5 p-4 border border-gray-200 rounded-md bg-gray-50">
-                <p class="text-sm text-gray-600"><span class="font-semibold">Category:</span> {addingNew ? newCategoryName : selectedCategoryName}</p>
-                <p class="text-sm text-gray-600 mt-1"><span class="font-semibold">Word:</span> {word}</p>
-                <p class="text-sm text-gray-600 mt-1"><span class="font-semibold">Explanation:</span> {explanation}</p>
+        {#if word.trim() || explanation.trim() || categoryName}
+            <div class="mb-6 p-5 rounded-xl border border-gray-200 bg-white shadow-sm transition-all">
+                {#if categoryName}
+                    <div class="mb-3">
+                <span class="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">
+                    {categoryName}
+                </span>
+                    </div>
+                {/if}
+
+                {#if word.trim()}
+                    <p class="text-lg font-semibold text-gray-900">{word}</p>
+                {/if}
+
+                {#if explanation.trim()}
+                    <p class="mt-2 text text-gray-600 leading-relaxed">{explanation}</p>
+                {/if}
             </div>
         {/if}
 
@@ -98,6 +110,7 @@
     let selectedCategoryName = '';
     let newCategoryName = '';
     let addingNew = false;
+    $: categoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
 
     onMount(async () => {
         try {
