@@ -5,6 +5,7 @@
   import { cn } from '$lib/utils';
   import type { HTMLAttributes } from 'svelte/elements';
   import { page } from '$app/stores'; // TODO: deprecated
+  import LoginButton from '$lib/components/ui/login-button/login-button.svelte';
 
   let { children } = $props();
 
@@ -25,7 +26,7 @@
   <link rel="icon" href={favicon} />
 </svelte:head>
 
-{#snippet ListItem({ title, href, class: className }: ListItemProps)}
+{#snippet ListItem({ title, href, class: className, key }: ListItemProps)}
   <NavigationMenu.Item>
     <NavigationMenu.Link>
       {#snippet child()}
@@ -44,17 +45,21 @@
 {/snippet}
 
 <div class="mx-auto my-8 h-full w-full max-w-[24.5rem] gap-2 rounded-md border p-1">
-  <NavigationMenu.Root>
-    <NavigationMenu.List class="flex w-full rounded-md border p-1">
-      {#each navigationItems as item}
-        {@render ListItem({
-          title: item.name,
-          href: item.href,
-          class: $page.url.pathname === item.href ? 'border' : ''
-        })}
-      {/each}
-    </NavigationMenu.List>
-  </NavigationMenu.Root>
+    <div class="flex items-center justify-between">
+      <NavigationMenu.Root>
+        <NavigationMenu.List class="flex w-full rounded-md border p-1">
+            {#each navigationItems as item}
+                {@render ListItem({
+                title: item.name,
+                href: item.href,
+                class: $page.url.pathname === item.href ? 'border' : ''
+                })}
+            {/each}
+
+            </NavigationMenu.List>
+        </NavigationMenu.Root>
+    <LoginButton/>
+  </div>
 
   <main class="mt-2 rounded-md border p-2">
     {@render children()}
