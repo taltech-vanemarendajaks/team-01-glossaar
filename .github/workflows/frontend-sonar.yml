@@ -1,0 +1,29 @@
+name: SonarCube frontend static analysis
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - frontend/**
+  push:
+    branches:
+      - main
+
+jobs:
+  frontend-sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube frontend scan
+        uses: SonarSource/sonarqube-scan-action@v7
+        with:
+          projectBaseDir: ./frontend
+          args: >
+            -Dsonar.organization=glossaar
+            -Dsonar.projectName=frontend
+            -Dsonar.projectKey=glossaar_frontend
+        env:
+          SONAR_TOKEN: ${{ secrets.FRONTEND_SONAR_TOKEN }}
