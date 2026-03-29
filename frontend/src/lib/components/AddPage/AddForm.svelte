@@ -1,4 +1,4 @@
-<div class="flex justify-center my-12 px-4">
+<div class="flex justify-center">
     <div class="w-full max-w-2xl p-6 rounded-xl border border-gray-200 bg-white shadow-lg">
 
         <div class="mb-5">
