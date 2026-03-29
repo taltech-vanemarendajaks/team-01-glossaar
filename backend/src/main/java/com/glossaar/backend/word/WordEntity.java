@@ -24,6 +24,7 @@ public class WordEntity {
     @Column(length = 1000)
     private String explanation;
 
+    // TODO: convert to many to many in the future?
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
