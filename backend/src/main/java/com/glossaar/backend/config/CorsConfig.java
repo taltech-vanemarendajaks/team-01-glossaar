@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173", "http://glossaar.href.ee")
+                        .allowedOrigins("http://localhost:5173", "https://glossaar.href.ee")
                         .allowedMethods("*");
             }
         };
