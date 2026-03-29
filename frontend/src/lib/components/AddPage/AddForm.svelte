@@ -61,9 +61,9 @@
             />
         </div>
 
-        {#if word || explanation}
+        {#if word || explanation || selectedCategoryName || newCategoryName}
             <div class="mb-5 p-4 border border-gray-200 rounded-md bg-gray-50">
-                <p class="text-sm text-gray-600"><span class="font-semibold">Category:</span> {newCategoryName}</p>
+                <p class="text-sm text-gray-600"><span class="font-semibold">Category:</span> {addingNew ? newCategoryName : selectedCategoryName}</p>
                 <p class="text-sm text-gray-600 mt-1"><span class="font-semibold">Word:</span> {word}</p>
                 <p class="text-sm text-gray-600 mt-1"><span class="font-semibold">Explanation:</span> {explanation}</p>
             </div>
