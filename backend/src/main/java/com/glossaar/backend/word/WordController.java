@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/words")
+@RequestMapping("words")
 @RequiredArgsConstructor
 public class WordController {
 
