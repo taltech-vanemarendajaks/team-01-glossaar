@@ -21,7 +21,7 @@ This guide is based on `docker-compose.yml` in the project root.
 
 - `db`: Postgres 18
 - `backend`: Spring Boot app (runs in dev profile; reloads via `docker compose watch`)
-- `frontend`: Vite dev server (`${FRONTEND_DEV_PORT:-5173}`)
+- `frontend`: Vite dev server running on its default port 5173
 
 ## Database migrations
 
@@ -70,9 +70,7 @@ Check service status:
 docker compose ps
 ```
 
-- Frontend: `http://localhost:5173` (or your `FRONTEND_DEV_PORT` from `.env`)
-- Backend is consumed by frontend inside Docker network (`backend` service name).
-- Database is available on host `localhost:5432`.
+- Frontend: `http://localhost:5173
 
 Because `frontend/` is mounted as a volume, Vite updates live when frontend files change.
 

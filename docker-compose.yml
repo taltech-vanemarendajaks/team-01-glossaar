@@ -30,6 +30,8 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_PROFILES_ACTIVE: dev
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
     ports:
       - "8080:8080"
     command: mvn -q -DskipTests spring-boot:run
@@ -55,7 +57,7 @@ services:
     environment:
       CHOKIDAR_USEPOLLING: "true"
     ports:
-      - "${FRONTEND_DEV_PORT:-5173}:5173"
+      - "5173:5173"
     depends_on:
       - backend
     command: sh -lc "npm ci && npm run dev -- --host 0.0.0.0"
