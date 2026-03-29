@@ -86,7 +86,6 @@ public class WordController {
     })
     @BadRequestApiResponse
     @InternalServerErrorApiResponse
-    @Transactional
     public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req) {
         WordEntity word = service.create(req.word(), req.explanation(), req.categoryName());
         return mapper.toResponseDto(word);
