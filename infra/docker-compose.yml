@@ -10,6 +10,8 @@ services:
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
     restart: unless-stopped
     env_file: ../backend/.env
+    depends_on:
+      - db
 
   nginx:
     image: nginx:latest

@@ -1,5 +1,6 @@
 package com.glossaar.backend.category;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class CategoryService {
             ));
     }
 
+    @Transactional
     public CategoryEntity create(String name) {
         String normalized = normalizeName("name", name);
 

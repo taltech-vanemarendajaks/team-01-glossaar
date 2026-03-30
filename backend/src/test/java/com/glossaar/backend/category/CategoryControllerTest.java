@@ -1,18 +1,16 @@
 package com.glossaar.backend.category;
 
+import com.glossaar.backend.IntegrationTest;
 import com.glossaar.backend.category.dto.CategoryResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(properties = "spring.profiles.active=test")
-@Transactional
-class CategoryControllerTest {
+
+class CategoryControllerTest extends IntegrationTest {
 
     @Autowired
     private CategoryService categoryService;

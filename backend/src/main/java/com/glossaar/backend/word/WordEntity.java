@@ -1,11 +1,7 @@
 package com.glossaar.backend.word;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.glossaar.backend.category.CategoryEntity;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +23,11 @@ public class WordEntity {
 
     @Column(length = 1000)
     private String explanation;
+
+    // TODO: convert to many to many in the future?
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private CategoryEntity category;
 
     public WordEntity(String word, String explanation) {
         this.word = word;
