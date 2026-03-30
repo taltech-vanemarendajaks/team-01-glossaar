@@ -8,6 +8,9 @@ public record CreateWordRequestDto(
         @Size(max = 255, message = "word must be at most 255 characters")
         String word,
         @Size(max = 1000, message = "explanation must be at most 1000 characters")
-        String explanation
+        String explanation,
+        @NotBlank(message = "category must not be blank")
+        @Size(max = 255, message = "category must be at most 255 characters")
+        String categoryName
 ) {
 }

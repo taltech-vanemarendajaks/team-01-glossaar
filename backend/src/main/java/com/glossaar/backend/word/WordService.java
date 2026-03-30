@@ -1,5 +1,7 @@
 package com.glossaar.backend.word;
 
+import com.glossaar.backend.category.CategoryEntity;
+import com.glossaar.backend.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class WordService {
 
     private final WordRepository repo;
+    private final CategoryService categoryService;
 
     public Page<WordEntity> getAll(String search, int page, int size, String sortBy, String sortDir) {
         if (page < 0) {
@@ -72,11 +75,19 @@ public class WordService {
     }
 
     @Transactional
-    public WordEntity create(String word, String explanation) {
-        return repo.save(new WordEntity(
-                requireNonBlank("word", word),
-                normalizeOptional(explanation)
-        ));
+    public WordEntity create(String word, String explanation, String categoryName) {
+        String validWord = requireNonBlank("word", word);
+        String validExplanation = normalizeOptional(explanation);
+        String validCategoryName = requireNonBlank("category", categoryName);
+
+        CategoryEntity category = categoryService.create(validCategoryName);
+
+        WordEntity wordToBeAdded = new WordEntity();
+        wordToBeAdded.setWord(validWord);
+        wordToBeAdded.setExplanation(validExplanation);
+        wordToBeAdded.setCategory(category);
+
+        return repo.save(wordToBeAdded);
     }
 
     @Transactional
@@ -109,10 +120,7 @@ public class WordService {
     }
 
     private static String normalizeOptional(String value) {
-        if (value == null) {
-            return null;
-        }
-        String normalized = value.trim();
-        return normalized.isEmpty() ? null : normalized;
+        requireNonBlank("explanation", value);
+        return value.trim();
     }
 }
