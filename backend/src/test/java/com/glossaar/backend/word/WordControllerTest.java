@@ -4,6 +4,7 @@ import com.glossaar.backend.IntegrationTest;
 import com.glossaar.backend.word.dto.CreateWordRequestDto;
 import com.glossaar.backend.category.CategoryRepository;
 import com.glossaar.backend.category.CategoryEntity;
+import com.glossaar.backend.userword.UserWordScoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,12 @@ class WordControllerTest extends IntegrationTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private UserWordScoreRepository userWordScoreRepository;
+
     @BeforeEach
     void setup() {
+        userWordScoreRepository.deleteAll();
         wordRepository.deleteAll();
         categoryRepository.deleteAll();
     }

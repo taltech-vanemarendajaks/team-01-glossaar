@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(
         name = "user_word_scores",
@@ -41,6 +43,9 @@ public class UserWordScoreEntity {
 
     @Column(name = "quiz_score", nullable = false)
     private int quizScore;
+
+    @Column(name = "last_quizzed_at")
+    private LocalDateTime lastQuizzedAt;
 
     public UserWordScoreEntity(UserEntity user, WordEntity word, int quizScore) {
         this.user = user;

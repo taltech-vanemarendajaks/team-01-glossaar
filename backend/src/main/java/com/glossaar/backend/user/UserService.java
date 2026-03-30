@@ -37,7 +37,9 @@ public class UserService {
         }
 
         try {
-            UserEntity saved = repository.save(new UserEntity(normalizedUsername));
+            UserEntity saved = repository.save(
+                    new UserEntity(normalizedUsername, emailFromUsername(normalizedUsername))
+            );
             return toResponse(saved);
         } catch (DataIntegrityViolationException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
@@ -49,6 +51,10 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, field + " must not be blank");
         }
         return value.trim();
+    }
+
+    private static String emailFromUsername(String username) {
+        return username.toLowerCase() + "@local.glossaar";
     }
 
     private UserResponseDto toResponse(UserEntity entity) {

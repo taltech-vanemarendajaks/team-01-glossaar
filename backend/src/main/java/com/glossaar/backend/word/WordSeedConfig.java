@@ -21,6 +21,7 @@ public class WordSeedConfig {
 
     private static final Logger log = LoggerFactory.getLogger(WordSeedConfig.class);
     private static final String TEST_USERNAME = "TestUser";
+    private static final String TEST_EMAIL = "testuser@local.glossaar";
     private static final String[] LOREM_WORDS = {
             "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
             "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
@@ -53,7 +54,7 @@ public class WordSeedConfig {
             }
 
             UserEntity testUser = userRepository.findByUsernameIgnoreCase(TEST_USERNAME)
-                    .orElseGet(() -> userRepository.save(new UserEntity(TEST_USERNAME)));
+                    .orElseGet(() -> userRepository.save(new UserEntity(TEST_USERNAME, TEST_EMAIL)));
 
             List<WordEntity> allWords = wordRepository.findAll();
             Set<Long> existingWordIds = userWordScoreRepository.findAllByUserId(testUser.getId())

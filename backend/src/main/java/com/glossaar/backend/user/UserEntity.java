@@ -25,7 +25,11 @@ public class UserEntity {
     @Column(nullable = false, unique = true, length = 255)
     private String username;
 
-    public UserEntity(String username) {
+    @Column(nullable = false, unique = true, length = 255)
+    private String email;
+
+    public UserEntity(String username, String email) {
         this.username = username;
+        this.email = email;
     }
 }

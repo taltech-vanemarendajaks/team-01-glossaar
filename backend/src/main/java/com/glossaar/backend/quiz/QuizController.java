@@ -34,7 +34,10 @@ public class QuizController {
     private final QuizService quizService;
 
     @GetMapping
-    @Operation(summary = "Get quiz set", description = "Returns a set of 4 quiz items, randomly chosen from the user's lowest-scoring 8 words.")
+    @Operation(
+            summary = "Get quiz set",
+            description = "Returns quiz items for the user. Use query param 'size' to control the number of questions (default: 1, min: 1, max: 50). Questions prioritize words never quizzed before, then the least recently quizzed words, with score used as a tie-breaker. Wrong options are sampled from the full vocabulary."
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -51,13 +54,22 @@ public class QuizController {
                     example = "1",
                     required = true
             )
-            @RequestParam Long userId
+            @RequestParam Long userId,
+            @Parameter(
+                    description = "How many quiz questions to return.",
+                    schema = @Schema(type = "integer", defaultValue = "1", minimum = "1", maximum = "50"),
+                    example = "1"
+            )
+            @RequestParam(defaultValue = "1") int size
     ) {
-        return quizService.getQuestionSet(userId);
+        return quizService.getQuestionSet(userId, size);
     }
 
     @PostMapping
-    @Operation(summary = "Submit quiz answers", description = "Updates user quiz scores from one or more answer items (by wordId) and returns success status.")
+    @Operation(
+            summary = "Submit quiz answers",
+            description = "Updates user quiz scores from one or more answer items (by wordId), sets last_quizzed_at for answered words, and returns success status."
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
