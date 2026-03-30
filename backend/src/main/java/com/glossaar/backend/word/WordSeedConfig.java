@@ -1,5 +1,9 @@
 package com.glossaar.backend.word;
 
+import com.glossaar.backend.user.UserEntity;
+import com.glossaar.backend.user.UserRepository;
+import com.glossaar.backend.userword.UserWordScoreEntity;
+import com.glossaar.backend.userword.UserWordScoreRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
@@ -7,13 +11,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 @Configuration
 public class WordSeedConfig {
 
     private static final Logger log = LoggerFactory.getLogger(WordSeedConfig.class);
+    private static final String TEST_USERNAME = "TestUser";
+    private static final String TEST_EMAIL = "testuser@local.glossaar";
     private static final String[] LOREM_WORDS = {
             "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
             "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
@@ -27,21 +35,49 @@ public class WordSeedConfig {
 
     @Bean
     @ConditionalOnProperty(name = "app.words.seed.enabled", havingValue = "true", matchIfMissing = true)
-    ApplicationRunner seedWordsIfEmpty(WordRepository repo) {
+    ApplicationRunner seedWordsIfEmpty(
+            WordRepository wordRepository,
+            UserRepository userRepository,
+            UserWordScoreRepository userWordScoreRepository
+    ) {
         return args -> {
-            if (repo.count() > 0) {
-                return;
+            if (wordRepository.count() == 0) {
+                List<WordEntity> seedWords = IntStream.rangeClosed(1, 100)
+                        .mapToObj(i -> new WordEntity(
+                                loremWord(i),
+                                loremExplanation(i)
+                        ))
+                        .toList();
+
+                wordRepository.saveAll(seedWords);
+                log.info("Seeded {} words because table was empty", seedWords.size());
             }
 
-            List<WordEntity> seedWords = IntStream.rangeClosed(1, 100)
-                    .mapToObj(i -> new WordEntity(
-                            loremWord(i),
-                            loremExplanation(i)
-                    ))
-                    .toList();
+            UserEntity testUser = userRepository.findByUsernameIgnoreCase(TEST_USERNAME)
+                    .orElseGet(() -> userRepository.save(new UserEntity(TEST_USERNAME, TEST_EMAIL)));
 
-            repo.saveAll(seedWords);
-            log.info("Seeded {} words because table was empty", seedWords.size());
+            List<WordEntity> allWords = wordRepository.findAll();
+            Set<Long> existingWordIds = userWordScoreRepository.findAllByUserId(testUser.getId())
+                    .stream()
+                    .map(score -> score.getWord().getId())
+                    .collect(java.util.stream.Collectors.toSet());
+
+            List<UserWordScoreEntity> missingScores = new ArrayList<>();
+            for (WordEntity word : allWords) {
+                if (!existingWordIds.contains(word.getId())) {
+                    missingScores.add(new UserWordScoreEntity(testUser, word, 0));
+                }
+            }
+
+            if (!missingScores.isEmpty()) {
+                userWordScoreRepository.saveAll(missingScores);
+            }
+            log.info(
+                    "Ensured {} has score rows for {} words ({} inserted)",
+                    TEST_USERNAME,
+                    allWords.size(),
+                    missingScores.size()
+            );
         };
     }
 

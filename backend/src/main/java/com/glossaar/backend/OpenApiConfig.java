@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(
                 title = "Glossaar Backend API",
                 version = "v1",
-                description = "REST API for Glossaar backend services.",
+                description = "REST API for Glossaar backend services. Quiz supports configurable question count via GET /api/quiz?size=<n> (default 1), prioritizes never-quizzed words first via last_quizzed_at, and updates recency on submit.",
                 contact = @Contact(name = "Glossaar Team")
         ),
         servers = {
-                @Server(url = "http://localhost:8083", description = "Local backend direct access"),
+                @Server(url = "http://localhost:8080", description = "Local backend direct access"),
                 @Server(url = "http://localhost:5173", description = "Frontend dev proxy access")
         }
 )

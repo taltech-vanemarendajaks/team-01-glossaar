@@ -104,8 +104,8 @@ docker compose logs -f frontend backend
 
 After backend is running, open:
 
-- Swagger UI: `http://localhost:8083/swagger-ui/index.html`
-- OpenAPI JSON: `http://localhost:8083/v3/api-docs`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
 If you only exposed frontend port in Docker, add backend port mapping in `docker-compose.yml`:
 
