@@ -13,6 +13,7 @@
     { name: 'Add', href: '/add' },
     { name: 'List', href: '/list' },
     { name: 'Quiz', href: '/quiz' },
+    { name: 'Login', href: '/login' },
   ];
 
   type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
@@ -46,7 +47,7 @@
 <div class="mx-auto my-8 h-full w-full max-w-[24.5rem] gap-2 rounded-md border p-1">
   <NavigationMenu.Root>
     <NavigationMenu.List class="flex w-full rounded-md border p-1">
-      {#each navigationItems as item}
+      {#each navigationItems as item (item.href)}
         {@render ListItem({
           title: item.name,
           href: item.href,
