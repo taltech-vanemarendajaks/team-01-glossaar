@@ -36,7 +36,7 @@ public class QuizController {
     @GetMapping
     @Operation(
             summary = "Get quiz set",
-            description = "Returns quiz items for the user. Use query param 'size' to control the number of questions (default: 1, min: 1, max: 50). Questions prioritize words never quizzed before, then the least recently quizzed words, with score used as a tie-breaker. Wrong options are sampled from the full vocabulary."
+            description = "Returns quiz items for the user. Use query param 'size' to control the number of questions (default: 1, min: 1, max: 50). Optionally provide 'categoryId' to generate questions from one category only. Questions prioritize words never quizzed before, then the least recently quizzed words, with score used as a tie-breaker. Wrong options are sampled from the full vocabulary."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -60,9 +60,15 @@ public class QuizController {
                     schema = @Schema(type = "integer", defaultValue = "1", minimum = "1", maximum = "50"),
                     example = "1"
             )
-            @RequestParam(defaultValue = "1") int size
+            @RequestParam(defaultValue = "1") int size,
+            @Parameter(
+                    description = "Optional category id to restrict quiz words to one category.",
+                    example = "1",
+                    schema = @Schema(type = "integer", nullable = true)
+            )
+            @RequestParam(required = false) Long categoryId
     ) {
-        return quizService.getQuestionSet(userId, size);
+        return quizService.getQuestionSet(userId, size, categoryId);
     }
 
     @PostMapping
