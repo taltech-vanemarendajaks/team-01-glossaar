@@ -21,7 +21,7 @@ This guide is based on `docker-compose.yml` in the project root.
 
 - `db`: Postgres 18
 - `backend`: Spring Boot app (runs in dev profile; reloads via `docker compose watch`)
-- `frontend`: Vite dev server (`${FRONTEND_DEV_PORT:-5173}`)
+- `frontend`: Vite dev server runnig on default Vite devserver port 5173
 
 ## Database migrations
 
