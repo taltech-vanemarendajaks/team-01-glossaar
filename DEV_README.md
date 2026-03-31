@@ -70,9 +70,9 @@ Check service status:
 docker compose ps
 ```
 
-- Frontend: `http://localhost:5173` (or your `FRONTEND_DEV_PORT` from `.env`)
-- Backend is consumed by frontend inside Docker network (`backend` service name).
-- Database is available on host `localhost:5432`.
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:8080`
+- Database: `localhost:5432`.
 
 Because `frontend/` is mounted as a volume, Vite updates live when frontend files change.
 
@@ -107,13 +107,6 @@ After backend is running, open:
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-If you only exposed frontend port in Docker, add backend port mapping in `docker-compose.yml`:
-
-```yaml
-backend:
-  ports:
-    - "${BACKEND_PORT:-8083}:8080"
-```
 
 ## Common commands
 
