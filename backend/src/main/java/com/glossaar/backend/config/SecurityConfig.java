@@ -28,7 +28,7 @@ public class SecurityConfig {
                 // TODO: log out option
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
-                        // TODO: this should not be hardcoded
+                        // TODO: this should not be hardcoded, in live, it will be just /
                         .defaultSuccessUrl("http://localhost:5173/", true))
                 .build();
     }
