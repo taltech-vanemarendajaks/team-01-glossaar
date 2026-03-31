@@ -22,11 +22,19 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(unique = true, length = 255)
     private String username;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(unique = true, length = 255)
     private String email;
+
+    // TODO: move authProvider and providerId to separate table so there can be
+    // multiple auth providers per user
+    @Column(nullable = false, length = 255)
+    private String authProvider;
+
+    @Column(nullable = false, length = 255)
+    private String providerId;
 
     public UserEntity(String username, String email) {
         this.username = username;
