@@ -30,9 +30,15 @@ public class SecurityConfig {
         // TODO: replace JSESSIONID cookie with JWT token, #96
         return http
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/", "/login**", "/oauth2/**").permitAll();
+                    auth.requestMatchers(
+                            // necessary to initiate the oauth2 login flow
+                            "/oauth2/authorization/**",
+                            // we should not block the callback request from the auth provider
+                            "/login/oauth2/code/**",
+                            // allow unauthenticated access to error page, is used when dispayng erors in
+                            // browser
+                            "/error").permitAll();
                     auth.anyRequest().authenticated();
-
                 })
                 .exceptionHandling(ex -> ex
                         // replaces default 302 redirects with concrete 401 for unauthenicated users

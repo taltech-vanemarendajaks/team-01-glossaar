@@ -7,11 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthController {
-    @GetMapping("/")
-    public String home() {
-        return "Unsecured by design";
-    }
-
     // TODO: use this endpoint to fetch user info. e.g. name and profile
     // image(originating from auth provider) etc
     // this can aslo be user to check authentications status on site initial load,
