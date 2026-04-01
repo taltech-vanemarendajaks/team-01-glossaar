@@ -1,5 +1,6 @@
 package com.glossaar.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,9 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SecurityConfig {
 
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @Value("${app.post-login-landing-url}")
+    private String postLoginLandingUrl;
 
     public SecurityConfig(OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
@@ -37,8 +41,7 @@ public class SecurityConfig {
                         }))
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
-                        // TODO: this should not be hardcoded, in live, it will be just /
-                        .defaultSuccessUrl("http://localhost:5173/", true))
+                        .defaultSuccessUrl(postLoginLandingUrl, true))
                 // TODO: logout, #95
                 .build();
     }
