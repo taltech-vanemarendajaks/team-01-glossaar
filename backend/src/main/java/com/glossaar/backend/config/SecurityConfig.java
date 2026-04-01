@@ -8,6 +8,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.glossaar.backend.auth.OAuth2LoginSuccessHandler;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -26,9 +28,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/", "/login**", "/oauth2/**").permitAll();
                     auth.anyRequest().authenticated();
+
                 })
-                // TODO: replace 302 redirects with concrete 401 for unauthenicated users at it
-                // should be, issue: #90
+                .exceptionHandling(ex -> ex
+                        // replaces default 302 redirects with concrete 401 for unauthenicated users
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        }))
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
                         // TODO: this should not be hardcoded, in live, it will be just /
