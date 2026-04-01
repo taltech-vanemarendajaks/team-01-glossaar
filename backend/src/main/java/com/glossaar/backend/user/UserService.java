@@ -75,9 +75,8 @@ public class UserService {
         return repository.findByAuthProviderAndProviderId(provider, providerId)
                 .map(existing -> {
                     log.info("Found an existing account {}", existing.getId());
-
-                    // TODO: modifycations can be done here. e.g. if user email has changed from the
-                    // auth provider side, we can keep it sync with our DB
+                    // if we'll need to update some info from provider side, then this can be done
+                    // here.
 
                     return existing;
                 })

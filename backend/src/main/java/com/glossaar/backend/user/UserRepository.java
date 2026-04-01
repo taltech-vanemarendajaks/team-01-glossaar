@@ -9,7 +9,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUsernameIgnoreCase(String username);
 
-    // will face conflicts if the same user want to use multiple providers.
-    // (duplicate account for same user) Not currently a problem in our case
+    // TODO: add multi auth support. Email will be the factor that determines who
+    // the user is across auth providers, #92
     Optional<UserEntity> findByAuthProviderAndProviderId(String authProvider, String providerId);
 }
