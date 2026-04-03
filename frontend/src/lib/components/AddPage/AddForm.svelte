@@ -5,12 +5,12 @@
             <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
 
             {#if !addingNew && categories.length > 0}
-                <select class="@apply flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base shadow-xs
-        ring-offset-background transition outline-none
-        focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
-        aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;"
+                <select class="flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base shadow-xs
+                ring-offset-background transition outline-none
+                focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+                aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
                         bind:value={selectedCategoryName}>
-                    <option value="" disabled selected>Select category</option>
+                    <option value="" disabled>Select category</option>
                     {#each categories as category}
                         <option value={category.name}>{category.name}</option>
                     {/each}
@@ -32,7 +32,11 @@
                         size="sm"
                         on:click={() => {
                             addingNew = !addingNew;
-                            if (addingNew) selectedCategoryName = '';
+                            if (addingNew) {
+                                selectedCategoryName = '';
+                            } else {
+                                newCategoryName = '';
+                            }
                         }}
                 >
                     <span class="flex items-center gap-2">
@@ -144,6 +148,7 @@
     import {Input} from '$lib/components/ui/input';
     import {Button} from '$lib/components/ui/button';
     import {GlossarClient} from '$lib/api/glossarClient';
+    import {fetchCategories} from '$lib/services/categoryService';
     import {Plus, Pencil} from '@lucide/svelte';
     import {onMount} from 'svelte';
 
@@ -162,12 +167,13 @@
 
     onMount(async () => {
         try {
-            categories = await GlossarClient.getCategories();
+            await reloadCategories();
             if (categories.length === 0) {
                 addingNew = true;
             }
         } catch (err) {
-            console.error('Failed to fetch categories', err);
+            alert('Failed to load categories');
+            console.error(err);
         }
     });
 
@@ -187,7 +193,7 @@
     async function closeManageModal() {
         manageModalOpen = false;
         try {
-            categories = await GlossarClient.getCategories();
+            await reloadCategories();
         } catch (err) {
             alert('Failed to reload categories');
         }
@@ -196,14 +202,14 @@
     async function saveWord() {
         loading = true;
         try {
-            const categoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
+            const finalCategoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
 
-            if (!categoryName) {
+            if (!finalCategoryName) {
                 alert('Please select or enter a category.');
                 return;
             }
 
-            await GlossarClient.createWord(word.trim(), explanation.trim(), categoryName.trim());
+            await GlossarClient.createWord(word.trim(), explanation.trim(), finalCategoryName);
 
             // Reset form
             word = '';
@@ -212,13 +218,22 @@
             newCategoryName = '';
             addingNew = false;
 
+            try {
+                await reloadCategories();
+            } catch (err) {
+                alert('Failed to reload categories');
+            }
+
             alert('Word saved successfully!');
         } catch (err) {
-            console.error(err);
             alert('Error saving word.');
         } finally {
             loading = false;
         }
+    }
+
+    async function reloadCategories() {
+        categories = await fetchCategories();
     }
 </script>
 
