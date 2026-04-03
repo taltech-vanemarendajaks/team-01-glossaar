@@ -2,8 +2,8 @@
     import AddForm from '$lib/components/AddPage/AddForm.svelte';
 </script>
 
-<main class="p-6 max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4">Create word</h1>
+<main class="mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
+    <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">Create word</h1>
     <AddForm />
 </main>
 
