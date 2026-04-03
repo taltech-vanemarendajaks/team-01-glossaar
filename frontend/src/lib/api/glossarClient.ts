@@ -28,6 +28,19 @@ export const GlossarClient = {
         return response.json();
     },
 
+    async updateCategory(id: number, name: string): Promise<void>  {
+        const response = await fetch(`/api/categories/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+
+        if (!response.ok) {
+            const text = await response.text().catch(() => '');
+            throw new Error(`Failed to save category: ${response.status} ${text}`);
+        }
+    },
+
     async createWord(word: string, explanation: string, categoryName: string) {
         const response = await fetch(`${API_BASE}/words`, {
             method: 'POST',

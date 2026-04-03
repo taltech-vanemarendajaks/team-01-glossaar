@@ -34,6 +34,19 @@ public class CategoryService {
             .orElseGet(() -> repository.save(new CategoryEntity(normalized)));
     }
 
+    @Transactional
+    public void update(Long id, String name) {
+        CategoryEntity category = getById(id);
+
+        String newName = name.trim();
+        if (newName.isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be empty");
+        }
+
+        category.setName(newName);
+        repository.save(category);
+    }
+
     private static String normalizeName(String field, String value) {
         if (value == null || value.trim().isEmpty()) {
             throw new ResponseStatusException(

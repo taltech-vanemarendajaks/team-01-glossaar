@@ -17,25 +17,45 @@
                 </select>
             {/if}
 
-            <div class="mt-2 flex items-center space-x-2">
-                <button
-                        type="button"
-                        class="text-sm text-blue-500 hover:underline"
-                        on:click={() => {
-        addingNew = !addingNew;
-        if (addingNew) selectedCategoryName = '';
-      }}
-                >
-                    {addingNew ? 'Cancel' : '+ Add new category'}
-                </button>
+            {#if addingNew}
+                <Input
+                        class="flex-1"
+                        placeholder="Enter new category"
+                        bind:value={newCategoryName}
+                />
+            {/if}
 
-                {#if addingNew}
-                    <Input
-                            class="flex-1"
-                            placeholder="Enter new category"
-                            bind:value={newCategoryName}
-                    />
-                {/if}
+            <div class="mt-2 flex justify-between items-center">
+                <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        on:click={() => {
+                            addingNew = !addingNew;
+                            if (addingNew) selectedCategoryName = '';
+                        }}
+                >
+                    <span class="flex items-center gap-2">
+                        {#if addingNew}
+                            Cancel
+                        {:else}
+                            <Plus class="w-4 h-4"/>
+                            Add new
+                        {/if}
+                    </span>
+                </Button>
+
+                <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        on:click={() => (manageModalOpen = true)}
+                >
+                    <span class="flex items-center gap-2">
+                        <Pencil class="w-4 h-4"/>
+                        Manage categories
+                    </span>
+                </Button>
             </div>
         </div>
 
@@ -95,11 +115,36 @@
     </div>
 </div>
 
+
+{#if manageModalOpen}
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-xl max-w-md w-full">
+            <h2 class="text-lg font-semibold mb-4">Edit Categories</h2>
+
+            <div class="space-y-2 max-h-80 overflow-y-auto">
+                {#each categories as category (category.id)}
+                    <div class="flex items-center gap-2">
+                        <input class="flex-1 border rounded px-2 py-1" bind:value={category.name}/>
+                        <Button size="sm" variant="outline" on:click={() => saveCategory(category)}>
+                            Save
+                        </Button>
+                    </div>
+                {/each}
+            </div>
+
+            <div class="flex justify-end mt-4">
+                <Button variant="outline" on:click={closeManageModal}>Close</Button>
+            </div>
+        </div>
+    </div>
+{/if}
+
 <script lang="ts">
     import {Textarea} from '$lib/components/ui/textarea';
     import {Input} from '$lib/components/ui/input';
     import {Button} from '$lib/components/ui/button';
     import {GlossarClient} from '$lib/api/glossarClient';
+    import {Plus, Pencil} from '@lucide/svelte';
     import {onMount} from 'svelte';
 
     let word = '';
@@ -110,6 +155,9 @@
     let selectedCategoryName = '';
     let newCategoryName = '';
     let addingNew = false;
+
+    let manageModalOpen = false;
+
     $: categoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
 
     onMount(async () => {
@@ -122,6 +170,28 @@
             console.error('Failed to fetch categories', err);
         }
     });
+
+    async function saveCategory(category: { id: number; name: string }) {
+        if (!category.id) {
+            alert('Invalid category ID');
+            return;
+        }
+        try {
+            await GlossarClient.updateCategory(category.id, category.name);
+            alert('Category updated!');
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to update category');
+        }
+    }
+
+    async function closeManageModal() {
+        manageModalOpen = false;
+        try {
+            categories = await GlossarClient.getCategories();
+        } catch (err) {
+            alert('Failed to reload categories');
+        }
+    }
 
     async function saveWord() {
         loading = true;
