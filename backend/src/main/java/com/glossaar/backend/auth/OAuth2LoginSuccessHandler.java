@@ -3,6 +3,7 @@ package com.glossaar.backend.auth;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -18,6 +19,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserService userService;
 
+    @Value("${app.post-login-landing-url}")
+    private String postLoginLandingUrl;
+
     public OAuth2LoginSuccessHandler(UserService userService) {
         this.userService = userService;
     }
@@ -31,5 +35,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
 
         userService.upsertOAuth2User(user);
+
+        response.sendRedirect(postLoginLandingUrl);
     }
 }
