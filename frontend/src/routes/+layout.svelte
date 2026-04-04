@@ -13,8 +13,7 @@
     { name: 'Add', href: '/add' },
     { name: 'List', href: '/list' },
     { name: 'Quiz', href: '/quiz' },
-    { name: 'Log in with Google', href: '/login-with-google' },
-    { name: 'Log in with Github', href: '/login-with-github' },
+    { name: 'Login', href: '/login' },
   ];
 
   type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
