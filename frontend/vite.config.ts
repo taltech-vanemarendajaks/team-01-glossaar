@@ -20,11 +20,16 @@ export default defineConfig(() => {
       port: 5173,
       strictPort: true,
       proxy: {
+        // TODO: still needs to be thought through. Currently these need manual setup via nginx on the server
         '/api': backendUrl,
         '/login/oauth2': backendUrl,
-        '/login': {
+        '/login-with-google': {
           target: backendUrl,
-          rewrite: (path) => path.replace(/^\/login/, '/oauth2/authorization/github')
+          rewrite: (path) => path.replace(/^\/login-with-google/, '/oauth2/authorization/google')
+        },
+        '/login-with-github': {
+          target: backendUrl,
+          rewrite: (path) => path.replace(/^\/login-with-github/, '/oauth2/authorization/github')
         }
       }
     },

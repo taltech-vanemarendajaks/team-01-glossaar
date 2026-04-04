@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum OAuthProvider {
-    GITHUB("GITHUB");
-    // TODO: add more providers as needed
+    GITHUB("GITHUB"),
+    GOOGLE("GOOGLE");
 
     private final String value;
 }

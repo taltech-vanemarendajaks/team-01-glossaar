@@ -75,18 +75,22 @@ public class UserService {
     public UserEntity upsertOAuth2User(OAuth2User oAuth2User, OAuthProvider provider) {
         String providerId = oAuth2User.getName(); // get oauth provider user id or 'name', e.g. github user id
 
+        // TODO: currently each provider will create a new account. We'll need to find a
+        // a constant between them that we can use to link the accounts. (email was not
+        // returned in case of github so we can't use that)
         return oauthAccountRepository
                 .findByProviderNameAndProviderUserId(provider, providerId)
                 .map(oauthAccount -> oauthAccount.getUser())
                 .orElseGet(() -> {
-                    log.info("Creating new user with provider:" + provider + ", providerId:" + providerId);
+                    log.info("Did not find a user with provider:" + provider + ", providerId:" + providerId);
 
                     UserEntity newUser = new UserEntity();
                     newUser.addOAuthAccount(
                             new OAuthAccount(newUser, provider, providerId));
 
                     UserEntity savedUser = repository.save(newUser);
-                    log.info("Created new user account id=" + savedUser.getId());
+                    log.info("Created new user account id=" + savedUser.getId() + " with provider:" + provider
+                            + ", providerId:" + providerId);
 
                     return savedUser;
                 });
