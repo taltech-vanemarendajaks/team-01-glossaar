@@ -15,7 +15,7 @@ public class CategoryService {
     private final CategoryRepository repository;
 
     public List<CategoryEntity> getAll() {
-        return repository.findAll();
+        return repository.findAllOrderByNameIgnoreCase();
     }
 
     public CategoryEntity getById(Long id) {

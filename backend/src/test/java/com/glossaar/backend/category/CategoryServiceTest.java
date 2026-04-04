@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,12 +18,12 @@ class CategoryServiceTest extends IntegrationTest {
     private CategoryService service;
 
     @Test
-    void getAll_returnsAllCategories() {
+    void getAll_returnsAllCategories_sortedByNameIgnoringCase() {
         CategoryEntity first = service.create("Tech");
-        CategoryEntity second = service.create("Gardening");
+        CategoryEntity second = service.create("gardening");
         CategoryEntity third = service.create("Cooking");
 
-        assertThat(service.getAll()).contains(first, second, third);
+        assertEquals(List.of(third, second, first), service.getAll());
     }
 
     @Test
