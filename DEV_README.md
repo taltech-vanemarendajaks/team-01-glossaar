@@ -35,6 +35,9 @@ This is not encouraged but if there is a wish to not write the migration manuall
 2. Remove all extra information and just keep what is relevant for the changes you made.
 3. Make liquibase migration file.
 
+Connecting to database on the cli. db is a container name, hash can also be used as in the previous example.
+`docker exec -it db psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}`
+
 ## Start and run
 
 From the project root:

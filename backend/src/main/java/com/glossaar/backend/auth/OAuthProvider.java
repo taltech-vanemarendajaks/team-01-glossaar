@@ -10,4 +10,16 @@ public enum OAuthProvider {
     GOOGLE("GOOGLE");
 
     private final String value;
+
+    public static OAuthProvider fromString(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        try {
+            return OAuthProvider.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }

@@ -22,14 +22,14 @@ export default defineConfig(() => {
       proxy: {
         // TODO: still needs to be thought through. Currently these need manual setup via nginx on the server
         '/api': backendUrl,
-        '/login/oauth2': backendUrl,
-        '/login-with-google': {
+        '/login/oauth2/code/': backendUrl,
+        '/login/google': {
           target: backendUrl,
-          rewrite: (path) => path.replace(/^\/login-with-google/, '/oauth2/authorization/google')
+          rewrite: () => '/oauth2/authorization/google'
         },
-        '/login-with-github': {
+        '/login/github': {
           target: backendUrl,
-          rewrite: (path) => path.replace(/^\/login-with-github/, '/oauth2/authorization/github')
+          rewrite: () => '/oauth2/authorization/github'
         }
       }
     },

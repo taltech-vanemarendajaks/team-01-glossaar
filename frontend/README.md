@@ -3,15 +3,15 @@
 ## Devloping on a local machine
 
 You can either:
+
 1. Install the runtime and deps manually:
-    - Install node.js LTS 24 version (nvm or other node version manager recommended)
-    - run `npm install` to install projects dependencies
-    - run `npm run dev` to start local development server
+   - Install node.js LTS 24 version (nvm or other node version manager recommended)
+   - run `npm install` to install projects dependencies
+   - run `npm run dev` to start local development server
 
 2. Or just run the dev docker compose.
 
 As a result, the frontend dev server will be running. Concrete port will be printed out to stdout.
-
 
 ## Framework
 

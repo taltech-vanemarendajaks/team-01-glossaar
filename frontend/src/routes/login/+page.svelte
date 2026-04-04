@@ -9,8 +9,8 @@
     }
 
     const providers: Provider[] = [
-        { name: 'Google', href: '/api/auth/login/google', icon: '/google-logo.svg' },
-        { name: 'GitHub', href: '/api/auth/login/github', icon: '/github-logo.svg' },
+        { name: 'Google', href: '/login/google', icon: '/google-logo.svg' },
+        { name: 'GitHub', href: '/login/github', icon: '/github-logo.svg' },
     ];
 </script>
 
