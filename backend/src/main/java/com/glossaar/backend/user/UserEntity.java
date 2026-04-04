@@ -1,10 +1,17 @@
 package com.glossaar.backend.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.glossaar.backend.auth.OAuthAccount;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,6 +25,11 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity {
 
+    public UserEntity(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,16 +40,16 @@ public class UserEntity {
     @Column(unique = true, length = 255)
     private String email;
 
-    // TODO: move authProvider and providerId to separate table so there can be
-    // multiple auth providers per user
-    @Column(nullable = false, length = 255)
-    private String authProvider;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OAuthAccount> oauthAccounts = new ArrayList<>();
 
-    @Column(nullable = false, length = 255)
-    private String providerId;
+    public void addOAuthAccount(OAuthAccount account) {
+        oauthAccounts.add(account);
+        account.setUser(this);
+    }
 
-    public UserEntity(String username, String email) {
-        this.username = username;
-        this.email = email;
+    public void removeOAuthAccount(OAuthAccount account) {
+        oauthAccounts.remove(account);
+        account.setUser(null);
     }
 }

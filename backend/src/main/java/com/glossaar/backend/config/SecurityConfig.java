@@ -6,7 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.glossaar.backend.auth.OAuth2LoginSuccessHandler;
+import com.glossaar.backend.auth.OAuthLoginSuccessHandler;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -14,9 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuthLoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    public SecurityConfig(OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
+    public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
     }
 

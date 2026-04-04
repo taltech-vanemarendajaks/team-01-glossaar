@@ -1,5 +1,8 @@
 package com.glossaar.backend.user;
 
+import com.glossaar.backend.auth.OAuthAccount;
+import com.glossaar.backend.auth.OAuthAccountRepository;
+import com.glossaar.backend.auth.OAuthProvider;
 import com.glossaar.backend.user.dto.UserResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,8 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository repository;
+    private final OAuthAccountRepository oauthAccountRepository;
+
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     public List<UserResponseDto> getAll() {
@@ -66,29 +71,22 @@ public class UserService {
         return new UserResponseDto(entity.getId(), entity.getUsername());
     }
 
-    public UserEntity upsertOAuth2User(OAuth2User oAuth2User) {
+    @Transactional
+    public UserEntity upsertOAuth2User(OAuth2User oAuth2User, OAuthProvider provider) {
+        String providerId = oAuth2User.getName(); // get oauth provider user id or 'name', e.g. github user id
 
-        String providerId = oAuth2User.getName();
-        String email = (String) oAuth2User.getAttributes().get("email");
-        String provider = "github";
-
-        return repository.findByAuthProviderAndProviderId(provider, providerId)
-                .map(existing -> {
-                    log.info("Found an existing account {}", existing.getId());
-                    // if we'll need to update some info from provider side, then this can be done
-                    // here.
-
-                    return existing;
-                })
+        return oauthAccountRepository
+                .findByProviderNameAndProviderUserId(provider, providerId)
+                .map(oauthAccount -> oauthAccount.getUser())
                 .orElseGet(() -> {
-                    UserEntity user = new UserEntity();
+                    log.info("Creating new user with provider:" + provider + ", providerId:" + providerId);
 
-                    user.setAuthProvider(provider);
-                    user.setProviderId(providerId);
-                    user.setEmail(email);
+                    UserEntity newUser = new UserEntity();
+                    newUser.addOAuthAccount(
+                            new OAuthAccount(newUser, provider, providerId));
 
-                    UserEntity savedUser = repository.save(user);
-                    log.info("Created a new account {}", savedUser.getId());
+                    UserEntity savedUser = repository.save(newUser);
+                    log.info("Created new user account id=" + savedUser.getId());
 
                     return savedUser;
                 });

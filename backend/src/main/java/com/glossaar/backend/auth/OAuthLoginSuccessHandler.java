@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -15,14 +16,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserService userService;
 
     @Value("${app.post-login-landing-url}")
     private String postLoginLandingUrl;
 
-    public OAuth2LoginSuccessHandler(UserService userService) {
+    public OAuthLoginSuccessHandler(UserService userService) {
         this.userService = userService;
     }
 
@@ -32,9 +33,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             Authentication authentication)
             throws IOException {
 
-        OAuth2User user = (OAuth2User) authentication.getPrincipal();
+        OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
 
-        userService.upsertOAuth2User(user);
+        OAuth2User user = (OAuth2User) token.getPrincipal();
+        OAuthProvider provider = OAuthProvider.valueOf(token.getAuthorizedClientRegistrationId().toUpperCase());
+
+        userService.upsertOAuth2User(user, provider);
 
         response.sendRedirect(postLoginLandingUrl);
     }
