@@ -61,19 +61,7 @@ java -jar target/backend-0.0.1-SNAPSHOT.jar
 
 ## Access the Application
 
-By default, Spring Boot runs on:
-
-http://localhost:8080
-
-To change the port, edit:
-
-    src/main/resources/application.properties
-
-Example:
-
-``` properties
-server.port=8081
-```
+Spring Boot runs on: http://localhost:8080
 
 ------------------------------------------------------------------------
 
@@ -108,7 +96,7 @@ plugin (if required)
 
 ### Port 8080 already in use
 
-Change the port in `application.properties`.
+Kill the process you have running on 8080 and try again.
 
 ### Wrong Java Version
 

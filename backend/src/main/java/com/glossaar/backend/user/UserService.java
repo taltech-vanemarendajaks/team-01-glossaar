@@ -1,9 +1,17 @@
 package com.glossaar.backend.user;
 
+import com.glossaar.backend.auth.OAuthAccount;
+import com.glossaar.backend.auth.OAuthAccountRepository;
+import com.glossaar.backend.auth.OAuthProvider;
 import com.glossaar.backend.user.dto.UserResponseDto;
+
 import lombok.RequiredArgsConstructor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,6 +23,9 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository repository;
+    private final OAuthAccountRepository oauthAccountRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     public List<UserResponseDto> getAll() {
         return repository.findAll().stream()
@@ -38,8 +49,7 @@ public class UserService {
 
         try {
             UserEntity saved = repository.save(
-                    new UserEntity(normalizedUsername, emailFromUsername(normalizedUsername))
-            );
+                    new UserEntity(normalizedUsername, emailFromUsername(normalizedUsername)));
             return toResponse(saved);
         } catch (DataIntegrityViolationException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
@@ -59,5 +69,30 @@ public class UserService {
 
     private UserResponseDto toResponse(UserEntity entity) {
         return new UserResponseDto(entity.getId(), entity.getUsername());
+    }
+
+    @Transactional
+    public UserEntity upsertOAuth2User(OAuth2User oAuth2User, OAuthProvider provider) {
+        String providerId = oAuth2User.getName(); // get oauth provider user id or 'name', e.g. github user id
+
+        // TODO: currently each provider will create a new account. We'll need to find a
+        // a constant between them that we can use to link the accounts. (email was not
+        // returned in case of github so we can't use that)
+        return oauthAccountRepository
+                .findByProviderNameAndProviderUserId(provider, providerId)
+                .map(oauthAccount -> oauthAccount.getUser())
+                .orElseGet(() -> {
+                    log.info("Did not find a user with provider:" + provider + ", providerId:" + providerId);
+
+                    UserEntity newUser = new UserEntity();
+                    newUser.addOAuthAccount(
+                            new OAuthAccount(newUser, provider, providerId));
+
+                    UserEntity savedUser = repository.save(newUser);
+                    log.info("Created new user account id=" + savedUser.getId() + " with provider:" + provider
+                            + ", providerId:" + providerId);
+
+                    return savedUser;
+                });
     }
 }
