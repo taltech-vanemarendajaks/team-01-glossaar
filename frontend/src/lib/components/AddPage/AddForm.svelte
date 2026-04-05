@@ -128,11 +128,33 @@
             <div class="space-y-2 max-h-80 overflow-y-auto">
                 {#each categories as category (category.id)}
                     <div class="flex items-center gap-2">
-                        <input class="flex-1 border rounded px-2 py-1" bind:value={category.name}/>
+                        <input
+                                class="flex-1 border rounded px-2 py-1"
+                                bind:value={category.name}
+                        />
+
                         <Button size="sm" variant="outline" on:click={() => saveCategory(category)}>
                             Save
                         </Button>
+
+                        <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={category.wordCount > 0}
+                                on:click={() => deleteCategory(category)}
+                        >
+                             <span class="border-red-500 text-red-600 hover:bg-red-50">
+                                 <Trash2 class="w-4 h-4"/>
+                             </span>
+                        </Button>
+
                     </div>
+
+                    {#if category.wordCount > 0}
+                        <p class="text-xs text-gray-500 ml-1">
+                            Used in {category.wordCount} word(s)
+                        </p>
+                    {/if}
                 {/each}
             </div>
 
@@ -149,14 +171,14 @@
     import {Button} from '$lib/components/ui/button';
     import {GlossarClient} from '$lib/api/glossarClient';
     import {fetchCategories} from '$lib/services/categoryService';
-    import {Plus, Pencil} from '@lucide/svelte';
+    import {Plus, Pencil, Trash2} from '@lucide/svelte';
     import {onMount} from 'svelte';
 
     let word = '';
     let explanation = '';
     let loading = false;
 
-    let categories: { id: number; name: string }[] = [];
+    let categories: { id: number; name: string; wordCount: number }[] = [];
     let selectedCategoryName = '';
     let newCategoryName = '';
     let addingNew = false;
@@ -229,6 +251,19 @@
             alert('Error saving word.');
         } finally {
             loading = false;
+        }
+    }
+
+    async function deleteCategory(category: { id: number; name: string }) {
+        if (!confirm(`Delete category "${category.name}"?`)) return;
+
+        try {
+            await GlossarClient.deleteCategory(category.id);
+            await reloadCategories();
+
+            alert('Category deleted!');
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Failed to delete category');
         }
     }
 

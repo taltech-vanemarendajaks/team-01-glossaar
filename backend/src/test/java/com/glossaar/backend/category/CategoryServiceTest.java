@@ -1,6 +1,9 @@
 package com.glossaar.backend.category;
 
 import com.glossaar.backend.IntegrationTest;
+import com.glossaar.backend.userword.UserWordScoreRepository;
+import com.glossaar.backend.word.WordRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +18,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class CategoryServiceTest extends IntegrationTest {
 
     @Autowired
-    private CategoryService service;
+    UserWordScoreRepository userWordScoreRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    WordRepository wordRepository;
+
+    @Autowired
+    CategoryService service;
+
+    @BeforeEach
+    void setup() {
+        userWordScoreRepository.deleteAll();
+        wordRepository.deleteAll();
+        categoryRepository.deleteAll();
+    }
 
     @Test
     void getAll_returnsAllCategories_sortedByNameIgnoringCase() {
