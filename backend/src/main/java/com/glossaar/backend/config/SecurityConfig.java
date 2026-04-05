@@ -36,7 +36,6 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // TODO: Set up oauth2 login with server
         // TODO: replace JSESSIONID cookie with JWT token, #96
         return http
                 .authorizeHttpRequests(auth -> {
