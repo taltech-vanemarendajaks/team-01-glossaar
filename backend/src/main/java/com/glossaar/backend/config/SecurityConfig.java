@@ -28,11 +28,6 @@ public class SecurityConfig {
             "/login/oauth2/code/**",
     };
 
-    private static final String[] MISC_URLS = {
-            // necessary for default error handling
-            // "/error",
-    };
-
     private final OAuthLoginSuccessHandler oAuth2LoginSuccessHandler;
 
     public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler) {
@@ -45,7 +40,6 @@ public class SecurityConfig {
         // TODO: replace JSESSIONID cookie with JWT token, #96
         return http
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(MISC_URLS).permitAll();
                     auth.requestMatchers(AUTH_URLS).permitAll();
                     auth.requestMatchers(SWAGGER_URLS).permitAll();
                     auth.anyRequest().authenticated();
