@@ -33,7 +33,10 @@ public class SecurityConfig {
                             "/login/oauth2/code/**",
                             // allow unauthenticated access to error page, is used when dispayng erors in
                             // browser
-                            "/error").permitAll();
+                            "/error",
+                            // Whitelist swagger endpoints, available only locally
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(ex -> ex
