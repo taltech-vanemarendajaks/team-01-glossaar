@@ -192,7 +192,7 @@
     {#if success}
         <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
     {/if}
-<div>Seened</div>
+
     <form on:submit|preventDefault={applyFilter} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
         <h2 class="mb-3 text-base font-semibold">Get words options</h2>
         <div class="grid gap-3 sm:grid-cols-2">
