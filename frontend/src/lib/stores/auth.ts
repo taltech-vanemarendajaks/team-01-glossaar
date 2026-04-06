@@ -1,41 +1,47 @@
 import { writable, derived } from 'svelte/store';
 import { GlossarClient, type MeResponse } from '$lib/api/glossarClient';
 
+type AuthState = {
+    user: MeResponse | null;
+    loading: boolean;
+    error: string | null;
+};
+
 function createAuthStore() {
-    const { subscribe, set } = writable<{
-        data: MeResponse | null;
-        loading: boolean;
-        isAuthenticated: boolean;
-    }>({
-        data: null,
+    const { subscribe, update } = writable<AuthState>({
+        user: null,
         loading: true,
-        isAuthenticated: false
+        error: null
     });
-
-    async function init() {
-        try {
-            const data = await GlossarClient.getMe();
-            set({ data, loading: false, isAuthenticated: true });
-        } catch {
-            set({ data: null, loading: false, isAuthenticated: false });
-        }
-    }
-
-    function logout() {
-        set({ data: null, loading: false, isAuthenticated: false });
-        // TODO: invalidate cookies and log out on server side as well
-    }
 
     return {
         subscribe,
-        set,
-        init,
-        logout
+
+        async init() {
+            try {
+                const user = await GlossarClient.getMe();
+                update((state) => ({ ...state, user, loading: false, error: null }));
+            } catch (err) {
+                const error = err instanceof Error ? err.message : 'Auth failed';
+                update((state) => ({ ...state, user: null, loading: false, error }));
+            }
+        },
+
+        async logout() {
+            try {
+                update((state) => ({ ...state, user: null, error: null }));
+                // TODO: purge session cookie on backend
+            } catch (err) {
+                const error = err instanceof Error ? err.message : 'Logout failed';
+                update((state) => ({ ...state, error }));
+            }
+        }
     };
 }
 
 export const auth = createAuthStore();
 
-export const isAuthenticated = derived(auth, ($auth) => $auth.isAuthenticated);
+export const isAuthenticated = derived(auth, ($auth) => !!$auth.user);
 export const isLoading = derived(auth, ($auth) => $auth.loading);
-export const authData = derived(auth, ($auth) => $auth.data);
+export const user = derived(auth, ($auth) => $auth.user);
+export const authError = derived(auth, ($auth) => $auth.error);

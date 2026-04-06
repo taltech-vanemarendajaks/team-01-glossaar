@@ -5,12 +5,12 @@
     import { page } from '$app/stores'; // TODO: deprecated
     import { isAuthenticated } from '$lib/stores/auth';
 
-    const navigationItems = [
-        { name: 'Index', href: '/', authenticated: true },
+    const routes = [
+        { name: 'Index', href: '/' },
+        { name: 'Login', href: '/login', authenticated: false },
         { name: 'Add', href: '/add', authenticated: true },
         { name: 'List', href: '/list', authenticated: true },
         { name: 'Quiz', href: '/quiz', authenticated: true },
-        { name: 'Login', href: '/login', authenticated: false }
     ];
 
     type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
@@ -39,7 +39,7 @@
 
 <NavigationMenu.Root>
     <NavigationMenu.List class="flex w-full rounded-md border p-1">
-        {#each navigationItems.filter((item) => item.authenticated === $isAuthenticated) as item (item.href)}
+        {#each routes.filter((item) => !('authenticated' in item) || item.authenticated === $isAuthenticated) as item (item.href)}
             {@render ListItem({
                 title: item.name,
                 href: item.href,
