@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN ./mvnw clean package
+# tests are run before creating a Docker image, we can skip them here
+RUN ./mvnw clean package -DskipTests
 
 FROM eclipse-temurin:21-jre AS runtime
 
