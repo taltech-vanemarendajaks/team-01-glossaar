@@ -55,6 +55,7 @@ services:
 
   frontend:
     image: node:lts-alpine
+    restart: unless-stopped
     container_name: frontend
     working_dir: /app
     volumes:
