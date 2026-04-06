@@ -14,6 +14,20 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // Whitelist swagger endpoints, swagger is only run locally as if now.
+    private static final String[] SWAGGER_URLS = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+    };
+
+    // OAuth2 OIDC flow endpoints
+    private static final String[] AUTH_URLS = {
+            // necessary to initiate the oauth2 login flow from FE side
+            "/oauth2/authorization/**",
+            // we should not block the callback request from the auth provider
+            "/login/oauth2/code/**",
+    };
+
     private final OAuthLoginSuccessHandler oAuth2LoginSuccessHandler;
 
     public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler) {
@@ -22,21 +36,11 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // TODO: Set up oauth2 login with server
         // TODO: replace JSESSIONID cookie with JWT token, #96
         return http
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(
-                            // necessary to initiate the oauth2 login flow
-                            "/oauth2/authorization/**",
-                            // we should not block the callback request from the auth provider
-                            "/login/oauth2/code/**",
-                            // allow unauthenticated access to error page, is used when dispayng erors in
-                            // browser
-                            "/error",
-                            // Whitelist swagger endpoints, available only locally
-                            "/swagger-ui/**",
-                            "/v3/api-docs/**").permitAll();
+                    auth.requestMatchers(AUTH_URLS).permitAll();
+                    auth.requestMatchers(SWAGGER_URLS).permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(ex -> ex
