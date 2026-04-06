@@ -1,5 +1,6 @@
 package com.glossaar.backend.category;
 
+import com.glossaar.backend.word.WordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,10 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository repository;
+    private final WordRepository wordRepository;
 
     public List<CategoryEntity> getAll() {
-        return repository.findAll();
+        return repository.findAllOrderByNameIgnoreCase();
     }
 
     public CategoryEntity getById(Long id) {
@@ -34,6 +36,19 @@ public class CategoryService {
             .orElseGet(() -> repository.save(new CategoryEntity(normalized)));
     }
 
+    @Transactional
+    public void update(Long id, String name) {
+        CategoryEntity category = getById(id);
+
+        String newName = name.trim();
+        if (newName.isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be empty");
+        }
+
+        category.setName(newName);
+        repository.save(category);
+    }
+
     private static String normalizeName(String field, String value) {
         if (value == null || value.trim().isEmpty()) {
             throw new ResponseStatusException(
@@ -50,5 +65,23 @@ public class CategoryService {
 
         String lower = trimmed.toLowerCase();
         return lower.substring(0, 1).toUpperCase() + lower.substring(1);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found: " + id);
+        }
+
+        long wordCount = wordRepository.countByCategory_Id(id);
+
+        if (wordCount > 0) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Cannot delete category: " + wordCount + " words reference it"
+            );
+        }
+
+        repository.deleteById(id);
     }
 }
