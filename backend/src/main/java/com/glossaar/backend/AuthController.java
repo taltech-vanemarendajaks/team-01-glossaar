@@ -15,6 +15,7 @@ import com.glossaar.backend.auth.dto.MeResponseDto;
 import com.glossaar.backend.user.UserService;
 import com.glossaar.backend.user.dto.UserResponseDto;
 
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,7 +25,6 @@ public class AuthController {
 
     private final UserService userService;
 
-    // TODO: api spec
     @GetMapping("/me")
     public MeResponseDto getMe(Authentication principal) {
 
