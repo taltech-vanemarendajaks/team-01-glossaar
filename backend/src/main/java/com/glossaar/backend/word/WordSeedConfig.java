@@ -61,9 +61,6 @@ public class WordSeedConfig {
                             word.setCategory(inCategoryA ? categoryA : categoryB);
                             return word;
                         })
-                        .mapToObj(i -> new WordEntity(
-                                loremWord(i),
-                                loremExplanation(i)))
                         .toList();
 
                 wordRepository.saveAll(seedWords);
