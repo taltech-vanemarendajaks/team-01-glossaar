@@ -32,6 +32,7 @@ export const GlossarClient = {
     async updateCategory(id: number, name: string): Promise<void>  {
         const response = await fetch(`/api/categories/${id}`, {
             method: 'PATCH',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name })
         });
@@ -44,7 +45,8 @@ export const GlossarClient = {
 
     async deleteCategory(id: number): Promise<void> {
         const response = await fetch(`${API_BASE}/categories/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
 
         if (!response.ok) {
@@ -63,6 +65,7 @@ export const GlossarClient = {
     async createWord(word: string, explanation: string, categoryName: string) {
         const response = await fetch(`${API_BASE}/words`, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 word,
@@ -91,6 +94,7 @@ export const GlossarClient = {
     async submitQuizAnswer(userId: number, wordId: number, correct: boolean): Promise<void> {
         const response = await fetch(`${API_BASE}/quiz`, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 userId,
