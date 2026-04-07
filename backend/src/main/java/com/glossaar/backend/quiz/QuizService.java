@@ -1,5 +1,6 @@
 package com.glossaar.backend.quiz;
 
+import com.glossaar.backend.category.CategoryRepository;
 import com.glossaar.backend.quiz.dto.QuizBatchAnswerRequestDto;
 import com.glossaar.backend.quiz.dto.QuizQuestionResponseDto;
 import com.glossaar.backend.quiz.dto.QuizSubmitResponseDto;
@@ -28,15 +29,21 @@ public class QuizService {
 
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final UserWordScoreRepository userWordScoreRepository;
 
-    public List<QuizQuestionResponseDto> getQuestionSet(Long userId, int requestedSize) {
+    public List<QuizQuestionResponseDto> getQuestionSet(Long userId, int requestedSize, Long categoryId) {
         if (!userRepository.existsById(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId);
         }
+        if (categoryId != null && !categoryRepository.existsById(categoryId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found: " + categoryId);
+        }
 
         int quizSetSize = normalizeQuizSetSize(requestedSize);
-        List<WordEntity> quizWords = quizRepository.findLowestScoreQuizWordsByUserId(userId, quizSetSize);
+        List<WordEntity> quizWords = categoryId == null
+                ? quizRepository.findLowestScoreQuizWordsByUserId(userId, quizSetSize)
+                : quizRepository.findLowestScoreQuizWordsByUserIdAndCategoryId(userId, categoryId, quizSetSize);
         if (quizWords.size() < quizSetSize) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
