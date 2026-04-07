@@ -56,9 +56,9 @@ jobs:
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:${{ github.sha }}
 
   deploy-to-server:
-    if: inputs.deploy-to-server == 'true'
+    if: github.event.inputs.deploy-to-server == 'true'
     needs: build-and-publish-to-ghcr
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      component: ${{ inputs.component }}
+      component: ${{ github.event.inputs.component }}
