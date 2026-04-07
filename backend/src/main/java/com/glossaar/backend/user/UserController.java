@@ -2,9 +2,9 @@ package com.glossaar.backend.user;
 
 import com.glossaar.backend.user.dto.CreateUserRequestDto;
 import com.glossaar.backend.user.dto.UserResponseDto;
-import com.glossaar.backend.word.docs.BadRequestApiResponse;
-import com.glossaar.backend.word.docs.InternalServerErrorApiResponse;
-import com.glossaar.backend.word.docs.NotFoundApiResponse;
+import com.glossaar.backend.docs.BadRequestApiResponse;
+import com.glossaar.backend.docs.InternalServerErrorApiResponse;
+import com.glossaar.backend.docs.NotFoundApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

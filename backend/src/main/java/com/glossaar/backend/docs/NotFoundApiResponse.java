@@ -1,4 +1,4 @@
-package com.glossaar.backend.word.docs;
+package com.glossaar.backend.docs;
 
 import com.glossaar.backend.ApiExceptionHandler.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.media.Content;
