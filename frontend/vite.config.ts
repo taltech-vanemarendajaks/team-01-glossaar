@@ -4,52 +4,68 @@ import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
 import path from 'path';
 
-export default defineConfig({
-  plugins: [tailwindcss(), sveltekit()],
+export default defineConfig(() => {
+  const runningWithinDocker = !!process.env.DOCKER_ENV;
+  const backendUrl = runningWithinDocker
+    ? // To make oauth work both within and outside of docker,
+      // we'll need to target host machine localhost instead of container localhost when running in docker
+      'http://host.docker.internal:8080'
+    : 'http://localhost:8080';
 
-  server: {
-    host: true,
-    port: 5173,
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: 'http://backend:8080',
-        changeOrigin: true
-      }
-    }
-  },
+  return {
+    plugins: [tailwindcss(), sveltekit()],
 
-  resolve: {
-    alias: {
-      $lib: path.resolve('./src/lib')
-    }
-  },
-
-  test: {
-    expect: { requireAssertions: true },
-    projects: [
-      {
-        extends: './vite.config.ts',
-        test: {
-          name: 'client',
-          browser: {
-            enabled: true,
-            provider: playwright(),
-            instances: [{ browser: 'chromium', headless: true }]
-          },
-          include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-          exclude: ['src/lib/server/**']
-        }
-      },
-      {
-        extends: './vite.config.ts',
-        test: {
-          name: 'server',
-          environment: 'node',
-          include: ['src/**/*.{test,spec}.{js,ts}'],
-          exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
+    server: {
+      host: true,
+      port: 5173,
+      strictPort: true,
+      proxy: {
+        // TODO: still needs to be thought through. Currently these need manual setup via nginx on the server
+        '/api': backendUrl,
+        '/login/oauth2/code/': backendUrl,
+        '/login/google': {
+          target: backendUrl,
+          rewrite: () => '/oauth2/authorization/google'
+        },
+        '/login/github': {
+          target: backendUrl,
+          rewrite: () => '/oauth2/authorization/github'
         }
       }
-    ]
-  }
+    },
+
+    resolve: {
+      alias: {
+        $lib: path.resolve('./src/lib')
+      }
+    },
+
+    test: {
+      expect: { requireAssertions: true },
+      projects: [
+        {
+          extends: './vite.config.ts',
+          test: {
+            name: 'client',
+            browser: {
+              enabled: true,
+              provider: playwright(),
+              instances: [{ browser: 'chromium', headless: true }]
+            },
+            include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+            exclude: ['src/lib/server/**']
+          }
+        },
+        {
+          extends: './vite.config.ts',
+          test: {
+            name: 'server',
+            environment: 'node',
+            include: ['src/**/*.{test,spec}.{js,ts}'],
+            exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
+          }
+        }
+      ]
+    }
+  };
 });

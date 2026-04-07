@@ -1,0 +1,52 @@
+erDiagram
+    USERS ||--o{ USER_AUTH_PROVIDERS : registers
+    USERS ||--o{ USER_WORD_SCORES : tracks
+    CATEGORIES ||--o{ WORDS : contains
+    WORDS ||--o{ QUIZ_WORDS : "included in"
+    QUIZZES ||--o{ QUIZ_WORDS : has
+    WORDS ||--o{ USER_WORD_SCORES : scores
+
+    USERS {
+        bigint id PK
+        string email "nullable"
+        string username "nullable"
+        timestamp created_at
+    }
+
+    USER_AUTH_PROVIDERS {
+        int id PK
+        bigint user_id FK
+        string provider_name
+        string provider_user_id
+    }
+
+    CATEGORIES {
+        bigint id PK
+        string name "unique"
+    }
+
+    WORDS {
+        bigint id PK
+        string word
+        string explanation
+        bigint category_id FK
+    }
+
+    QUIZZES {
+        bigint id PK
+        string title
+        timestamp created_at
+    }
+
+    QUIZ_WORDS {
+        bigint quiz_id FK
+        bigint word_id FK
+    }
+
+    USER_WORD_SCORES {
+        bigint id PK
+        bigint user_id FK
+        bigint word_id FK
+        int quiz_score
+        timestamp last_quizzed_at
+    }

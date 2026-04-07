@@ -21,7 +21,7 @@ This guide is based on `docker-compose.yml` in the project root.
 
 - `db`: Postgres 18
 - `backend`: Spring Boot app (runs in dev profile; reloads via `docker compose watch`)
-- `frontend`: Vite dev server (`${FRONTEND_DEV_PORT:-5173}`)
+- `frontend`: Vite dev server runnig on default Vite devserver port 5173
 
 ## Database migrations
 
@@ -34,6 +34,9 @@ This is not encouraged but if there is a wish to not write the migration manuall
 2. Extract the schema via pgdump `docker exec -it <container-hash> pg_dump -U ${POSTGRES_USER} -d ${POSTGRES_DB} --schema-only --table <table_name> > dump.sql`
 2. Remove all extra information and just keep what is relevant for the changes you made.
 3. Make liquibase migration file.
+
+Connecting to database on the cli. db is a container name, hash can also be used as in the previous example.
+`docker exec -it db psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}`
 
 ## Start and run
 
@@ -70,9 +73,9 @@ Check service status:
 docker compose ps
 ```
 
-- Frontend: `http://localhost:5173` (or your `FRONTEND_DEV_PORT` from `.env`)
-- Backend is consumed by frontend inside Docker network (`backend` service name).
-- Database is available on host `localhost:5432`.
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:8080`
+- Database: `localhost:5432`.
 
 Because `frontend/` is mounted as a volume, Vite updates live when frontend files change.
 
@@ -107,13 +110,6 @@ After backend is running, open:
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-If you only exposed frontend port in Docker, add backend port mapping in `docker-compose.yml`:
-
-```yaml
-backend:
-  ports:
-    - "${BACKEND_PORT:-8083}:8080"
-```
 
 ## Common commands
 

@@ -43,8 +43,7 @@ public class WordSeedConfig {
             WordRepository wordRepository,
             CategoryRepository categoryRepository,
             UserRepository userRepository,
-            UserWordScoreRepository userWordScoreRepository
-    ) {
+            UserWordScoreRepository userWordScoreRepository) {
         return args -> {
             if (wordRepository.count() == 0) {
                 CategoryEntity categoryA = categoryRepository.findByName(CATEGORY_A)
@@ -62,6 +61,9 @@ public class WordSeedConfig {
                             word.setCategory(inCategoryA ? categoryA : categoryB);
                             return word;
                         })
+                        .mapToObj(i -> new WordEntity(
+                                loremWord(i),
+                                loremExplanation(i)))
                         .toList();
 
                 wordRepository.saveAll(seedWords);
@@ -91,8 +93,7 @@ public class WordSeedConfig {
                     "Ensured {} has score rows for {} words ({} inserted)",
                     TEST_USERNAME,
                     allWords.size(),
-                    missingScores.size()
-            );
+                    missingScores.size());
         };
     }
 
@@ -106,7 +107,8 @@ public class WordSeedConfig {
         int start = (index - 1) % LOREM_WORDS.length;
         StringBuilder sb = new StringBuilder("Lorem ipsum ");
         for (int i = 0; i < 10; i++) {
-            if (i > 0) sb.append(' ');
+            if (i > 0)
+                sb.append(' ');
             sb.append(LOREM_WORDS[(start + i) % LOREM_WORDS.length]);
         }
         sb.append('.');

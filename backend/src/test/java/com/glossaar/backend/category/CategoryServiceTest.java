@@ -1,10 +1,15 @@
 package com.glossaar.backend.category;
 
 import com.glossaar.backend.IntegrationTest;
+import com.glossaar.backend.userword.UserWordScoreRepository;
+import com.glossaar.backend.word.WordRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,15 +18,31 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class CategoryServiceTest extends IntegrationTest {
 
     @Autowired
-    private CategoryService service;
+    UserWordScoreRepository userWordScoreRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    WordRepository wordRepository;
+
+    @Autowired
+    CategoryService service;
+
+    @BeforeEach
+    void setup() {
+        userWordScoreRepository.deleteAll();
+        wordRepository.deleteAll();
+        categoryRepository.deleteAll();
+    }
 
     @Test
-    void getAll_returnsAllCategories() {
+    void getAll_returnsAllCategories_sortedByNameIgnoringCase() {
         CategoryEntity first = service.create("Tech");
-        CategoryEntity second = service.create("Gardening");
+        CategoryEntity second = service.create("gardening");
         CategoryEntity third = service.create("Cooking");
 
-        assertThat(service.getAll()).contains(first, second, third);
+        assertEquals(List.of(third, second, first), service.getAll());
     }
 
     @Test
