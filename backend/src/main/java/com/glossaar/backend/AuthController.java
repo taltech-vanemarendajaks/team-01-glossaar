@@ -14,8 +14,12 @@ import com.glossaar.backend.auth.OAuthProvider;
 import com.glossaar.backend.auth.dto.MeResponseDto;
 import com.glossaar.backend.user.UserService;
 import com.glossaar.backend.user.dto.UserResponseDto;
+import com.glossaar.backend.docs.UnauthorizedApiResponse;
 
-
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,6 +30,14 @@ public class AuthController {
     private final UserService userService;
 
     @GetMapping("/me")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "User info fetched successfully",
+            content = @Content(schema = @Schema(implementation = MeResponseDto.class))
+        )
+    })
+    @UnauthorizedApiResponse
     public MeResponseDto getMe(Authentication principal) {
 
         OAuth2User user = (OAuth2User) principal.getPrincipal();
