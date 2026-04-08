@@ -10,6 +10,11 @@ flowchart TB
 	NginxContainer -->|/| FeContainer
 
 	BeContainer --> DbContainer
+	BeContainer --> EKI_SERVER
+
+	subgraph Server
+		cron
+	end
 
 	subgraph DockerHost["Docker Host"]
 		direction TB
@@ -38,6 +43,5 @@ flowchart TB
 		end
 	end
 
-%% TODO: add multiple BE containers
-%% TODO: add monitoring
-%% TODO: add background jobs
+%% TODO: add multiple BE containers, if added
+%% TODO: add monitoring, if added
