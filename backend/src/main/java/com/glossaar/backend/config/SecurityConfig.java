@@ -1,13 +1,17 @@
 package com.glossaar.backend.config;
 
+import com.glossaar.backend.user.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.glossaar.backend.auth.OAuthLoginSuccessHandler;
+import com.glossaar.backend.auth.jwt.JwtAuthenticationFilter;
+import com.glossaar.backend.auth.jwt.JwtService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -30,14 +34,17 @@ public class SecurityConfig {
     };
 
     private final OAuthLoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final JwtService jwtService;
 
-    public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler) {
+    public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler, JwtService jwtService) {
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+        this.jwtService = jwtService;
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // TODO: replace JSESSIONID cookie with JWT token, #96
+    SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) throws Exception {
+        JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtService, userService);
+
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> {
@@ -46,12 +53,12 @@ public class SecurityConfig {
                 auth.anyRequest().authenticated();
             })
             .exceptionHandling(ex -> ex
-                // replaces default 302 redirects with concrete 401 for unauthenicated users
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                }))
+                .authenticationEntryPoint((request, response, authException) ->
+                                              response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+                ))
             .oauth2Login(oauth2 -> oauth2
                 .successHandler(oAuth2LoginSuccessHandler))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 }

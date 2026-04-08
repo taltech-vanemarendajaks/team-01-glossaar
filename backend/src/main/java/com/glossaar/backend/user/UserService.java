@@ -40,6 +40,12 @@ public class UserService {
         return toResponse(entity);
     }
 
+    @Transactional(readOnly = true)
+    public UserEntity getByIdEntity(Long id) {
+        return repository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + id));
+    }
+
     @Transactional
     public UserResponseDto create(String username) {
         String normalizedUsername = requireNonBlank("username", username);
