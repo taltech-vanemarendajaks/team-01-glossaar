@@ -1,0 +1,39 @@
+---
+title: Glossaar architecture
+---
+
+flowchart TB
+    Browser --> DNS
+	DNS --> Server
+    Server --> DockerHost
+	NginxContainer -->|/api| BeContainer
+	NginxContainer -->|/| FeContainer
+
+	BeContainer --> DbContainer
+
+	subgraph DockerHost["Docker Host"]
+		direction TB
+
+		subgraph NginxContainer["Nginx container"]
+			Nginx
+		end
+
+		subgraph BeContainer["BE container"]
+			Be[
+				Java Spring
+				boot
+			]
+		end
+
+		subgraph FeContainer["FE container (nginx)"]
+			Fe[
+				SvelteKit static
+				files
+			]
+		end
+
+		subgraph DbContainer["DB container"]
+			DB[(PSQL)]
+		end
+	end
+
