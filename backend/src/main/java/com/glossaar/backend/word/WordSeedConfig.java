@@ -1,5 +1,7 @@
 package com.glossaar.backend.word;
 
+import com.glossaar.backend.category.CategoryEntity;
+import com.glossaar.backend.category.CategoryRepository;
 import com.glossaar.backend.user.UserEntity;
 import com.glossaar.backend.user.UserRepository;
 import com.glossaar.backend.userword.UserWordScoreEntity;
@@ -22,6 +24,8 @@ public class WordSeedConfig {
     private static final Logger log = LoggerFactory.getLogger(WordSeedConfig.class);
     private static final String TEST_USERNAME = "TestUser";
     private static final String TEST_EMAIL = "testuser@local.glossaar";
+    private static final String CATEGORY_A = "categoryA";
+    private static final String CATEGORY_B = "categoryB";
     private static final String[] LOREM_WORDS = {
             "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
             "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
@@ -37,14 +41,26 @@ public class WordSeedConfig {
     @ConditionalOnProperty(name = "app.words.seed.enabled", havingValue = "true", matchIfMissing = true)
     ApplicationRunner seedWordsIfEmpty(
             WordRepository wordRepository,
+            CategoryRepository categoryRepository,
             UserRepository userRepository,
             UserWordScoreRepository userWordScoreRepository) {
         return args -> {
             if (wordRepository.count() == 0) {
+                CategoryEntity categoryA = categoryRepository.findByName(CATEGORY_A)
+                        .orElseGet(() -> categoryRepository.save(new CategoryEntity(CATEGORY_A)));
+                CategoryEntity categoryB = categoryRepository.findByName(CATEGORY_B)
+                        .orElseGet(() -> categoryRepository.save(new CategoryEntity(CATEGORY_B)));
+
                 List<WordEntity> seedWords = IntStream.rangeClosed(1, 100)
-                        .mapToObj(i -> new WordEntity(
-                                loremWord(i),
-                                loremExplanation(i)))
+                        .mapToObj(i -> {
+                            boolean inCategoryA = i <= 50;
+                            WordEntity word = new WordEntity(
+                                    (inCategoryA ? "a_" : "b_") + loremWord(i),
+                                    loremExplanation(i)
+                            );
+                            word.setCategory(inCategoryA ? categoryA : categoryB);
+                            return word;
+                        })
                         .toList();
 
                 wordRepository.saveAll(seedWords);

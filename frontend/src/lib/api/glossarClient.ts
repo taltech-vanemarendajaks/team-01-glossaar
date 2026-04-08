@@ -18,6 +18,15 @@ export interface QuizQuestion {
   correctIndex: number;
 }
 
+export interface MeResponse {
+    user: {
+        id: number;
+        username: string | null;
+    };
+    authProvider: 'GITHUB' | 'GOOGLE';
+    avatarUrl: string | null;
+}
+
 const API_BASE = '/api';
 
 export const GlossarClient = {
@@ -29,7 +38,7 @@ export const GlossarClient = {
         return response.json();
     },
 
-    async updateCategory(id: number, name: string): Promise<void>  {
+    async updateCategory(id: number, name: string): Promise<void> {
         const response = await fetch(`/api/categories/${id}`, {
             method: 'PATCH',
             credentials: 'include',
@@ -104,5 +113,15 @@ export const GlossarClient = {
         if (!response.ok) {
             throw new Error(`Failed to submit quiz answer: ${response.status}`);
         }
+    },
+
+    async getMe(): Promise<MeResponse> {
+        const response = await fetch(`${API_BASE}/auth/me`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch user info: ${response.status}`);
+        }
+
+        return response.json();
     }
 };

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -94,5 +95,18 @@ public class UserService {
 
                     return savedUser;
                 });
+    }
+
+    public UserResponseDto getByOAuthAccount(OAuthProvider provider, String providerUserId) {
+        Optional<UserEntity> authEntry = oauthAccountRepository
+                .findByProviderNameAndProviderUserId(provider, providerUserId).map(it -> it.getUser());
+
+        if (authEntry.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "User not found for provider: " + provider + ", providerUserId: " +
+                            providerUserId);
+        }
+
+        return toResponse(authEntry.get());
     }
 }

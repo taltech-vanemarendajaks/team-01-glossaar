@@ -194,7 +194,7 @@
                 addingNew = true;
             }
         } catch (err) {
-            alert('Failed to load categories');
+            console.error('Failed to load categories');
             console.error(err);
         }
     });
