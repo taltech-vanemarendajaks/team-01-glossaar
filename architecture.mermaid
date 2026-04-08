@@ -20,15 +20,16 @@ flowchart TB
 
 		subgraph BeContainer["BE container"]
 			Be[
-				Java Spring
-				boot
+				- Java Spring boot
+				- JPA
+				- Liquibase
 			]
 		end
 
 		subgraph FeContainer["FE container (nginx)"]
 			Fe[
-				SvelteKit static
-				files
+				- SvelteKit static
+				- shadcn-svelte
 			]
 		end
 
@@ -37,3 +38,6 @@ flowchart TB
 		end
 	end
 
+%% TODO: add multiple BE containers
+%% TODO: add monitoring
+%% TODO: add background jobs
