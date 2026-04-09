@@ -42,6 +42,9 @@ public class OAuthAccount {
     @Column(name = "provider_user_id", nullable = false, length = 255)
     private String providerUserId;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     public OAuthAccount(UserEntity user, OAuthProvider providerName, String providerUserId) {
         this.user = user;
         this.providerName = providerName;

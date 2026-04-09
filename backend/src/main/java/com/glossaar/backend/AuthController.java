@@ -1,8 +1,8 @@
 package com.glossaar.backend;
 
-import java.util.Map;
 import java.util.Optional;
 
+import com.glossaar.backend.auth.OAuthAccount;
 import com.glossaar.backend.user.UserEntity;
 import com.glossaar.backend.user.UserPrincipal;
 import org.springframework.security.core.Authentication;
@@ -44,24 +44,22 @@ public class AuthController {
 
         Object principalObj = principal.getPrincipal();
         UserResponseDto userResponseDto;
-        OAuthProvider provider = null;
-        Optional<String> profilePictureUrl = Optional.empty();
+        OAuthProvider provider;
 
         if (principalObj instanceof OAuth2User oauthUser) {
             String authProviderUserId = oauthUser.getName();
             provider = getAuthProvider(principal);
             userResponseDto = userService.getByOAuthAccount(provider, authProviderUserId);
-            profilePictureUrl = getProfilePictureUrl(oauthUser, provider);
-        } else if (principalObj instanceof UserResponseDto jwtUser) {
-            userResponseDto = jwtUser;
-        } else if (principalObj instanceof UserEntity userEntity) {
-            userResponseDto = new UserResponseDto(userEntity.getId(), userEntity.getUsername());
         } else if (principalObj instanceof UserPrincipal userPrincipal) {
-                UserEntity userEntity = userPrincipal.getUser();
-                userResponseDto = new UserResponseDto(userEntity.getId(), userEntity.getUsername());
+            UserEntity userEntity = userPrincipal.getUser();
+            userResponseDto = new UserResponseDto(userEntity.getId(), userEntity.getUsername());
         } else {
             throw new IllegalStateException("Unknown principal type: " + principalObj.getClass());
         }
+
+        Optional<OAuthAccount> accountOption = userService.getOAuthAccount(userResponseDto.id());
+        Optional<String> profilePictureUrl = accountOption.map(OAuthAccount::getAvatarUrl);
+        provider = accountOption.map(OAuthAccount::getProviderName).orElse(null);
 
         return new MeResponseDto(userResponseDto, provider, profilePictureUrl);
     }
@@ -69,14 +67,5 @@ public class AuthController {
     private OAuthProvider getAuthProvider(Authentication principal) {
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) principal;
         return OAuthProvider.valueOf(token.getAuthorizedClientRegistrationId().toUpperCase());
-    }
-
-    private Optional<String> getProfilePictureUrl(OAuth2User user, OAuthProvider provider) {
-        Map<String, Object> attributes = user.getAttributes();
-        return switch (provider) {
-            case GOOGLE -> Optional.ofNullable((String) attributes.get("picture"));
-            case GITHUB -> Optional.ofNullable((String) attributes.get("avatar_url"));
-            default -> Optional.empty();
-        };
     }
 }
