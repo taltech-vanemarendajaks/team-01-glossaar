@@ -1,4 +1,3 @@
-# TODO: use docker swarm for running multiple spring containers in production, #97
 services:
   frontend:
     # No ports exposed, as nginx will proxy requests to its default port 80
