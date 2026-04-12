@@ -24,6 +24,7 @@
 </svelte:head>
 
 <div class="mx-auto my-4 h-full w-full max-w-[24.5rem] gap-2 rounded-md border p-1">
+    <!-- TODO: make navbar sticky? -->
     <div class="flex flex-row justify-between items-center">
         <Navigation />
         {#if $isAuthenticated}
