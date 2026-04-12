@@ -7,7 +7,7 @@ Plaani puhul prioritiseerime vastavalt Glossaar.md roadmap failis kirjeldatud pe
 - [x] Loo uus repo + ligipääsud + protected main (#1)
 - [x] Svelte starter project (#2)
 - [x] Java Spring starter project (#3)
-- [ ] ise nullist authi ei teeks - oauth2 integratsioon BE (kas FE tahab ka midagi?) (#4)
+- [x] ise nullist authi ei teeks - oauth2 integratsioon BE (kas FE tahab ka midagi?) (#4)
 - [x] mingisugune ORM lahendus üles seada (Java maailma standard on JPA?) (#5)
 - [x] mingisugun svelte komponentide raamistik üles seada (btn, card, textfield, mida veel vaja?) bootstrap / tailwind / miski muu? (#6)
 - [x] võiks mingi automaatne format-on-save lahendus olla BE (#7)
@@ -16,22 +16,22 @@ Plaani puhul prioritiseerime vastavalt Glossaar.md roadmap failis kirjeldatud pe
 
 ## developemnt
 
-- [ ] mingi algne andmebaasi word tabelite koosseis (user >-< user_word >-< word_key >-< word_value(saab custom word puhul omaniku külge panna)) (#10)
-- [ ] User / auth endpointid (#11)
+- [x] mingi algne andmebaasi word tabelite koosseis (user >-< user_word >-< word_key >-< word_value(saab custom word puhul omaniku külge panna)) (#10)
+- [x] User / auth endpointid (#11)
 - BE põhilised word endpointid - toimetada saab vaid enda ressurssidega:
-  - [ ] POST words/{id} (#12)
-  - [ ] PATCH words/{id} (#13)
-  - [ ] DELETE words/{id} -  kustutab seose kasutaja ja sõna vahel. v.a. kui on custom word, siis kustutame sõna. (#14)
-  - [ ] GET words?filter=abs + pagination? (#15)
+  - [x] POST words/{id} (#12)
+  - [x] PATCH words/{id} (#13)
+  - [x] DELETE words/{id} -  kustutab seose kasutaja ja sõna vahel. v.a. kui on custom word, siis kustutame sõna. (#14)
+  - [x] GET words?filter=abs + pagination? (#15)
 - FE vaated:
-  - [ ] Kirje lisamise/muutmise vaade (#16)
-  - [ ] Kirjete listivaade + filtrid + kustutamine + paginatsioon (#17)
-  - [ ] Quiz režiim vaade (#18)
-- [ ] põhilised quiz endpointid (algselt võib olla loogika ainult FE poolel?)
-  - [ ] mingi algne andmebaasi quiz tabelite koosseis (user_quiz - kasutajal oli nö seanss. user_quiz_result - seansside tulemused) (#19)
-  - [ ] POST quiz (seesmiselt tehakse words?filter=quiz&count=4 ja lisatakse, et milline on õige + luuakse user_quiz kirje ja sisestatakse user_quiz_result null väärtustega) (#20)
-  - [ ] POST quiz-results - APIs muudetakse vastavalt scorei, (FE saadab { userQuizId + mida valis õigesti, mida valesti }) (#21)
-  - [ ] GET words quiz filter arvesse võtma quiz-results tulemusi (küsida rohkem neid, millel skoor madal, aga alles siis kui küsimata sõnu ei ole). (#22)
+  - [x] Kirje lisamise/muutmise vaade (#16)
+  - [x] Kirjete listivaade + filtrid + kustutamine + paginatsioon (#17)
+  - [x] Quiz režiim vaade (#18)
+- [x] põhilised quiz endpointid (algselt võib olla loogika ainult FE poolel?)
+  - [x] mingi algne andmebaasi quiz tabelite koosseis (user_quiz - kasutajal oli nö seanss. user_quiz_result - seansside tulemused) (#19)
+  - [x] POST quiz (seesmiselt tehakse words?filter=quiz&count=4 ja lisatakse, et milline on õige + luuakse user_quiz kirje ja sisestatakse user_quiz_result null väärtustega) (#20)
+  - [x] POST quiz-results - APIs muudetakse vastavalt scorei, (FE saadab { userQuizId + mida valis õigesti, mida valesti }) (#21)
+  - [x] GET words quiz filter arvesse võtma quiz-results tulemusi (küsida rohkem neid, millel skoor madal, aga alles siis kui küsimata sõnu ei ole). (#22)
 
 ## CI/CD
 

@@ -1,0 +1,47 @@
+---
+title: Glossaar architecture
+---
+
+flowchart TB
+    Browser --> DNS
+	DNS --> Server
+    Server --> DockerHost
+	NginxContainer -->|/api| BeContainer
+	NginxContainer -->|/| FeContainer
+
+	BeContainer --> DbContainer
+	BeContainer --> EKI_SERVER
+
+	subgraph Server
+		cron
+	end
+
+	subgraph DockerHost["Docker Host"]
+		direction TB
+
+		subgraph NginxContainer["Nginx container"]
+			Nginx
+		end
+
+		subgraph BeContainer["BE container 1..N"]
+			Be[
+				- Java Spring boot
+				- JPA
+				- Liquibase
+			]
+		end
+
+		subgraph FeContainer["FE container (nginx)"]
+			Fe[
+				- SvelteKit static
+				- shadcn-svelte
+			]
+		end
+
+		subgraph DbContainer["DB container"]
+			DB[(PSQL)]
+		end
+	end
+
+%% TODO: add monitoring, if applies
+%% TODO: add replica db logic, if applies

@@ -28,8 +28,8 @@ erDiagram
     WORDS {
         bigint id PK
         string word
-        string explanation
-        bigint category_id FK
+        string explanation "nullable"
+        bigint category_id FK "nullable"
     }
 
     QUIZZES {
@@ -48,5 +48,5 @@ erDiagram
         bigint user_id FK
         bigint word_id FK
         int quiz_score
-        timestamp last_quizzed_at
+        timestamp last_quizzed_at "nullable"
     }
