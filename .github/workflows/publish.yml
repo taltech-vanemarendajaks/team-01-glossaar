@@ -51,9 +51,10 @@ jobs:
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:latest
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:${{ github.sha }}
 
-  deploy-to-server:
-    needs: build-and-publish-to-ghcr
-    uses: ./.github/workflows/deploy.yml
-    secrets: inherit
-    with:
-      component: ${{ inputs.component }}
+# TODO: is broken... this should be opt in via GH UI, not automatically triggered after publishing
+  # deploy-to-server:
+  #   needs: build-and-publish-to-ghcr
+  #   uses: ./.github/workflows/deploy.yml
+  #   secrets: inherit
+  #   with:
+  #     component: ${{ inputs.component }}
