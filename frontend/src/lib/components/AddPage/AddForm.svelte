@@ -271,9 +271,3 @@
         categories = await fetchCategories();
     }
 </script>
-
-<style>
-    :global(body) {
-        background-color: #f3f4f6;
-    }
-</style>
