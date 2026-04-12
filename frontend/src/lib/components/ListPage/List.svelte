@@ -114,7 +114,10 @@
         const fallbackPage = words.length === 1 && page > 0 ? page - 1 : page;
 
         try {
-            const res = await fetch(`/api/words/${target.id}`, { method: 'DELETE' });
+            const res = await fetch(`/api/words/${target.id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
             if (!res.ok) {
                 const text = await res.text().catch(() => '');
                 throw new Error(text || `DELETE /api/words/${target.id} -> HTTP ${res.status}`);
@@ -152,6 +155,7 @@
         try {
             const res = await fetch(`/api/words/${target.id}`, {
                 method: 'PATCH',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     word: payload.word,

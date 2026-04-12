@@ -45,11 +45,9 @@ services:
         - action: sync+restart
           path: ./backend/src
           target: /app/src
-          initial_sync: true
         - action: sync+restart
           path: ./backend/pom.xml
           target: /app/pom.xml
-          initial_sync: true
         - action: rebuild
           path: ./backend/Dockerfile.dev
 

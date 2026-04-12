@@ -40,6 +40,12 @@ public class UserService {
         return toResponse(entity);
     }
 
+    @Transactional(readOnly = true)
+    public UserEntity getByIdEntity(Long id) {
+        return repository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + id));
+    }
+
     @Transactional
     public UserResponseDto create(String username) {
         String normalizedUsername = requireNonBlank("username", username);
@@ -76,25 +82,36 @@ public class UserService {
     public UserEntity upsertOAuth2User(OAuth2User oAuth2User, OAuthProvider provider) {
         String providerId = oAuth2User.getName(); // get oauth provider user id or 'name', e.g. github user id
 
+        String avatarUrl = getAvatarUrl(oAuth2User, provider).orElse(null);
+
         // TODO: currently each provider will create a new account. We'll need to find a
         // a constant between them that we can use to link the accounts. (email was not
         // returned in case of github so we can't use that)
         return oauthAccountRepository
-                .findByProviderNameAndProviderUserId(provider, providerId)
-                .map(oauthAccount -> oauthAccount.getUser())
-                .orElseGet(() -> {
-                    log.info("Did not find a user with provider:" + provider + ", providerId:" + providerId);
+            .findByProviderNameAndProviderUserId(provider, providerId)
+            .map(oauthAccount -> {
+                oauthAccount.setAvatarUrl(avatarUrl);
+                return oauthAccount.getUser();
+            })
+            .orElseGet(() -> {
+                log.info("Did not find a user with provider:" + provider + ", providerId:" + providerId);
+                UserEntity newUser = new UserEntity();
 
-                    UserEntity newUser = new UserEntity();
-                    newUser.addOAuthAccount(
-                            new OAuthAccount(newUser, provider, providerId));
+                OAuthAccount account = new OAuthAccount(newUser, provider, providerId);
+                account.setAvatarUrl(avatarUrl);
 
-                    UserEntity savedUser = repository.save(newUser);
-                    log.info("Created new user account id=" + savedUser.getId() + " with provider:" + provider
-                            + ", providerId:" + providerId);
+                newUser.addOAuthAccount(account);
 
-                    return savedUser;
-                });
+                UserEntity savedUser = repository.save(newUser);
+                log.info("Created new user account id=" + savedUser.getId() + " with provider:" + provider
+                         + ", providerId:" + providerId);
+
+                return savedUser;
+            });
+    }
+
+    public Optional<OAuthAccount> getOAuthAccount(Long userId) {
+        return oauthAccountRepository.findFirstByUserId(userId);
     }
 
     public UserResponseDto getByOAuthAccount(OAuthProvider provider, String providerUserId) {
@@ -108,5 +125,15 @@ public class UserService {
         }
 
         return toResponse(authEntry.get());
+    }
+
+    private Optional<String> getAvatarUrl(OAuth2User user, OAuthProvider provider) {
+        var attrs = user.getAttributes();
+
+        return switch (provider) {
+            case GOOGLE -> Optional.ofNullable((String) attrs.get("picture"));
+            case GITHUB -> Optional.ofNullable((String) attrs.get("avatar_url"));
+            default -> Optional.empty();
+        };
     }
 }
