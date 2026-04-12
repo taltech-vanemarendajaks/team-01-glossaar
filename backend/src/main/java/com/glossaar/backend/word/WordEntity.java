@@ -33,4 +33,10 @@ public class WordEntity {
         this.word = word;
         this.explanation = explanation;
     }
+
+    public WordEntity(String word, String explanation, CategoryEntity category) {
+        this.word = word;
+        this.explanation = explanation;
+        this.category = category;
+    }
 }

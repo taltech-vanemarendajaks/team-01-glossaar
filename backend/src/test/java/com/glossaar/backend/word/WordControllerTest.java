@@ -2,6 +2,8 @@ package com.glossaar.backend.word;
 
 import com.glossaar.backend.IntegrationTest;
 import com.glossaar.backend.word.dto.CreateWordRequestDto;
+import com.glossaar.backend.word.dto.GetWordsResponseDto;
+import com.glossaar.backend.word.dto.WordResponseDto;
 import com.glossaar.backend.category.CategoryRepository;
 import com.glossaar.backend.category.CategoryEntity;
 import com.glossaar.backend.userword.UserWordScoreRepository;
@@ -149,5 +151,65 @@ class WordControllerTest extends IntegrationTest {
         List<WordEntity> words = wordRepository.findAll();
         assertEquals(0, categories.size());
         assertEquals(0, words.size());
+    }
+
+    @Test
+    void getAll_includesCategoryNameForEachWord() {
+        controller.create(new CreateWordRequestDto("Car", "Vehicle", "Transport"));
+        controller.create(new CreateWordRequestDto("Apple", "Fruit", "Food"));
+
+        GetWordsResponseDto response = controller.getAll("", 0, 10, "word", "asc");
+
+        assertThat(response.items()).hasSize(2);
+        assertThat(response.items().get(0).word()).isEqualTo("Apple");
+        assertThat(response.items().get(0).categoryName()).isEqualTo("Food");
+        assertThat(response.items().get(1).word()).isEqualTo("Car");
+        assertThat(response.items().get(1).categoryName()).isEqualTo("Transport");
+    }
+
+    @Test
+    void getAll_withSearch_includesCategoryName() {
+        controller.create(new CreateWordRequestDto("Banana", "Yellow", "Food"));
+        controller.create(new CreateWordRequestDto("Train", "Rail", "Transport"));
+
+        GetWordsResponseDto response = controller.getAll("Banana", 0, 10, "word", "asc");
+
+        assertThat(response.items()).hasSize(1);
+        assertThat(response.items().getFirst().word()).isEqualTo("Banana");
+        assertThat(response.items().getFirst().categoryName()).isEqualTo("Food");
+    }
+
+    @Test
+    void getAll_wordWithoutCategory_returnsNullCategoryName() {
+        wordRepository.save(new WordEntity("Legacy", "Old data without category"));
+
+        GetWordsResponseDto response = controller.getAll("", 0, 10, "word", "asc");
+
+        assertThat(response.items()).hasSize(1);
+        assertThat(response.items().getFirst().word()).isEqualTo("Legacy");
+        assertThat(response.items().getFirst().categoryName()).isNull();
+    }
+
+    @Test
+    void getById_includesCategoryName() {
+        WordResponseDto created = controller.create(
+                new CreateWordRequestDto("Desk", "Furniture", "Office"));
+
+        WordResponseDto byId = controller.getById(created.id());
+
+        assertThat(byId.id()).isEqualTo(created.id());
+        assertThat(byId.word()).isEqualTo("Desk");
+        assertThat(byId.explanation()).isEqualTo("Furniture");
+        assertThat(byId.categoryName()).isEqualTo("Office");
+    }
+
+    @Test
+    void getById_wordWithoutCategory_returnsNullCategoryName() {
+        WordEntity saved = wordRepository.save(new WordEntity("Orphan", "No category row"));
+
+        WordResponseDto byId = controller.getById(saved.getId());
+
+        assertThat(byId.word()).isEqualTo("Orphan");
+        assertThat(byId.categoryName()).isNull();
     }
 }
