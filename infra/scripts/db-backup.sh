@@ -4,6 +4,9 @@
 # If the number of dumps exceeds the MAX_DUMP_COUNT, the oldest dump will be deleted.
 # This script will be triggered via cron and run from team-01-glossaar/infra/scripts folder, so all of the paths are relative to that
 
+# changes the working directory to wherever the script itself is, cron runs it from $HOME
+cd "$(dirname "$0")"
+
 MAX_DUMP_COUNT=7
 DUMP_LOCATION=~/db-backups
 

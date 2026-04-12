@@ -1,3 +1,5 @@
+name: glossaar
+
 services:
   frontend:
     # No ports exposed, as nginx will proxy requests to its default port 80
@@ -49,6 +51,7 @@ services:
   db:
     image: postgres:18
     restart: unless-stopped
+    container_name: db
     env_file: ../backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql
