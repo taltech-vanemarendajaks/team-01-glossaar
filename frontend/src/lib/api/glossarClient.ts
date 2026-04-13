@@ -116,7 +116,9 @@ export const GlossarClient = {
     },
 
     async getMe(): Promise<MeResponse> {
-        const response = await fetch(`${API_BASE}/auth/me`);
+        const response = await fetch(`${API_BASE}/auth/me`, {
+            credentials: 'include'
+        });
 
         if (!response.ok) {
             throw new Error(`Failed to fetch user info: ${response.status}`);
