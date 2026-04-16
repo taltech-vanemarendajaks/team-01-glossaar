@@ -7,13 +7,18 @@
     import UserAvatar from '$lib/components/UserAvatar.svelte';
     import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
     import { logout } from '$lib/services/authService';
+    import { goto } from '$app/navigation';
 
     onMount(async () => {
         await auth.init();
-        if (!$isAuthenticated) {
+        if ($isAuthenticated) {
+            if (window.location.href === '/') {
+                goto('/add');
+            }
+        } else {
             // TODO: needs to be improved. If navigating directly to protected page, it will briefly flash before redirecting
             if (!window.location.href.endsWith('/login')) {
-                window.location.href = '/login';
+                goto('/login');
             }
         }
     });
