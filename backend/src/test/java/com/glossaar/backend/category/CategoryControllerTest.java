@@ -120,7 +120,7 @@ class CategoryControllerTest extends IntegrationTest {
         assertEquals(1, allCategoriesBeforeDelete.size());
         assertEquals(food, allCategoriesBeforeDelete.getFirst());
 
-        WordEntity word = new WordEntity("Beef", "Red meat");
+        WordEntity word = new WordEntity("Beef", "Red meat", testUser);
         word.setCategory(food);
         wordRepository.save(word);
 
