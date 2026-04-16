@@ -5,6 +5,8 @@
     import { auth, isAuthenticated } from '$lib/stores/auth';
     import { onMount } from 'svelte';
     import UserAvatar from '$lib/components/UserAvatar.svelte';
+    import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+    import { logout } from '$lib/services/authService';
 
     onMount(async () => {
         await auth.init();
@@ -27,7 +29,14 @@
     <div class="flex flex-row justify-between items-center">
         <Navigation />
         {#if $isAuthenticated}
-            <UserAvatar />
+            <DropdownMenu.Root>
+                <DropdownMenu.Trigger class="hover:cursor-pointer" >
+                    <UserAvatar />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content class="w-28" align="end">
+                    <DropdownMenu.Item class="hover:cursor-pointer" variant="destructive" onSelect={logout}>Log out</DropdownMenu.Item>
+                </DropdownMenu.Content>
+            </DropdownMenu.Root>
         {/if}
     </div>
     <main class="mt-2 rounded-md border p-2">

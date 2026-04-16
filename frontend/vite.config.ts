@@ -19,8 +19,12 @@ export default defineConfig(() => {
       host: true,
       port: 5173,
       strictPort: true,
+      // TODO: still needs to be thought through. Currently these need manual setup via nginx on the server
       proxy: {
-        // TODO: still needs to be thought through. Currently these need manual setup via nginx on the server
+        '/api/logout': {
+            target: backendUrl,
+            rewrite: () => '/logout'
+        },
         '/api': backendUrl,
         '/login/oauth2/code/': backendUrl,
         '/login/google': {

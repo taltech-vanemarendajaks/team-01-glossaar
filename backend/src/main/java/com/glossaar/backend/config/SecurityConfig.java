@@ -47,11 +47,17 @@ public class SecurityConfig {
 
         return http
             .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> {
+            .authorizeHttpRequests(auth -> {
                 auth.requestMatchers(AUTH_URLS).permitAll();
                 auth.requestMatchers(SWAGGER_URLS).permitAll();
                 auth.anyRequest().authenticated();
             })
+            .logout(logout -> logout
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    // The JWT will remain valid until its expiration to. Invalidate the cookie to kill the session on this client.
+                    response.setHeader("Set-Cookie", "auth_token=; HttpOnly; Path=/; Max-Age=0");
+                    response.setStatus(HttpServletResponse.SC_OK);
+                }))
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) ->
                                               response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
