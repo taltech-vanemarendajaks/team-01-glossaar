@@ -20,8 +20,7 @@ public class AuthLogoutSuccessHandler implements LogoutSuccessHandler  {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
-            // The JWT will remain valid until its expiration to. Invalidate the cookie to kill the session on this client.
-            // The JWT will remain valid until its expiration to. Invalidate the cookie to kill the session on this client.
+            // The JWT itself will remain valid until its TTL expires. Invalidate the cookie to kill the session on this client.
             response.setHeader("Set-Cookie", "auth_token=; HttpOnly; Path=/; Max-Age=0");
             response.sendRedirect(postLogoutLandingUrl);
     };
