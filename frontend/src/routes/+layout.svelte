@@ -2,9 +2,9 @@
     import './layout.css';
     import favicon from '$lib/assets/favicon.svg';
     import Navigation from '$lib/components/Navigation.svelte';
-    import { auth, isAuthenticated, user } from '$lib/stores/auth';
+    import { auth, isAuthenticated } from '$lib/stores/auth';
     import { onMount } from 'svelte';
-    import * as Avatar from '$lib/components/ui/avatar/index';
+    import UserAvatar from '$lib/components/UserAvatar.svelte';
 
     onMount(async () => {
         await auth.init();
@@ -27,12 +27,7 @@
     <div class="flex flex-row justify-between items-center">
         <Navigation />
         {#if $isAuthenticated}
-            <Avatar.Root class="m-1" >
-                <Avatar.Image src={$user?.avatarUrl} alt="User Avatar" />
-                <Avatar.Badge class="bg-white">
-                    <img src={`/${$user?.authProvider?.toLowerCase()}-logo.svg`} alt="user-auth-provider">
-                </Avatar.Badge>
-            </Avatar.Root>
+            <UserAvatar />
         {/if}
     </div>
     <main class="mt-2 rounded-md border p-2">
