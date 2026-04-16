@@ -18,6 +18,11 @@ export interface QuizQuestion {
   correctIndex: number;
 }
 
+export interface ExplanationGroup {
+    groupNumber: number;
+    explanations: string[];
+}
+
 export interface MeResponse {
     user: {
         id: number;
@@ -113,6 +118,15 @@ export const GlossarClient = {
         if (!response.ok) {
             throw new Error(`Failed to submit quiz answer: ${response.status}`);
         }
+    },
+
+    async fetchEkiExplanations(word: string): Promise<ExplanationGroup[]> {
+        const response = await fetch(`${API_BASE}/eki/explanations/${encodeURIComponent(word)}`);
+        if (!response.ok) {
+            throw new Error(`EKI explanation lookup failed: ${response.status}`);
+        }
+        const data: { word: string; explanationGroups: ExplanationGroup[] } = await response.json();
+        return data.explanationGroups;
     },
 
     async getMe(): Promise<MeResponse> {
