@@ -23,6 +23,7 @@
 
 <svelte:head>
     <link rel="icon" href={favicon} />
+    <title>Glossaar</title>
 </svelte:head>
 
 <div class="mx-auto my-4 h-full w-full max-w-[24.5rem] gap-2 rounded-md border p-1">

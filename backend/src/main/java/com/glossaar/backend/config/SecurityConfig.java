@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.glossaar.backend.auth.AuthLogoutSuccessHandler;
 import com.glossaar.backend.auth.OAuthLoginSuccessHandler;
 import com.glossaar.backend.auth.jwt.JwtAuthenticationFilter;
 import com.glossaar.backend.auth.jwt.JwtService;
@@ -34,10 +35,12 @@ public class SecurityConfig {
     };
 
     private final OAuthLoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final AuthLogoutSuccessHandler authLogoutSuccessHandler;
     private final JwtService jwtService;
 
-    public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler, JwtService jwtService) {
+    public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler, AuthLogoutSuccessHandler authLogoutSuccessHandler, JwtService jwtService) {
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+        this.authLogoutSuccessHandler = authLogoutSuccessHandler;
         this.jwtService = jwtService;
     }
 
@@ -53,11 +56,7 @@ public class SecurityConfig {
                 auth.anyRequest().authenticated();
             })
             .logout(logout -> logout
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    // The JWT will remain valid until its expiration to. Invalidate the cookie to kill the session on this client.
-                    response.setHeader("Set-Cookie", "auth_token=; HttpOnly; Path=/; Max-Age=0");
-                    response.setStatus(HttpServletResponse.SC_OK);
-                }))
+                .logoutSuccessHandler(authLogoutSuccessHandler))
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) ->
                                               response.sendError(HttpServletResponse.SC_UNAUTHORIZED)

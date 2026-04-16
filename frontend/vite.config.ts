@@ -21,12 +21,11 @@ export default defineConfig(() => {
       strictPort: true,
       // TODO: still needs to be thought through. Currently these need manual setup via nginx on the server
       proxy: {
-        '/api/logout': {
-            target: backendUrl,
-            rewrite: () => '/logout'
-        },
         '/api': backendUrl,
         '/login/oauth2/code/': backendUrl,
+        '/logout': {
+            target: backendUrl,
+        },
         '/login/google': {
           target: backendUrl,
           rewrite: () => '/oauth2/authorization/google'
