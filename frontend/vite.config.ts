@@ -23,9 +23,7 @@ export default defineConfig(() => {
       proxy: {
         '/api': backendUrl,
         '/login/oauth2/code/': backendUrl,
-        '/logout': {
-            target: backendUrl,
-        },
+        '/logout': backendUrl,
         '/login/google': {
           target: backendUrl,
           rewrite: () => '/oauth2/authorization/google'
