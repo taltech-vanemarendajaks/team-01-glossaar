@@ -137,5 +137,5 @@ export const GlossarClient = {
         }
 
         return response.json();
-    }
+    },
 };

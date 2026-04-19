@@ -6,7 +6,6 @@
     import { isAuthenticated } from '$lib/stores/auth';
 
     const routes = [
-        { name: 'Index', href: '/' },
         { name: 'Login', href: '/login', authenticated: false },
         { name: 'Add', href: '/add', authenticated: true },
         { name: 'List', href: '/list', authenticated: true },

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.glossaar.backend.auth.AuthLogoutSuccessHandler;
 import com.glossaar.backend.auth.OAuthLoginSuccessHandler;
 import com.glossaar.backend.auth.jwt.JwtAuthenticationFilter;
 import com.glossaar.backend.auth.jwt.JwtService;
@@ -34,10 +35,12 @@ public class SecurityConfig {
     };
 
     private final OAuthLoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final AuthLogoutSuccessHandler authLogoutSuccessHandler;
     private final JwtService jwtService;
 
-    public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler, JwtService jwtService) {
+    public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler, AuthLogoutSuccessHandler authLogoutSuccessHandler, JwtService jwtService) {
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+        this.authLogoutSuccessHandler = authLogoutSuccessHandler;
         this.jwtService = jwtService;
     }
 
@@ -47,11 +50,13 @@ public class SecurityConfig {
 
         return http
             .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> {
+            .authorizeHttpRequests(auth -> {
                 auth.requestMatchers(AUTH_URLS).permitAll();
                 auth.requestMatchers(SWAGGER_URLS).permitAll();
                 auth.anyRequest().authenticated();
             })
+            .logout(logout -> logout
+                .logoutSuccessHandler(authLogoutSuccessHandler))
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) ->
                                               response.sendError(HttpServletResponse.SC_UNAUTHORIZED)

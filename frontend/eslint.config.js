@@ -34,6 +34,11 @@ export default defineConfig(
         parser: ts.parser,
         svelteConfig
       }
+    },
+  },
+  {
+    rules: {
+        'svelte/no-navigation-without-resolve': 'off',
     }
-  }
+  },
 );
