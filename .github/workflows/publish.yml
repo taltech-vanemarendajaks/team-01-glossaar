@@ -38,8 +38,9 @@ jobs:
     #   (needs.run-fe-tests.result == 'success' || needs.run-fe-tests.result == 'skipped') &&
     #   (needs.run-be-tests.result == 'success' || needs.run-be-tests.result == 'skipped')
     runs-on: ubuntu-latest
-    matrix:
-      component: [frontend, backend]
+    strategy:
+      matrix:
+        component: [frontend, backend]
 
     steps:
       - uses: actions/checkout@v5
@@ -61,8 +62,9 @@ jobs:
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ matrix.component }}:${{ github.sha }}
 
   deploy-to-server:
-    matrix:
-      component: [frontend, backend]
+    strategy:
+      matrix:
+        component: [frontend, backend]
     needs: build-and-publish-to-ghcr
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
