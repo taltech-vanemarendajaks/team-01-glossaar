@@ -42,7 +42,7 @@
             {@render ListItem({
                 title: item.name,
                 href: item.href,
-                class: $page.url.pathname === item.href ? 'border' : ''
+                class: $page.url.pathname === item.href ? 'border-default' : ''
             })}
         {/each}
     </NavigationMenu.List>
