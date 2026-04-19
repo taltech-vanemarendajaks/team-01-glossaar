@@ -1,40 +1,45 @@
 name: Publish image to GHCR
 
 on:
-  workflow_dispatch:
-    inputs:
-      component:
-        description: Application component to build and publish to GHCR
-        type: choice
-        required: true
-        options:
-          - frontend
-          - backend
-      deploy-to-server:
-        description: Deploy the server
-        type: boolean
-        default: false
+  push:
+    branches:
+      - main
+  # workflow_dispatch:
+  #   inputs:
+  #     component:
+  #       description: Application component to build and publish to GHCR
+  #       type: choice
+  #       required: true
+  #       options:
+  #         - frontend
+  #         - backend
+  #     deploy-to-server:
+  #       description: Deploy the server
+  #       type: boolean
+  #       default: false
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  run-fe-tests:
-    if: inputs.component == 'frontend'
-    uses: ./.github/workflows/frontend-tests.yml
+  # run-fe-tests:
+  #   if: inputs.component == 'frontend'
+  #   uses: ./.github/workflows/frontend-tests.yml
 
-  run-be-tests:
-    if: inputs.component == 'backend'
-    uses: ./.github/workflows/backend-tests.yml
+  # run-be-tests:
+  #   if: inputs.component == 'backend'
+  #   uses: ./.github/workflows/backend-tests.yml
 
   build-and-publish-to-ghcr:
-    needs: [run-fe-tests, run-be-tests]
-    if: |
-      always() &&
-      (needs.run-fe-tests.result == 'success' || needs.run-fe-tests.result == 'skipped') &&
-      (needs.run-be-tests.result == 'success' || needs.run-be-tests.result == 'skipped')
+    # needs: [run-fe-tests, run-be-tests]
+    # if: |
+    #   always() &&
+    #   (needs.run-fe-tests.result == 'success' || needs.run-fe-tests.result == 'skipped') &&
+    #   (needs.run-be-tests.result == 'success' || needs.run-be-tests.result == 'skipped')
     runs-on: ubuntu-latest
+    matrix:
+      component: [frontend, backend]
 
     steps:
       - uses: actions/checkout@v5
@@ -49,16 +54,17 @@ jobs:
       - name: Build & Push
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ inputs.component }}
+          context: ./${{ matrix.component }}
           push: true
           tags: |
-            ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:latest
-            ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ inputs.component }}:${{ github.sha }}
+            ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ matrix.component }}:latest
+            ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ matrix.component }}:${{ github.sha }}
 
   deploy-to-server:
-    if: inputs.deploy-to-server == 'true'
+    matrix:
+      component: [frontend, backend]
     needs: build-and-publish-to-ghcr
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      component: ${{ inputs.component }}
+      component: ${{ matrix.component }}
