@@ -184,9 +184,6 @@
 <div class="mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
     <div class="mb-6">
         <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">Word list</h1>
-        <p class="mt-1 text-sm text-zinc-600">
-            Browse words from <code>GET /api/words</code>.
-        </p>
     </div>
 
     {#if error}
@@ -198,7 +195,7 @@
     {/if}
 
     <form on:submit|preventDefault={applyFilter} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-        <h2 class="mb-3 text-base font-semibold">Get words options</h2>
+        <h2 class="mb-3 text-base font-semibold">Search</h2>
         <div class="grid gap-3 sm:grid-cols-2">
             <input bind:value={listSearch} placeholder="search by word/explanation" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2" />
             <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
@@ -216,7 +213,7 @@
                 <option value="desc">Descending (DESC)</option>
             </select>
             <button type="submit" disabled={filterLoading || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
-                GET /api/words
+               Done
             </button>
         </div>
     </form>
