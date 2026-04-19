@@ -40,7 +40,7 @@
                     <UserAvatar />
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content class="w-28" align="end">
-                    <DropdownMenu.Item class="hover:cursor-pointer" variant="destructive" onSelect={logout}>Log out</DropdownMenu.Item>
+                    <DropdownMenu.Item class="hover:cursor-pointer" var[a-zA-Z0-9]+iant="destructive" onSelect={logout}>Log out</DropdownMenu.Item>
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
         {/if}
