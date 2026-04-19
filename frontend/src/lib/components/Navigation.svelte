@@ -25,7 +25,7 @@
                 <a
                     {href}
                     class={cn(
-                        'box-border block rounded-md p-2 leading-none no-underline hover:bg-accent hover:text-accent-foreground active:border-primary',
+                        'box-border block rounded-md p-2 leading-none no-underline hover:bg-accent hover:text-accent-foreground active:border-primary border border-transparent',
                         className
                     )}
                 >
