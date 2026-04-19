@@ -31,8 +31,12 @@
     <title>Glossaar</title>
 </svelte:head>
 
-{#if !$isLoading}
-    <div class="mx-auto my-2 h-full w-full max-w-[24.5rem] flex flex-col p-1 rounded-md border">
+{#if $isLoading}
+    <div class="flex items-center justify-center h-screen">
+        <p class="text-lg text-zinc-500">Loading...</p>
+    </div>
+{:else}
+    <div class="mx-auto my-2 h-full w-full max-w-[24.5rem] flex flex-col p-2 rounded-md border">
         <div class="flex flex-row justify-between items-center sticky top-1 bg-white shadow-sm rounded-md border pr-1">
             <Navigation />
             {#if $isAuthenticated}
