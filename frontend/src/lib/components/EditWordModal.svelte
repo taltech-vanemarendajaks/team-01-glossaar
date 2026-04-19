@@ -6,22 +6,33 @@
     export let initialWord = '';
     export let initialExplanation = '';
     export let loading = false;
+    export let initialCategory = '';
+    export let categories: { id: number; name: string }[] = [];
 
     let word = '';
     let explanation = '';
     let snapshotWord = '';
     let snapshotExplanation = '';
 
+    let categoryName = '';
+    let snapshotCategory = '';
+
     const dispatch = createEventDispatcher<{
-        save: { word: string; explanation: string };
+        save: { word: string; explanation: string; categoryName: string };
         cancel: void;
     }>();
 
-    $: if (open && (initialWord !== snapshotWord || initialExplanation !== snapshotExplanation)) {
+    $: if (open && (initialWord !== snapshotWord ||
+            initialExplanation !== snapshotExplanation ||
+            initialCategory !== snapshotCategory)
+    ) {
         word = initialWord;
         explanation = initialExplanation;
+        categoryName = initialCategory;
+
         snapshotWord = initialWord;
         snapshotExplanation = initialExplanation;
+        snapshotCategory = initialCategory;
     }
 
     function onCancel() {
@@ -37,7 +48,8 @@
 
         dispatch('save', {
             word: trimmedWord,
-            explanation: explanation.trim()
+            explanation: explanation.trim(),
+            categoryName
         });
     }
 
@@ -47,7 +59,7 @@
 </script>
 
 <svelte:window
-    on:keydown={(event) => {
+        on:keydown={(event) => {
         if (open && event.key === 'Escape') onCancel();
     }}
 />
@@ -80,6 +92,18 @@
                     bind:value={explanation}
                     disabled={loading}
                 />
+
+                <label for="edit-category" class="text-sm font-medium text-zinc-700">Category</label>
+                <select
+                        id="edit-category"
+                        class="h-10 rounded-lg border border-zinc-300 px-3 text-sm"
+                        bind:value={categoryName}
+                        disabled={loading}
+                >
+                    {#each categories as c}
+                        <option value={c.name}>{c.name}</option>
+                    {/each}
+                </select>
             </div>
 
             <div class="mt-5 flex justify-end gap-2">

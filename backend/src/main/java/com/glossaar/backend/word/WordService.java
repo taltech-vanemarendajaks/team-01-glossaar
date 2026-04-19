@@ -102,7 +102,7 @@ public class WordService {
     }
 
     @Transactional
-    public WordEntity patch(Long id, String word, String explanation) {
+    public WordEntity patch(Long id, String word, String explanation, String categoryName) {
         WordEntity entity = getById(id);
 
         if (word != null) {
@@ -111,6 +111,10 @@ public class WordService {
         if (explanation != null) {
             entity.setExplanation(normalizeOptional(explanation));
         }
+
+        String validCategoryName = requireNonBlank("category", categoryName);
+        CategoryEntity category = categoryService.create(validCategoryName);
+        entity.setCategory(category);
 
         return repo.save(entity);
     }

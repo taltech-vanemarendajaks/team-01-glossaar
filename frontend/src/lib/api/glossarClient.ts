@@ -124,6 +124,7 @@ export const GlossarClient = {
     async updateWord(id: number, payload: {
         word: string;
         explanation: string;
+        categoryName: string;
     }): Promise<void> {
         const response = await fetch(`${API_BASE}/words/${id}`, {
             method: 'PATCH',

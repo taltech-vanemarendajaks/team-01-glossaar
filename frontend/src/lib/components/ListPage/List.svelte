@@ -12,6 +12,13 @@
         categoryName: string;
     };
 
+    type Category = {
+        id: number;
+        name: string;
+    };
+
+    let categories: Category[] = [];
+
     let words: Word[] = [];
     let wordsLoading = false;
     let filterLoading = false;
@@ -122,7 +129,8 @@
         }
     }
 
-    async function saveEdit(event: CustomEvent<{ word: string; explanation: string }>) {
+    async function saveEdit(event: CustomEvent<{ word: string; explanation: string; categoryName: string }>) {
+
         if (!editTarget) return;
 
         error = null;
@@ -134,7 +142,8 @@
         try {
             await GlossarClient.updateWord(target.id, {
                 word: payload.word,
-                explanation: payload.explanation
+                explanation: payload.explanation,
+                categoryName: payload.categoryName
             });
 
             editTarget = null;
@@ -147,7 +156,11 @@
         }
     }
 
-    onMount(() => loadWords(0));
+    onMount(async () => {
+        await loadWords(0);
+        categories = await GlossarClient.getCategories();
+    });
+
 </script>
 
 <div class="mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
@@ -214,9 +227,6 @@
                     <li class="px-4 py-3">
                         <div class="flex items-center justify-between gap-3">
                             <div class="text-sm font-semibold text-zinc-900">{item.word}</div>
-                            <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-zinc-600">
-                                {item.categoryName}
-                            </span>
                             <div class="flex items-center gap-1">
                                 <button
                                         type="button"
@@ -236,7 +246,14 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="mt-1 text-sm text-zinc-600">{item.explanation || 'No explanation'}</div>
+                        <div class="mt-1 text-sm text-zinc-600">
+                            {item.explanation || 'No explanation'}
+                        </div>
+                        <div class="mt-3">
+                            <span class="rounded-full bg-blue-100 px-3 py-0.5 text-xs text-zinc-600">
+                                {item.categoryName}
+                            </span>
+                        </div>
                     </li>
                 {/each}
             </ul>
@@ -272,6 +289,8 @@
         title="Edit word"
         initialWord={editTarget?.word ?? ''}
         initialExplanation={editTarget?.explanation ?? ''}
+        initialCategory={editTarget?.categoryName ?? ''}
+        categories={categories}
         loading={editLoading}
         on:cancel={closeEditModal}
         on:save={saveEdit}
