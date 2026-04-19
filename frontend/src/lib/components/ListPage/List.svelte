@@ -3,24 +3,12 @@
     import { Pencil, Trash2 } from '@lucide/svelte';
     import ConfirmModal from '$lib/components/ConfirmModal.svelte';
     import EditWordModal from '$lib/components/EditWordModal.svelte';
+    import {GlossarClient} from "$lib/api/glossarClient";
 
     type Word = {
         id: number;
         word: string;
         explanation: string | null;
-    };
-
-    type GetWordsResponse = {
-        items: Word[];
-        totalItems: number;
-        totalPages: number;
-        page: number;
-        size: number;
-        hasNext: boolean;
-        hasPrevious: boolean;
-        search: string;
-        sortBy: string;
-        sortDir: string;
     };
 
     let words: Word[] = [];
@@ -47,25 +35,22 @@
         error = null;
         wordsLoading = true;
         try {
-            const params = new URLSearchParams({
+            const data = await GlossarClient.getWords({
                 search: listSearch.trim(),
-                page: String(targetPage),
-                size: String(size),
+                page: targetPage,
+                size,
                 sortBy,
                 sortDir
             });
-            const res = await fetch(`/api/words?${params.toString()}`);
-            if (!res.ok) throw new Error(`GET /api/words -> HTTP ${res.status}`);
-            const payload = (await res.json()) as GetWordsResponse;
 
-            words = payload.items;
-            totalItems = payload.totalItems;
-            totalPages = payload.totalPages;
-            page = payload.page;
-            hasNext = payload.hasNext;
-            hasPrevious = payload.hasPrevious;
-            sortBy = payload.sortBy || sortBy;
-            sortDir = payload.sortDir || sortDir;
+            words = data.items;
+            totalItems = data.totalItems;
+            totalPages = data.totalPages;
+            page = data.page;
+            hasNext = data.hasNext;
+            hasPrevious = data.hasPrevious;
+            sortBy = data.sortBy || sortBy;
+            sortDir = data.sortDir || sortDir;
         } catch (e) {
             error = e instanceof Error ? e.message : String(e);
         } finally {
@@ -114,14 +99,7 @@
         const fallbackPage = words.length === 1 && page > 0 ? page - 1 : page;
 
         try {
-            const res = await fetch(`/api/words/${target.id}`, {
-                method: 'DELETE',
-                credentials: 'include'
-            });
-            if (!res.ok) {
-                const text = await res.text().catch(() => '');
-                throw new Error(text || `DELETE /api/words/${target.id} -> HTTP ${res.status}`);
-            }
+            await GlossarClient.deleteWord(target.id);
 
             deleteTarget = null;
             success = `Deleted "${target.word}"`;
@@ -153,20 +131,10 @@
         const payload = event.detail;
 
         try {
-            const res = await fetch(`/api/words/${target.id}`, {
-                method: 'PATCH',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    word: payload.word,
-                    explanation: payload.explanation
-                })
+            await GlossarClient.updateWord(target.id, {
+                word: payload.word,
+                explanation: payload.explanation
             });
-
-            if (!res.ok) {
-                const text = await res.text().catch(() => '');
-                throw new Error(text || `PATCH /api/words/${target.id} -> HTTP ${res.status}`);
-            }
 
             editTarget = null;
             success = `Updated "${payload.word}"`;

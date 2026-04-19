@@ -5,6 +5,19 @@ export interface Word {
     categoryId?: number;
 }
 
+export interface GetWordsResponse {
+    items: Word[];
+    totalItems: number;
+    totalPages: number;
+    page: number;
+    size: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    search: string;
+    sortBy: string;
+    sortDir: string;
+}
+
 export interface Category {
     id: number;
     name: string;
@@ -94,6 +107,60 @@ export const GlossarClient = {
         }
 
         return response.json() as Promise<Word>;
+    },
+
+    async deleteWord(id: number): Promise<void> {
+        const response = await fetch(`${API_BASE}/words/${id}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete word: ${response.status}`);
+        }
+    },
+
+    async updateWord(id: number, payload: {
+        word: string;
+        explanation: string;
+    }): Promise<void> {
+        const response = await fetch(`${API_BASE}/words/${id}`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to update word: ${response.status}`);
+        }
+    },
+
+
+    async getWords(params: {
+        search: string;
+        page: number;
+        size: number;
+        sortBy: string;
+        sortDir: string;
+    }): Promise<GetWordsResponse> {
+        const query = new URLSearchParams({
+            search: params.search,
+            page: String(params.page),
+            size: String(params.size),
+            sortBy: params.sortBy,
+            sortDir: params.sortDir
+        });
+
+        const response = await fetch(`${API_BASE}/words?${query.toString()}`, {
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch words: ${response.status}`);
+        }
+
+        return response.json();
     },
 
     async getQuizQuestion(userId: number): Promise<QuizQuestion> {
