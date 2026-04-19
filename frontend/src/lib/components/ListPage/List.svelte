@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { Pencil, Trash2 } from '@lucide/svelte';
+    import {onMount} from 'svelte';
+    import {Pencil, Trash2} from '@lucide/svelte';
     import ConfirmModal from '$lib/components/ConfirmModal.svelte';
     import EditWordModal from '$lib/components/EditWordModal.svelte';
     import {GlossarClient} from "$lib/api/glossarClient";
@@ -9,6 +9,7 @@
         id: number;
         word: string;
         explanation: string | null;
+        categoryName: string;
     };
 
     let words: Word[] = [];
@@ -165,7 +166,8 @@
     <form on:submit|preventDefault={applyFilter} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
         <h2 class="mb-3 text-base font-semibold">Search</h2>
         <div class="grid gap-3 sm:grid-cols-2">
-            <input bind:value={listSearch} placeholder="search by word/explanation" class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2" />
+            <input bind:value={listSearch} placeholder="search by word/explanation"
+                   class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2"/>
             <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
                 <option value={5}>5 per page</option>
                 <option value={10}>10 per page</option>
@@ -180,8 +182,9 @@
                 <option value="asc">Ascending (ASC)</option>
                 <option value="desc">Descending (DESC)</option>
             </select>
-            <button type="submit" disabled={filterLoading || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
-               Done
+            <button type="submit" disabled={filterLoading || wordsLoading}
+                    class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
+                Done
             </button>
         </div>
     </form>
@@ -199,31 +202,37 @@
         </div>
 
         {#if wordsLoading}
-            <div class="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">Loading words...</div>
+            <div class="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">Loading words...
+            </div>
         {:else if words.length === 0}
-            <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">No words yet.</div>
+            <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">
+                No words yet.
+            </div>
         {:else}
             <ul class="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200">
                 {#each words as item (item.id)}
                     <li class="px-4 py-3">
                         <div class="flex items-center justify-between gap-3">
                             <div class="text-sm font-semibold text-zinc-900">{item.word}</div>
+                            <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-zinc-600">
+                                {item.categoryName}
+                            </span>
                             <div class="flex items-center gap-1">
                                 <button
-                                    type="button"
-                                    class="rounded-lg p-2 text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800"
-                                    aria-label={`Edit word ${item.word}`}
-                                    on:click={() => openEditModal(item)}
+                                        type="button"
+                                        class="rounded-lg p-2 text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800"
+                                        aria-label={`Edit word ${item.word}`}
+                                        on:click={() => openEditModal(item)}
                                 >
-                                    <Pencil class="h-4 w-4" />
+                                    <Pencil class="h-4 w-4"/>
                                 </button>
                                 <button
-                                    type="button"
-                                    class="rounded-lg p-2 text-zinc-500 transition hover:bg-red-50 hover:text-red-600"
-                                    aria-label={`Delete word ${item.word}`}
-                                    on:click={() => openDeleteModal(item)}
+                                        type="button"
+                                        class="rounded-lg p-2 text-zinc-500 transition hover:bg-red-50 hover:text-red-600"
+                                        aria-label={`Delete word ${item.word}`}
+                                        on:click={() => openDeleteModal(item)}
                                 >
-                                    <Trash2 class="h-4 w-4" />
+                                    <Trash2 class="h-4 w-4"/>
                                 </button>
                             </div>
                         </div>
@@ -233,11 +242,13 @@
             </ul>
 
             <div class="mt-4 flex items-center justify-between gap-3">
-                <button type="button" on:click={previousPage} disabled={!hasPrevious || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium disabled:opacity-50">
+                <button type="button" on:click={previousPage} disabled={!hasPrevious || wordsLoading}
+                        class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium disabled:opacity-50">
                     Prev
                 </button>
                 <div class="text-sm text-zinc-600">Showing {words.length} item(s)</div>
-                <button type="button" on:click={nextPage} disabled={!hasNext || wordsLoading} class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium disabled:opacity-50">
+                <button type="button" on:click={nextPage} disabled={!hasNext || wordsLoading}
+                        class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium disabled:opacity-50">
                     Next
                 </button>
             </div>
@@ -246,22 +257,22 @@
 </div>
 
 <ConfirmModal
-    open={deleteTarget !== null}
-    title="Delete word"
-    message={`Are you sure you want to delete word: "${deleteTarget?.word ?? ''}"?`}
-    confirmText="Delete"
-    cancelText="Cancel"
-    loading={deleteLoading}
-    on:cancel={closeDeleteModal}
-    on:confirm={confirmDelete}
+        open={deleteTarget !== null}
+        title="Delete word"
+        message={`Are you sure you want to delete word: "${deleteTarget?.word ?? ''}"?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        loading={deleteLoading}
+        on:cancel={closeDeleteModal}
+        on:confirm={confirmDelete}
 />
 
 <EditWordModal
-    open={editTarget !== null}
-    title="Edit word"
-    initialWord={editTarget?.word ?? ''}
-    initialExplanation={editTarget?.explanation ?? ''}
-    loading={editLoading}
-    on:cancel={closeEditModal}
-    on:save={saveEdit}
+        open={editTarget !== null}
+        title="Edit word"
+        initialWord={editTarget?.word ?? ''}
+        initialExplanation={editTarget?.explanation ?? ''}
+        loading={editLoading}
+        on:cancel={closeEditModal}
+        on:save={saveEdit}
 />

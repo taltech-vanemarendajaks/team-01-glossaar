@@ -3,6 +3,7 @@ export interface Word {
     word: string;
     explanation: string;
     categoryId?: number;
+    categoryName: string;
 }
 
 export interface GetWordsResponse {
