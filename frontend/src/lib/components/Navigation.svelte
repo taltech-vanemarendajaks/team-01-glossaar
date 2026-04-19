@@ -37,7 +37,7 @@
 {/snippet}
 
 <NavigationMenu.Root>
-    <NavigationMenu.List class="flex w-full rounded-md border p-1">
+    <NavigationMenu.List class="flex w-full p-1">
         {#each routes.filter((item) => !('authenticated' in item) || item.authenticated === $isAuthenticated) as item (item.href)}
             {@render ListItem({
                 title: item.name,

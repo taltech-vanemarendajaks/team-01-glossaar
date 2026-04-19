@@ -133,26 +133,6 @@
             />
         </div>
 
-        {#if word.trim() || explanation.trim() || categoryName}
-            <div class="mb-6 p-5 rounded-xl border border-gray-200 bg-white shadow-sm transition-all">
-                {#if categoryName}
-                    <div class="mb-3">
-                <span class="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">
-                    {categoryName}
-                </span>
-                    </div>
-                {/if}
-
-                {#if word.trim()}
-                    <p class="text-lg font-semibold text-gray-900">{word}</p>
-                {/if}
-
-                {#if explanation.trim()}
-                    <p class="mt-2 text text-gray-600 leading-relaxed">{explanation}</p>
-                {/if}
-            </div>
-        {/if}
-
         <div class="mt-6 flex justify-center">
             <Button
                     variant="default"
@@ -170,7 +150,7 @@
 
 {#if manageModalOpen}
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-xl max-w-md w-full">
+        <div class="bg-white p-6 rounded-md max-w-md w-full">
             <h2 class="text-lg font-semibold mb-4">Edit Categories</h2>
 
             <div class="space-y-2 max-h-80 overflow-y-auto">
