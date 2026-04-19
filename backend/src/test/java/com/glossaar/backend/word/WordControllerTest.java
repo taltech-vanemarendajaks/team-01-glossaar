@@ -156,8 +156,8 @@ class WordControllerTest extends IntegrationTest {
 
     @Test
     void getAll_includesCategoryNameForEachWord() {
-        controller.create(new CreateWordRequestDto("Car", "Vehicle", "Transport"));
-        controller.create(new CreateWordRequestDto("Apple", "Fruit", "Food"));
+        controller.create(new CreateWordRequestDto("Car", "Vehicle", "Transport" ), testUserPrincipal);
+        controller.create(new CreateWordRequestDto("Apple", "Fruit", "Food"), testUserPrincipal);
 
         GetWordsResponseDto response = controller.getAll("", 0, 10, "word", "asc");
 
@@ -170,8 +170,8 @@ class WordControllerTest extends IntegrationTest {
 
     @Test
     void getAll_withSearch_includesCategoryName() {
-        controller.create(new CreateWordRequestDto("Banana", "Yellow", "Food"));
-        controller.create(new CreateWordRequestDto("Train", "Rail", "Transport"));
+        controller.create(new CreateWordRequestDto("Banana", "Yellow", "Food"), testUserPrincipal);
+        controller.create(new CreateWordRequestDto("Train", "Rail", "Transport"), testUserPrincipal);
 
         GetWordsResponseDto response = controller.getAll("Banana", 0, 10, "word", "asc");
 
@@ -182,7 +182,7 @@ class WordControllerTest extends IntegrationTest {
 
     @Test
     void getAll_wordWithoutCategory_returnsNullCategoryName() {
-        wordRepository.save(new WordEntity("Legacy", "Old data without category"));
+        wordRepository.save(new WordEntity("Legacy", "Old data without category", testUser));
 
         GetWordsResponseDto response = controller.getAll("", 0, 10, "word", "asc");
 
@@ -194,7 +194,8 @@ class WordControllerTest extends IntegrationTest {
     @Test
     void getById_includesCategoryName() {
         WordResponseDto created = controller.create(
-                new CreateWordRequestDto("Desk", "Furniture", "Office"));
+                new CreateWordRequestDto("Desk", "Furniture", "Office"),
+                testUserPrincipal);
 
         WordResponseDto byId = controller.getById(created.id());
 
@@ -206,7 +207,7 @@ class WordControllerTest extends IntegrationTest {
 
     @Test
     void getById_wordWithoutCategory_returnsNullCategoryName() {
-        WordEntity saved = wordRepository.save(new WordEntity("Orphan", "No category row"));
+        WordEntity saved = wordRepository.save(new WordEntity("Orphan", "No category row", testUser));
 
         WordResponseDto byId = controller.getById(saved.getId());
 
