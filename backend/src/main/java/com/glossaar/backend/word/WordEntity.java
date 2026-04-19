@@ -1,6 +1,7 @@
 package com.glossaar.backend.word;
 
 import com.glossaar.backend.category.CategoryEntity;
+import com.glossaar.backend.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,8 +30,13 @@ public class WordEntity {
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
 
-    public WordEntity(String word, String explanation) {
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
+
+    public WordEntity(String word, String explanation, UserEntity user) {
         this.word = word;
         this.explanation = explanation;
+        this.user = user;
     }
 }

@@ -48,7 +48,7 @@ class WordControllerTest extends IntegrationTest {
             "Word category"
         );
 
-        controller.create(request);
+        controller.create(request, testUserPrincipal);
 
         List<WordEntity> words = wordRepository.findAll();
         List<CategoryEntity> categories = categoryRepository.findAll();
@@ -77,7 +77,7 @@ class WordControllerTest extends IntegrationTest {
             "Food"
         );
 
-        controller.create(request);
+        controller.create(request, testUserPrincipal);
 
         List<CategoryEntity> categories = categoryRepository.findAll();
         List<WordEntity> words = wordRepository.findAll();
@@ -98,7 +98,7 @@ class WordControllerTest extends IntegrationTest {
         );
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            controller.create(request);
+            controller.create(request, testUserPrincipal);
         });
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -119,7 +119,7 @@ class WordControllerTest extends IntegrationTest {
         );
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            controller.create(request);
+            controller.create(request, testUserPrincipal);
         });
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -130,6 +130,7 @@ class WordControllerTest extends IntegrationTest {
         assertEquals(0, categories.size());
         assertEquals(0, words.size());
     }
+
     @Test
     void create_categoryIsEmpty_throws() {
         CreateWordRequestDto request = new CreateWordRequestDto(
@@ -139,7 +140,7 @@ class WordControllerTest extends IntegrationTest {
         );
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            controller.create(request);
+            controller.create(request, testUserPrincipal);
         });
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
