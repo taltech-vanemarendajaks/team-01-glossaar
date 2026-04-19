@@ -1,5 +1,7 @@
 package com.glossaar.backend.word;
 
+import com.glossaar.backend.user.UserEntity;
+import com.glossaar.backend.user.UserPrincipal;
 import com.glossaar.backend.word.dto.CreateWordRequestDto;
 import com.glossaar.backend.word.dto.GetWordsResponseDto;
 import com.glossaar.backend.word.dto.UpdateWordRequestDto;
@@ -17,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -85,8 +88,9 @@ public class WordController {
     })
     @BadRequestApiResponse
     @InternalServerErrorApiResponse
-    public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req) {
-        WordEntity word = service.create(req.word(), req.explanation(), req.categoryName());
+    public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req,  @AuthenticationPrincipal UserPrincipal principal) {
+        UserEntity user = principal.getUser();
+        WordEntity word = service.create(req.word(), req.explanation(), req.categoryName(), user);
         return mapper.toResponseDto(word);
     }
 

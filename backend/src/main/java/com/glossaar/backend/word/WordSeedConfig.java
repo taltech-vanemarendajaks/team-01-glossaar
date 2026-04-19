@@ -4,6 +4,7 @@ import com.glossaar.backend.category.CategoryEntity;
 import com.glossaar.backend.category.CategoryRepository;
 import com.glossaar.backend.user.UserEntity;
 import com.glossaar.backend.user.UserRepository;
+import com.glossaar.backend.user.UserService;
 import com.glossaar.backend.userword.UserWordScoreEntity;
 import com.glossaar.backend.userword.UserWordScoreRepository;
 import org.slf4j.Logger;
@@ -40,10 +41,13 @@ public class WordSeedConfig {
     @Bean
     @ConditionalOnProperty(name = "app.words.seed.enabled", havingValue = "true", matchIfMissing = true)
     ApplicationRunner seedWordsIfEmpty(
-            WordRepository wordRepository,
-            CategoryRepository categoryRepository,
-            UserRepository userRepository,
-            UserWordScoreRepository userWordScoreRepository) {
+        WordRepository wordRepository,
+        CategoryRepository categoryRepository,
+        UserRepository userRepository,
+        UserWordScoreRepository userWordScoreRepository, UserService userService) {
+
+        UserEntity user = userRepository.findByUsernameIgnoreCase("TestUser")
+            .orElseGet(() -> userRepository.save(new UserEntity("TestUser", "testuser@local.glossaar")));
         return args -> {
             if (wordRepository.count() == 0) {
                 CategoryEntity categoryA = categoryRepository.findByName(CATEGORY_A)
@@ -56,8 +60,8 @@ public class WordSeedConfig {
                             boolean inCategoryA = i <= 50;
                             WordEntity word = new WordEntity(
                                     (inCategoryA ? "a_" : "b_") + loremWord(i),
-                                    loremExplanation(i)
-                            );
+                                    loremExplanation(i),
+                                    user);
                             word.setCategory(inCategoryA ? categoryA : categoryB);
                             return word;
                         })

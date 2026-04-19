@@ -94,8 +94,18 @@ public class UserService {
                 return oauthAccount.getUser();
             })
             .orElseGet(() -> {
-                log.info("Did not find a user with provider:" + provider + ", providerId:" + providerId);
+                log.info(String.format("Did not find a user with provider: %s, providerId: %s", provider, providerId ));
+
+                String email = getEmail(oAuth2User, provider);
+                String username = getUsername(oAuth2User, provider);
+
+                if (email == null) {
+                    email = provider + "_" + providerId + "@oauth.local";
+                }
+
                 UserEntity newUser = new UserEntity();
+                newUser.setEmail(email);
+                newUser.setUsername(username);
 
                 OAuthAccount account = new OAuthAccount(newUser, provider, providerId);
                 account.setAvatarUrl(avatarUrl);
@@ -103,8 +113,8 @@ public class UserService {
                 newUser.addOAuthAccount(account);
 
                 UserEntity savedUser = repository.save(newUser);
-                log.info("Created new user account id=" + savedUser.getId() + " with provider:" + provider
-                         + ", providerId:" + providerId);
+
+                log.info(String.format("Created new user account id= %s", savedUser.getId()));
 
                 return savedUser;
             });
@@ -135,5 +145,25 @@ public class UserService {
             case GITHUB -> Optional.ofNullable((String) attrs.get("avatar_url"));
             default -> Optional.empty();
         };
+    }
+
+    private String getEmail(OAuth2User user, OAuthProvider provider) {
+        if (provider == OAuthProvider.GOOGLE) {
+            return user.getAttribute("email");
+        }
+        if (provider == OAuthProvider.GITHUB) {
+            return user.getAttribute("email"); // may be null!
+        }
+        return null;
+    }
+
+    private String getUsername(OAuth2User user, OAuthProvider provider) {
+        if (provider == OAuthProvider.GOOGLE) {
+            return user.getAttribute("name");
+        }
+        if (provider == OAuthProvider.GITHUB) {
+            return user.getAttribute("login");
+        }
+        return "user";
     }
 }
