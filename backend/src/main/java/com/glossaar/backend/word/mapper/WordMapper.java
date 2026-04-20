@@ -10,7 +10,14 @@ import org.springframework.stereotype.Component;
 public class WordMapper {
 
     public WordResponseDto toResponseDto(WordEntity entity) {
-        return new WordResponseDto(entity.getId(), entity.getWord(), entity.getExplanation());
+        return new WordResponseDto(
+            entity.getId(),
+            entity.getWord(),
+            entity.getExplanation(),
+            entity.getCategory() != null
+                ? entity.getCategory().getName()
+                : null
+        );
     }
 
     public GetWordsResponseDto toGetWordsResponseDto(
