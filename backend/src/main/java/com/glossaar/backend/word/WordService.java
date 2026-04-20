@@ -2,6 +2,7 @@ package com.glossaar.backend.word;
 
 import com.glossaar.backend.category.CategoryEntity;
 import com.glossaar.backend.category.CategoryService;
+import com.glossaar.backend.user.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -84,7 +85,7 @@ public class WordService {
     }
 
     @Transactional
-    public WordEntity create(String word, String explanation, String categoryName) {
+    public WordEntity create(String word, String explanation, String categoryName, UserEntity user) {
         String validWord = requireNonBlank("word", word);
         String validExplanation = normalizeOptional(explanation);
         String validCategoryName = requireNonBlank("category", categoryName);
@@ -95,6 +96,7 @@ public class WordService {
         wordToBeAdded.setWord(validWord);
         wordToBeAdded.setExplanation(validExplanation);
         wordToBeAdded.setCategory(category);
+        wordToBeAdded.setUser(user);
 
         return repo.save(wordToBeAdded);
     }

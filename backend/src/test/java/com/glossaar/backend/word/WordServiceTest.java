@@ -44,6 +44,7 @@ class WordServiceTest extends IntegrationTest {
         WordEntity word = new WordEntity();
         word.setWord("Beef");
         word.setCategory(food);
+        word.setUser(testUser);
         wordRepository.save(word);
 
         List<WordEntity> words = wordService.getAllByCategoryIds(List.of(food.getId()));
@@ -60,6 +61,7 @@ class WordServiceTest extends IntegrationTest {
         WordEntity word = new WordEntity();
         word.setWord("Beef");
         word.setCategory(food);
+        word.setUser(testUser);
         wordRepository.save(word);
 
         List<WordEntity> words = wordService.getAllByCategoryIds(List.of(drink.getId()));
