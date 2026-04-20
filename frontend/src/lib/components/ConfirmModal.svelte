@@ -40,7 +40,7 @@
         aria-label={title}
         on:click={onBackdropClick}
     >
-        <div class="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-5 shadow-xl">
+        <div class="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
             <h3 class="text-lg font-semibold text-zinc-900">{title}</h3>
             <p class="mt-2 text-sm text-zinc-600">{message}</p>
 

@@ -1,17 +1,36 @@
-# TODO: use docker swarm for running multiple spring containers in production, #97
+name: glossaar
+
 services:
   frontend:
     # No ports exposed, as nginx will proxy requests to its default port 80
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/frontend:latest
     restart: unless-stopped
 
-  backend:
+  backend-1:
     # No ports exposed, as nginx will proxy requests to its default port 8080
     image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
     restart: unless-stopped
     env_file: ../backend/.env
     depends_on:
       - db
+
+  backend-2:
+    # No ports exposed, as nginx will proxy requests to its default port 8080
+    image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
+    restart: unless-stopped
+    env_file: ../backend/.env
+    depends_on:
+      - db
+      - backend-1 # ensure backend-1 will be the one running migrations
+
+  backend-3:
+    # No ports exposed, as nginx will proxy requests to its default port 8080
+    image: ghcr.io/taltech-vanemarendajaks/team-01-glossaar/backend:latest
+    restart: unless-stopped
+    env_file: ../backend/.env
+    depends_on:
+      - db
+      - backend-1 # ensure backend-1 will be the one running migrations
 
   nginx:
     image: nginx:latest
@@ -25,10 +44,16 @@ services:
     restart: unless-stopped
     networks:
       - default
+    depends_on:
+      - frontend
+      - backend-1
+      - backend-2
+      - backend-3
 
   db:
     image: postgres:18
     restart: unless-stopped
+    container_name: db
     env_file: ../backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql

@@ -169,14 +169,14 @@
     </div>
 
     {#if error}
-        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
     {/if}
 
     {#if success}
-        <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
+        <div class="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
     {/if}
 
-    <form on:submit|preventDefault={applyFilter} class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <form on:submit|preventDefault={applyFilter} class="rounded-md border border-zinc-200 bg-white p-4 shadow-sm">
         <h2 class="mb-3 text-base font-semibold">Search</h2>
         <div class="grid gap-3 sm:grid-cols-2">
             <input bind:value={listSearch} placeholder="search by word/explanation"

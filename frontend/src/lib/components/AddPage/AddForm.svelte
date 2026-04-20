@@ -1,13 +1,13 @@
 <svelte:window on:click={handleWindowClick} />
 
 <div class="flex justify-center">
-    <div class="w-full max-w-2xl p-6 rounded-xl border border-gray-200 bg-white shadow-lg">
+    <div class="w-full max-w-2xl p-6 rounded-xl border border-gray-200 bg-white shadow-sm">
 
         <div class="mb-5">
             <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
 
             {#if !addingNew && categories.length > 0}
-                <select class="flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base shadow-xs
+                <select class="flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm
                 ring-offset-background transition outline-none
                 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
                 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
@@ -99,7 +99,7 @@
                         </span>
                     </Button>
                     {#if ekiError || ekiExplanations.length > 0}
-                        <div class="absolute right-0 top-full mt-1 w-80 max-h-60 overflow-y-auto rounded-lg border bg-white p-2 shadow-md z-50">
+                        <div class="absolute right-0 top-full mt-1 w-80 max-h-60 overflow-y-auto rounded-lg border bg-white p-2 shadow-sm z-50">
                             {#if ekiError}
                                 <p class="text-xs text-red-500 p-2">{ekiError}</p>
                             {:else}
@@ -150,7 +150,7 @@
 
 {#if manageModalOpen}
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-xl max-w-md w-full">
+        <div class="bg-white p-6 rounded-md max-w-md w-full">
             <h2 class="text-lg font-semibold mb-4">Edit Categories</h2>
 
             <div class="space-y-2 max-h-80 overflow-y-auto">
