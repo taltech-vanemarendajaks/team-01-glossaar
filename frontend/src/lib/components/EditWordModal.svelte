@@ -60,7 +60,7 @@
         aria-label={title}
         on:click={onBackdropClick}
     >
-        <form class="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-5 shadow-xl" on:submit={onSubmit}>
+        <form class="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-5 shadow-sm" on:submit={onSubmit}>
             <h3 class="text-lg font-semibold text-zinc-900">{title}</h3>
 
             <div class="mt-4 grid gap-3">

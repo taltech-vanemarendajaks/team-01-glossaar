@@ -58,7 +58,7 @@
     onMount(() => loadQuestion());
 </script>
 
-<div class="space-y-6 py-2">
+<div class="space-y-6">
     {#if status === 'loading'}
         <div class="py-12 text-center text-sm text-zinc-500">Loading...</div>
 
