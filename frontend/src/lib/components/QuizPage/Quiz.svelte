@@ -2,7 +2,6 @@
     import { onMount } from 'svelte';
     import { Check } from '@lucide/svelte';
     import { GlossarClient, type QuizQuestion } from '$lib/api/glossarClient';
-    import { user } from '$lib/stores/auth';
 
     type Status = 'loading' | 'ready' | 'empty' | 'submitting' | 'error';
 
@@ -35,7 +34,7 @@
         selected = undefined;
         question = null;
         try {
-            question = await GlossarClient.getQuizQuestion($user!.user.id) ?? null;
+            question = await GlossarClient.getQuizQuestion() ?? null;
             status = question ? 'ready' : 'empty';
         } catch (e) {
             error = e instanceof Error ? e.message : 'Failed to load question';
@@ -48,7 +47,7 @@
         status = 'submitting';
         submitError = null;
         try {
-            await GlossarClient.submitQuizAnswer($user!.user.id, question.wordId, selected === question.correctIndex);
+            await GlossarClient.submitQuizAnswer(question.wordId, selected === question.correctIndex);
         } catch (e) {
             submitError = e instanceof Error ? e.message : 'Failed to save answer';
         }

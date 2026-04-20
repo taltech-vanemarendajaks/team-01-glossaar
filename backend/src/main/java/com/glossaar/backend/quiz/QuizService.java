@@ -93,9 +93,9 @@ public class QuizService {
     }
 
     @Transactional
-    public QuizSubmitResponseDto submitAnswers(QuizBatchAnswerRequestDto request) {
-        if (!userRepository.existsById(request.userId())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + request.userId());
+    public QuizSubmitResponseDto submitAnswers(Long userId, QuizBatchAnswerRequestDto request) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId);
         }
 
         if (request.answers().size() > MAX_SUBMIT_BATCH_SIZE) {
@@ -119,7 +119,7 @@ public class QuizService {
         for (QuizBatchAnswerRequestDto.QuizAnswerItemDto answer : request.answers()) {
             int delta = answer.correct() ? 1 : -1;
             int updatedRows = userWordScoreRepository.incrementScoreAndTouch(
-                    request.userId(),
+                    userId,
                     answer.wordId(),
                     delta,
                     now
@@ -127,7 +127,7 @@ public class QuizService {
             if (updatedRows == 0) {
                 throw new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "User-word score not found for userId=" + request.userId() + ", wordId=" + answer.wordId()
+                        "User-word score not found for userId=" + userId + ", wordId=" + answer.wordId()
                 );
             }
         }

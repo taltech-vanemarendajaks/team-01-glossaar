@@ -6,6 +6,7 @@ import com.glossaar.backend.quiz.dto.QuizSubmitResponseDto;
 import com.glossaar.backend.docs.BadRequestApiResponse;
 import com.glossaar.backend.docs.InternalServerErrorApiResponse;
 import com.glossaar.backend.docs.NotFoundApiResponse;
+import com.glossaar.backend.user.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,12 +52,6 @@ public class QuizController {
     @InternalServerErrorApiResponse
     public List<QuizQuestionResponseDto> getQuestions(
             @Parameter(
-                    description = "Existing user ID for whom the quiz is generated.",
-                    example = "1",
-                    required = true
-            )
-            @RequestParam Long userId,
-            @Parameter(
                     description = "How many quiz questions to return.",
                     schema = @Schema(type = "integer", defaultValue = "1", minimum = "1", maximum = "50"),
                     example = "1"
@@ -66,9 +62,10 @@ public class QuizController {
                     example = "1",
                     schema = @Schema(type = "integer", nullable = true)
             )
-            @RequestParam(required = false) Long categoryId
+            @RequestParam(required = false) Long categoryId,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        return quizService.getQuestionSet(userId, size, categoryId);
+        return quizService.getQuestionSet(principal.getId(), size, categoryId);
     }
 
     @PostMapping
@@ -91,7 +88,10 @@ public class QuizController {
     @BadRequestApiResponse
     @NotFoundApiResponse
     @InternalServerErrorApiResponse
-    public QuizSubmitResponseDto submitAnswers(@Valid @RequestBody QuizBatchAnswerRequestDto request) {
-        return quizService.submitAnswers(request);
+    public QuizSubmitResponseDto submitAnswers(
+            @Valid @RequestBody QuizBatchAnswerRequestDto request,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        return quizService.submitAnswers(principal.getId(), request);
     }
 }
