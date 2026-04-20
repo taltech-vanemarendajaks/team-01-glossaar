@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WordRepository extends JpaRepository<WordEntity, Long> {
 
@@ -18,6 +19,8 @@ public interface WordRepository extends JpaRepository<WordEntity, Long> {
 
     Page<WordEntity> findAllByUser(UserEntity user, Pageable pageable);
 
+    Optional<WordEntity> findByIdAndUser(Long id, UserEntity user);
+
     Page<WordEntity> findByUserAndWordContainingIgnoreCaseOrUserAndExplanationContainingIgnoreCase(
         UserEntity user1,
         String wordFilter,
@@ -25,4 +28,5 @@ public interface WordRepository extends JpaRepository<WordEntity, Long> {
         String explanationFilter,
         Pageable pageable
     );
+
 }

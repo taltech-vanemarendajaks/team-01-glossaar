@@ -90,7 +90,7 @@ public class WordController {
     })
     @BadRequestApiResponse
     @InternalServerErrorApiResponse
-    public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req,  @AuthenticationPrincipal UserPrincipal principal) {
+    public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req, @AuthenticationPrincipal UserPrincipal principal) {
         UserEntity user = principal.getUser();
         WordEntity word = service.create(req.word(), req.explanation(), req.categoryName(), user);
         return mapper.toResponseDto(word);
@@ -108,8 +108,11 @@ public class WordController {
     @BadRequestApiResponse
     @NotFoundApiResponse
     @InternalServerErrorApiResponse
-    public WordResponseDto patch(@PathVariable Long id, @Valid @RequestBody UpdateWordRequestDto req) {
-        return mapper.toResponseDto(service.patch(id, req.word(), req.explanation(), req.categoryName()));
+    public WordResponseDto patch(@PathVariable Long id,
+                                 @Valid @RequestBody UpdateWordRequestDto req,
+                                 @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        return mapper.toResponseDto(service.patch(id, req.word(), req.explanation(), req.categoryName(), principal.getUser()));
     }
 
     @DeleteMapping("/{id}")
@@ -124,7 +127,7 @@ public class WordController {
     })
     @NotFoundApiResponse
     @InternalServerErrorApiResponse
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public void delete(@PathVariable Long id,@AuthenticationPrincipal UserPrincipal principal) {
+        service.delete(id, principal.getUser());
     }
 }

@@ -104,8 +104,10 @@ public class WordService {
     }
 
     @Transactional
-    public WordEntity patch(Long id, String word, String explanation, String categoryName) {
-        WordEntity entity = getById(id);
+    public WordEntity patch(Long id, String word, String explanation, String categoryName, UserEntity user) {
+        WordEntity entity = repo.findByIdAndUser(id, user)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id));
+
 
         if (word != null) {
             entity.setWord(requireNonBlank("word", word));
@@ -122,11 +124,11 @@ public class WordService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (!repo.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id);
-        }
-        repo.deleteById(id);
+    public void delete(Long id, UserEntity user) {
+        WordEntity entity = repo.findByIdAndUser(id, user)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id));
+
+        repo.delete(entity);
     }
 
     private static String requireNonBlank(String field, String value) {
