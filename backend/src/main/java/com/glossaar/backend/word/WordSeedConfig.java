@@ -44,16 +44,17 @@ public class WordSeedConfig {
         WordRepository wordRepository,
         CategoryRepository categoryRepository,
         UserRepository userRepository,
-        UserWordScoreRepository userWordScoreRepository, UserService userService) {
-
+        UserWordScoreRepository userWordScoreRepository,
+        UserService userService
+    ) {
         UserEntity user = userRepository.findByUsernameIgnoreCase("TestUser")
             .orElseGet(() -> userRepository.save(new UserEntity("TestUser", "testuser@local.glossaar")));
         return args -> {
             if (wordRepository.count() == 0) {
-                CategoryEntity categoryA = categoryRepository.findByName(CATEGORY_A)
-                        .orElseGet(() -> categoryRepository.save(new CategoryEntity(CATEGORY_A)));
-                CategoryEntity categoryB = categoryRepository.findByName(CATEGORY_B)
-                        .orElseGet(() -> categoryRepository.save(new CategoryEntity(CATEGORY_B)));
+                CategoryEntity categoryA = categoryRepository.findByNameAndUser(CATEGORY_A, user)
+                        .orElseGet(() -> categoryRepository.save(new CategoryEntity(CATEGORY_A, user)));
+                CategoryEntity categoryB = categoryRepository.findByNameAndUser(CATEGORY_B, user)
+                        .orElseGet(() -> categoryRepository.save(new CategoryEntity(CATEGORY_B, user)));
 
                 List<WordEntity> seedWords = IntStream.rangeClosed(1, 100)
                         .mapToObj(i -> {

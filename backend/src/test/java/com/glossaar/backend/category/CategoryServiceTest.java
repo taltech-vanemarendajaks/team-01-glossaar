@@ -38,30 +38,30 @@ class CategoryServiceTest extends IntegrationTest {
 
     @Test
     void getAll_returnsAllCategories_sortedByNameIgnoringCase() {
-        CategoryEntity first = service.create("Tech");
-        CategoryEntity second = service.create("gardening");
-        CategoryEntity third = service.create("Cooking");
+        CategoryEntity first = service.create("Tech", testUser);
+        CategoryEntity second = service.create("gardening", testUser);
+        CategoryEntity third = service.create("Cooking", testUser);
 
-        assertEquals(List.of(third, second, first), service.getAll());
+        assertEquals(List.of(third, second, first), service.getAll(testUser));
     }
 
     @Test
     void getById_returnsActualCategory() {
-        CategoryEntity first = service.create("Tech");
-        CategoryEntity second = service.create("Gardening");
-        CategoryEntity third = service.create("Cooking");
+        CategoryEntity first = service.create("Tech", testUser);
+        CategoryEntity second = service.create("Gardening", testUser);
+        CategoryEntity third = service.create("Cooking", testUser);
 
-        assertEquals(third, service.getById(third.getId()));
+        assertEquals(third, service.getById(third.getId(), testUser));
     }
 
     @Test
     void getById_throwsWhenNotFound() {
-        service.create("Tech");
-        service.create("Gardening");
-        service.create("Cooking");
+        service.create("Tech", testUser);
+        service.create("Gardening", testUser);
+        service.create("Cooking", testUser);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            service.getById(-2L);
+            service.getById(-1L, testUser);
         });
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -70,15 +70,15 @@ class CategoryServiceTest extends IntegrationTest {
 
     @Test
     void create_savesCategoryWithUpperCase() {
-        CategoryEntity cat = service.create("tech");
+        CategoryEntity cat = service.create("tech", testUser);
         assertThat(cat.getId()).isNotNull();
         assertThat(cat.getName()).isEqualTo("Tech");
     }
 
     @Test
     void create_reusesExistingCategoryIfPresent() {
-        CategoryEntity first = service.create("Tech");
-        CategoryEntity second = service.create("Tech");
+        CategoryEntity first = service.create("Tech", testUser);
+        CategoryEntity second = service.create("Tech", testUser);
 
         assertThat(second.getId()).isEqualTo(first.getId());
     }
@@ -86,7 +86,7 @@ class CategoryServiceTest extends IntegrationTest {
     @Test
     void create_throwsWhenBlankName() {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            service.create("      ");
+            service.create("      ", testUser);
         });
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);

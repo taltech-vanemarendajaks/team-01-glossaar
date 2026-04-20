@@ -39,7 +39,7 @@ class WordServiceTest extends IntegrationTest {
 
     @Test
     void getAllByCategoryIds() {
-        CategoryEntity food = categoryService.create("Food");
+        CategoryEntity food = categoryService.create("Food", testUser);
 
         WordEntity word = new WordEntity();
         word.setWord("Beef");
@@ -47,7 +47,7 @@ class WordServiceTest extends IntegrationTest {
         word.setUser(testUser);
         wordRepository.save(word);
 
-        List<WordEntity> words = wordService.getAllByCategoryIds(List.of(food.getId()));
+        List<WordEntity> words = wordService.getAllByCategoryIds(List.of(food.getId()), testUser);
 
         assertEquals(1, words.size());
         assertEquals("Beef", words.getFirst().getWord());
@@ -55,8 +55,8 @@ class WordServiceTest extends IntegrationTest {
 
     @Test
     void getAllByCategoryIds_noWordsReferenceCategory_returnsEmptyList() {
-        CategoryEntity food = categoryService.create("Food");
-        CategoryEntity drink = categoryService.create("Drink");
+        CategoryEntity food = categoryService.create("Food", testUser);
+        CategoryEntity drink = categoryService.create("Drink", testUser);
 
         WordEntity word = new WordEntity();
         word.setWord("Beef");
@@ -64,7 +64,7 @@ class WordServiceTest extends IntegrationTest {
         word.setUser(testUser);
         wordRepository.save(word);
 
-        List<WordEntity> words = wordService.getAllByCategoryIds(List.of(drink.getId()));
+        List<WordEntity> words = wordService.getAllByCategoryIds(List.of(drink.getId()), testUser);
 
         assertEquals(0, words.size());
     }

@@ -44,10 +44,14 @@ class CategoryControllerTest extends IntegrationTest {
     }
     @Test
     void getAll_returnsAllCategories() {
-        CategoryEntity first = categoryService.create("Tech");
-        CategoryEntity second = categoryService.create("Gardening");
-        CategoryEntity third = categoryService.create("ABC");
-        CategoryEntity fourth = categoryService.create("Cooking");
+        CategoryEntity first = categoryService.create("Tech", testUser);
+        first.setUser(testUser);
+        CategoryEntity second = categoryService.create("Gardening", testUser);
+        second.setUser(testUser);
+        CategoryEntity third = categoryService.create("ABC", testUser);
+        third.setUser(testUser);
+        CategoryEntity fourth = categoryService.create("Cooking", testUser);
+        fourth.setUser(testUser);
 
         CategoryResponseDto categoryResponseDto1 = new CategoryResponseDto(third.getId(), third.getName(), 0L);
         CategoryResponseDto categoryResponseDto2 = new CategoryResponseDto(fourth.getId(), fourth.getName(), 0L);
@@ -58,22 +62,22 @@ class CategoryControllerTest extends IntegrationTest {
                                                            categoryResponseDto2,
                                                            categoryResponseDto3,
                                                            categoryResponseDto4);
-        assertEquals(expectedResult, controller.getAll());
+        assertEquals(expectedResult, controller.getAll(testUserPrincipal));
     }
 
     @Test
     void getAll_returnsEmptyListIfNoCategoryFound() {
-        assertEquals(List.of(), controller.getAll());
+        assertEquals(List.of(), controller.getAll(testUserPrincipal));
     }
 
     @Test
     void update_success(){
-        CategoryEntity existingCategory = categoryService.create("Cooking");
+        CategoryEntity existingCategory = categoryService.create("Cooking", testUser);
         List<CategoryEntity> allCategoriesBeforeUpdate = categoryRepository.findAll();
         assertEquals(1, allCategoriesBeforeUpdate.size());
         assertEquals(existingCategory, allCategoriesBeforeUpdate.get(0));
 
-        controller.update(existingCategory.getId(), new CategoryUpdateDto("New name"));
+        controller.update(existingCategory.getId(), new CategoryUpdateDto("New name"),testUserPrincipal);
 
         List<CategoryEntity> allCategoriesAfterUpdate = categoryRepository.findAll();
         assertEquals(1, allCategoriesAfterUpdate.size());
@@ -84,13 +88,13 @@ class CategoryControllerTest extends IntegrationTest {
 
     @Test
     void update_nameIsEmpty(){
-        CategoryEntity existingCategory = categoryService.create("Cooking");
-        List<CategoryEntity> allCategoriesBeforeUpdate = categoryRepository.findAll();
+        CategoryEntity existingCategory = categoryService.create("Cooking", testUser);
+        List<CategoryEntity> allCategoriesBeforeUpdate = categoryRepository.findAllByUserOrdered(testUser);
         assertEquals(1, allCategoriesBeforeUpdate.size());
         assertEquals(existingCategory, allCategoriesBeforeUpdate.get(0));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            controller.update(existingCategory.getId(), new CategoryUpdateDto("   "));
+            controller.update(existingCategory.getId(), new CategoryUpdateDto("   "), testUserPrincipal);
         });
 
         assertEquals("Category name cannot be empty", exception.getMessage());
@@ -102,12 +106,12 @@ class CategoryControllerTest extends IntegrationTest {
 
     @Test
     void delete(){
-        CategoryEntity existingCategory = categoryService.create("Cooking");
+        CategoryEntity existingCategory = categoryService.create("Cooking", testUser);
         List<CategoryEntity> allCategoriesBeforeUpdate = categoryRepository.findAll();
         assertEquals(1, allCategoriesBeforeUpdate.size());
         assertEquals(existingCategory, allCategoriesBeforeUpdate.get(0));
 
-        controller.delete(existingCategory.getId());
+        controller.delete(existingCategory.getId(), testUserPrincipal);
 
         List<CategoryEntity> allCategoriesAfterUpdate = categoryRepository.findAll();
         assertEquals(0, allCategoriesAfterUpdate.size());
@@ -115,7 +119,7 @@ class CategoryControllerTest extends IntegrationTest {
 
     @Test
     void delete_wordIsUsingCategory_canNotBeDeleted(){
-        CategoryEntity food = categoryService.create("Food");
+        CategoryEntity food = categoryService.create("Food", testUser);
         List<CategoryEntity> allCategoriesBeforeDelete = categoryRepository.findAll();
         assertEquals(1, allCategoriesBeforeDelete.size());
         assertEquals(food, allCategoriesBeforeDelete.getFirst());
@@ -125,7 +129,7 @@ class CategoryControllerTest extends IntegrationTest {
         wordRepository.save(word);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            controller.delete(food.getId());
+            controller.delete(food.getId(), testUserPrincipal);
         });
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);

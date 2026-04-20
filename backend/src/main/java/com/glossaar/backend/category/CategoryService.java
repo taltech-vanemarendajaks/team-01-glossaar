@@ -1,5 +1,6 @@
 package com.glossaar.backend.category;
 
+import com.glossaar.backend.user.UserEntity;
 import com.glossaar.backend.word.WordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -12,33 +13,34 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-
     private final CategoryRepository repository;
     private final WordRepository wordRepository;
 
-    public List<CategoryEntity> getAll() {
-        return repository.findAllOrderByNameIgnoreCase();
+    public List<CategoryEntity> getAll(UserEntity user) {
+        return repository.findAllByUserOrdered(user);
     }
 
-    public CategoryEntity getById(Long id) {
-        return repository.findById(id)
+
+    public CategoryEntity getById(Long id, UserEntity user) {
+        return repository.findByIdAndUser(id, user)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
                 "Category not found: " + id
             ));
     }
 
+
     @Transactional
-    public CategoryEntity create(String name) {
+    public CategoryEntity create(String name, UserEntity user) {
         String normalized = normalizeName("name", name);
 
-        return repository.findByName(normalized)
-            .orElseGet(() -> repository.save(new CategoryEntity(normalized)));
+        return repository.findByNameAndUser(normalized, user)
+            .orElseGet(() -> repository.save(new CategoryEntity(normalized, user)));
     }
 
     @Transactional
-    public void update(Long id, String name) {
-        CategoryEntity category = getById(id);
+    public void update(Long id, String name, UserEntity user) {
+        CategoryEntity category = getById(id, user);
 
         String newName = name.trim();
         if (newName.isEmpty()) {
@@ -68,12 +70,14 @@ public class CategoryService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found: " + id);
-        }
+    public void delete(Long id, UserEntity user) {
+        CategoryEntity category = repository.findByIdAndUser(id, user)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Category not found: " + id
+            ));
 
-        long wordCount = wordRepository.countByCategory_Id(id);
+        long wordCount = wordRepository.countByCategory_IdAndUser(id, user);
 
         if (wordCount > 0) {
             throw new ResponseStatusException(
@@ -82,6 +86,6 @@ public class CategoryService {
             );
         }
 
-        repository.deleteById(id);
+        repository.delete(category);
     }
 }

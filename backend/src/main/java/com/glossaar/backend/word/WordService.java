@@ -79,11 +79,11 @@ public class WordService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id));
     }
 
-    public List<WordEntity> getAllByCategoryIds(List<Long> categoryIds) {
+    public List<WordEntity> getAllByCategoryIds(List<Long> categoryIds, UserEntity user) {
         if (categoryIds == null || categoryIds.isEmpty()) {
             return List.of();
         }
-        return repo.findAllByCategoryIds(categoryIds);
+        return repo.findAllByCategoryIdsAndUser(categoryIds, user);
     }
 
     @Transactional
@@ -92,7 +92,7 @@ public class WordService {
         String validExplanation = normalizeOptional(explanation);
         String validCategoryName = requireNonBlank("category", categoryName);
 
-        CategoryEntity category = categoryService.create(validCategoryName);
+        CategoryEntity category = categoryService.create(validCategoryName, user);
 
         WordEntity wordToBeAdded = new WordEntity();
         wordToBeAdded.setWord(validWord);
@@ -117,7 +117,7 @@ public class WordService {
         }
 
         String validCategoryName = requireNonBlank("category", categoryName);
-        CategoryEntity category = categoryService.create(validCategoryName);
+        CategoryEntity category = categoryService.create(validCategoryName, user);
         entity.setCategory(category);
 
         return repo.save(entity);

@@ -71,7 +71,7 @@ class WordControllerTest extends IntegrationTest {
 
     @Test
     void create_creatingWordWithExistingCategoryDoesNotDuplicateCategory() {
-        CategoryEntity existing = categoryRepository.save(new CategoryEntity("Food"));
+        CategoryEntity existing = categoryRepository.save(new CategoryEntity("Food", testUser));
 
         CreateWordRequestDto request = new CreateWordRequestDto(
             "Chicken",

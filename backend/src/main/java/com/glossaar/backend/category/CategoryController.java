@@ -2,6 +2,8 @@ package com.glossaar.backend.category;
 
 import com.glossaar.backend.category.dto.CategoryResponseDto;
 import com.glossaar.backend.category.dto.CategoryUpdateDto;
+import com.glossaar.backend.user.UserEntity;
+import com.glossaar.backend.user.UserPrincipal;
 import com.glossaar.backend.word.WordEntity;
 import com.glossaar.backend.word.WordService;
 import com.glossaar.backend.docs.BadRequestApiResponse;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -39,12 +42,13 @@ public class CategoryController {
     })
     @BadRequestApiResponse
     @InternalServerErrorApiResponse
-    public List<CategoryResponseDto> getAll() {
-        List<CategoryEntity> categories = categoryService.getAll();
+    public List<CategoryResponseDto> getAll( @AuthenticationPrincipal UserPrincipal principal) {
+        UserEntity user = principal.getUser();
+        List<CategoryEntity> categories = categoryService.getAll(user);
 
         List<Long> categoryIds = categories.stream().map(CategoryEntity::getId).toList();
 
-        List<WordEntity> wordsForCategories = wordService.getAllByCategoryIds(categoryIds);
+        List<WordEntity> wordsForCategories = wordService.getAllByCategoryIds(categoryIds, user);
 
         List<CategoryResponseDto> response = new ArrayList<>();
         for (CategoryEntity category : categories) {
@@ -69,8 +73,8 @@ public class CategoryController {
     @BadRequestApiResponse
     @NotFoundApiResponse
     @InternalServerErrorApiResponse
-    public void update(@PathVariable Long id, @RequestBody CategoryUpdateDto dto) {
-        categoryService.update(id, dto.name());
+    public void update(@PathVariable Long id, @RequestBody CategoryUpdateDto dto,  @AuthenticationPrincipal UserPrincipal principal) {
+        categoryService.update(id, dto.name(), principal.getUser());
     }
 
     @DeleteMapping("/{id}")
@@ -95,7 +99,7 @@ public class CategoryController {
     @BadRequestApiResponse
     @NotFoundApiResponse
     @InternalServerErrorApiResponse
-    public void delete(@PathVariable Long id) {
-        categoryService.delete(id);
+    public void delete(@PathVariable Long id, @AuthenticationPrincipal UserPrincipal principal) {
+        categoryService.delete(id, principal.getUser());
     }
 }

@@ -12,10 +12,17 @@ import java.util.Optional;
 
 public interface WordRepository extends JpaRepository<WordEntity, Long> {
 
-    @Query("SELECT w FROM WordEntity w WHERE w.category.id IN :categoryIds")
-    List<WordEntity> findAllByCategoryIds(@Param("categoryIds") List<Long> categoryIds);
+    @Query("""
+    SELECT w FROM WordEntity w
+    WHERE w.category.id IN :categoryIds
+    AND w.user = :user
+""")
+    List<WordEntity> findAllByCategoryIdsAndUser(
+        @Param("categoryIds") List<Long> categoryIds,
+        @Param("user") UserEntity user
+    );
 
-    long countByCategory_Id(Long categoryId);
+    long countByCategory_IdAndUser(Long categoryId, UserEntity user);
 
     Page<WordEntity> findAllByUser(UserEntity user, Pageable pageable);
 
