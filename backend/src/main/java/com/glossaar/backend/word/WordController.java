@@ -55,9 +55,11 @@ public class WordController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "word") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        Page<WordEntity> result = service.getAll(search, page, size, sortBy, sortDir);
+        UserEntity user = principal.getUser();
+        Page<WordEntity> result = service.getAll(user, search, page, size, sortBy, sortDir);
         return mapper.toGetWordsResponseDto(result, search, sortBy, sortDir);
     }
 

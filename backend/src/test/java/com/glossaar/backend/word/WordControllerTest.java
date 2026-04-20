@@ -159,7 +159,7 @@ class WordControllerTest extends IntegrationTest {
         controller.create(new CreateWordRequestDto("Car", "Vehicle", "Transport" ), testUserPrincipal);
         controller.create(new CreateWordRequestDto("Apple", "Fruit", "Food"), testUserPrincipal);
 
-        GetWordsResponseDto response = controller.getAll("", 0, 10, "word", "asc");
+        GetWordsResponseDto response = controller.getAll("", 0, 10, "word", "asc", testUserPrincipal);
 
         assertThat(response.items()).hasSize(2);
         assertThat(response.items().get(0).word()).isEqualTo("Apple");
@@ -173,7 +173,7 @@ class WordControllerTest extends IntegrationTest {
         controller.create(new CreateWordRequestDto("Banana", "Yellow", "Food"), testUserPrincipal);
         controller.create(new CreateWordRequestDto("Train", "Rail", "Transport"), testUserPrincipal);
 
-        GetWordsResponseDto response = controller.getAll("Banana", 0, 10, "word", "asc");
+        GetWordsResponseDto response = controller.getAll("Banana", 0, 10, "word", "asc", testUserPrincipal);
 
         assertThat(response.items()).hasSize(1);
         assertThat(response.items().getFirst().word()).isEqualTo("Banana");
@@ -184,7 +184,7 @@ class WordControllerTest extends IntegrationTest {
     void getAll_wordWithoutCategory_returnsNullCategoryName() {
         wordRepository.save(new WordEntity("Legacy", "Old data without category", testUser));
 
-        GetWordsResponseDto response = controller.getAll("", 0, 10, "word", "asc");
+        GetWordsResponseDto response = controller.getAll("", 0, 10, "word", "asc", testUserPrincipal);
 
         assertThat(response.items()).hasSize(1);
         assertThat(response.items().getFirst().word()).isEqualTo("Legacy");

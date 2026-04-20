@@ -22,7 +22,7 @@ public class WordService {
     private final WordRepository repo;
     private final CategoryService categoryService;
 
-    public Page<WordEntity> getAll(String search, int page, int size, String sortBy, String sortDir) {
+    public Page<WordEntity> getAll(UserEntity user, String search, int page, int size, String sortBy, String sortDir) {
         if (page < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page must be >= 0");
         }
@@ -36,13 +36,15 @@ public class WordService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, normalizedSortBy));
 
         if (normalizedSearch.isEmpty()) {
-            return repo.findAll(pageable);
+            return repo.findAllByUser(user, pageable);
         }
 
-        return repo.findByWordContainingIgnoreCaseOrExplanationContainingIgnoreCase(
-                normalizedSearch,
-                normalizedSearch,
-                pageable
+        return repo.findByUserAndWordContainingIgnoreCaseOrUserAndExplanationContainingIgnoreCase(
+            user,
+            normalizedSearch,
+            user,
+            normalizedSearch,
+            pageable
         );
     }
 
