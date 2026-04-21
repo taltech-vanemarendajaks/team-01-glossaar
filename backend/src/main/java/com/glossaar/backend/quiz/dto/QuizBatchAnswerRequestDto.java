@@ -9,9 +9,6 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record QuizBatchAnswerRequestDto(
-        @NotNull(message = "userId is required")
-        @Schema(description = "User ID submitting the answers.", example = "1")
-        Long userId,
         @NotNull(message = "answers are required")
         @Size(min = 1, max = 100, message = "answers must contain between 1 and 100 items")
         @ArraySchema(

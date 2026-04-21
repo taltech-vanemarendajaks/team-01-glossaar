@@ -165,8 +165,10 @@ export const GlossarClient = {
         return response.json();
     },
 
-    async getQuizQuestion(userId: number): Promise<QuizQuestion> {
-        const response = await fetch(`${API_BASE}/quiz?userId=${userId}&size=1`);
+    async getQuizQuestion(): Promise<QuizQuestion> {
+        const response = await fetch(`${API_BASE}/quiz?size=1`, {
+            credentials: 'include'
+        });
         if (!response.ok) {
             throw new Error(`Failed to fetch quiz question: ${response.status}`);
         }
@@ -174,13 +176,12 @@ export const GlossarClient = {
         return questions[0];
     },
 
-    async submitQuizAnswer(userId: number, wordId: number, correct: boolean): Promise<void> {
+    async submitQuizAnswer(wordId: number, correct: boolean): Promise<void> {
         const response = await fetch(`${API_BASE}/quiz`, {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                userId,
                 answers: [{ wordId, correct }]
             })
         });
