@@ -163,11 +163,7 @@
 
 </script>
 
-<div class="mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
-    <div class="mb-6">
-        <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">Word list</h1>
-    </div>
-
+<div>
     {#if error}
         <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
     {/if}
