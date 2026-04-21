@@ -41,14 +41,12 @@
                             }
                         }}
                 >
-                    <span class="flex items-center gap-2">
-                        {#if addingNew}
-                            Cancel
-                        {:else}
-                            <Plus class="w-4 h-4"/>
-                            Add new
-                        {/if}
-                    </span>
+                    {#if addingNew}
+                        Cancel
+                    {:else}
+                        <Plus class="w-4 h-4"/>
+                        Add new
+                    {/if}
                 </Button>
 
                 <Button
@@ -57,10 +55,8 @@
                         size="sm"
                         on:click={() => (manageModalOpen = true)}
                 >
-                    <span class="flex items-center gap-2">
-                        <Pencil class="w-4 h-4"/>
-                        Manage categories
-                    </span>
+                    <Pencil class="w-4 h-4"/>
+                    Manage categories
                 </Button>
             </div>
         </div>
@@ -84,19 +80,17 @@
                     <Button
                             type="button"
                             variant="outline"
-                            size="sm"
+                            size="xs"
                             disabled={!word.trim() || ekiLoading}
                             on:click={fetchFromEki}
                     >
-                        <span class="flex items-center gap-1.5 text-xs">
-                            {#if ekiLoading}
-                                <BookOpen class="w-3.5 h-3.5 animate-spin" />
-                                Loading…
-                            {:else}
-                                <BookOpen class="w-3.5 h-3.5" />
-                                EKI explanation (ET)
-                            {/if}
-                        </span>
+                        {#if ekiLoading}
+                            <Loader class="w-4 h-4 animate-spin" />
+                            Loading…
+                        {:else}
+                            <BookOpen class="w-4 h-4" />
+                            EKI explanation (ET)
+                        {/if}
                     </Button>
                     {#if ekiError || ekiExplanations.length > 0}
                         <div class="absolute right-0 top-full mt-1 w-80 max-h-60 overflow-y-auto rounded-lg border bg-white p-2 shadow-sm z-50">
@@ -113,7 +107,7 @@
                                     {#each ekiGroup.explanations as explanation, j (j)}
                                         <button
                                             type="button"
-                                            class="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                                            class="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors cursor-pointer"
                                             on:click={() => selectExplanation(explanation)}
                                         >
                                             <span class="text-gray-400 mr-1">{j + 1}.</span>{explanation}
@@ -133,7 +127,7 @@
             />
         </div>
 
-        <div class="mt-6 flex justify-center">
+        <div class="mt-6 flex justify-end">
             <Button
                     variant="default"
                     size="lg"
@@ -165,9 +159,11 @@
                             Save
                         </Button>
 
+                        <!-- TODO: show some tooltip of why it can't be deleted -->
+                        <!-- TODO: unify remove icon button with list view -->
                         <Button
-                                size="sm"
-                                variant="outline"
+                                size="icon-lg"
+                                variant="ghost"
                                 disabled={category.wordCount > 0}
                                 on:click={() => deleteCategory(category)}
                         >
@@ -199,7 +195,7 @@
     import {Button} from '$lib/components/ui/button';
     import {GlossarClient, type ExplanationGroup} from '$lib/api/glossarClient';
     import {fetchCategories} from '$lib/services/categoryService';
-    import {Plus, Pencil, Trash2, BookOpen} from '@lucide/svelte';
+    import {Plus, Pencil, Trash2, BookOpen, Loader} from '@lucide/svelte';
     import {onMount} from 'svelte';
 
     let word = '';
@@ -217,8 +213,6 @@
 
     let manageModalOpen = false;
 
-    $: categoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
-
     onMount(async () => {
         try {
             await reloadCategories();
@@ -233,14 +227,14 @@
 
     async function saveCategory(category: { id: number; name: string }) {
         if (!category.id) {
-            alert('Invalid category ID');
+            alert('Invalid category ID'); // TODO: replace with a nicer notification
             return;
         }
         try {
             await GlossarClient.updateCategory(category.id, category.name);
-            alert('Category updated!');
+            alert('Category updated!'); // TODO: replace with a nicer notification
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to update category');
+            alert(err instanceof Error ? err.message : 'Failed to update category'); // TODO: replace with a nicer notification
         }
     }
 
@@ -249,7 +243,7 @@
         try {
             await reloadCategories();
         } catch (err) {
-            alert('Failed to reload categories');
+            alert('Failed to reload categories'); // TODO: replace with a nicer notification
         }
     }
 
@@ -312,27 +306,27 @@
             try {
                 await reloadCategories();
             } catch (err) {
-                alert('Failed to reload categories');
+                alert('Failed to reload categories'); // TODO: replace with a nicer notification
             }
 
-            alert('Word saved successfully!');
+            alert('Word saved successfully!'); // TODO: replace with a nicer notification
         } catch (err) {
-            alert('Error saving word.');
+            alert('Error saving word.'); // TODO: replace with a nicer notification
         } finally {
             loading = false;
         }
     }
 
     async function deleteCategory(category: { id: number; name: string }) {
-        if (!confirm(`Delete category "${category.name}"?`)) return;
+        if (!confirm(`Delete category "${category.name}"?`)) return; // TODO: replace with a nicer confirmation dialog
 
         try {
             await GlossarClient.deleteCategory(category.id);
             await reloadCategories();
 
-            alert('Category deleted!');
+            alert('Category deleted!'); // TODO: replace with a nicer notification
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete category');
+            alert(err instanceof Error ? err.message : 'Failed to delete category'); // TODO: replace with a nicer notification
         }
     }
 

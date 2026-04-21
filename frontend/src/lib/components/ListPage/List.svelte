@@ -232,6 +232,7 @@
                                 >
                                     <Pencil class="h-4 w-4"/>
                                 </button>
+                                <!-- TODO: unify remove icon button with add view -->
                                 <button
                                         type="button"
                                         class="rounded-lg p-2 text-zinc-500 transition hover:bg-red-50 hover:text-red-600"
