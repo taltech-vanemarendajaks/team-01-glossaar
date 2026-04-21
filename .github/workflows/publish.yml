@@ -62,11 +62,11 @@ jobs:
             ghcr.io/taltech-vanemarendajaks/team-01-glossaar/${{ matrix.component }}:${{ github.sha }}
 
   deploy-to-server:
-    strategy:
-      matrix:
-        component: [frontend, backend]
+    # strategy:
+    #   matrix:
+    #     component: [frontend, backend]
     needs: build-and-publish-to-ghcr
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
-    with:
-      component: ${{ matrix.component }}
+    # with:
+    #   component: ${{ matrix.component }}
