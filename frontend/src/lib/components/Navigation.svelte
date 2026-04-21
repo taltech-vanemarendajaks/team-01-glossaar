@@ -1,7 +1,6 @@
 <script lang="ts">
     import * as NavigationMenu from '$lib/components/ui/navigation-menu';
-    import { cn } from '$lib/utils';
-    import type { HTMLAttributes } from 'svelte/elements';
+    import Button from '$lib/components/ui/button/button.svelte';
     import { page } from '$app/stores'; // TODO: deprecated
     import { isAuthenticated } from '$lib/stores/auth';
 
@@ -12,25 +11,20 @@
         { name: 'Quiz', href: '/quiz', authenticated: true },
     ];
 
-    type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
+    type ListItemProps = {
         title: string;
         href: string;
+        active: boolean;
     };
 </script>
 
-{#snippet ListItem({ title, href, class: className }: ListItemProps)}
+{#snippet ListItem({ title, href, active }: ListItemProps)}
     <NavigationMenu.Item>
         <NavigationMenu.Link>
             {#snippet child()}
-                <a
-                    {href}
-                    class={cn(
-                        'box-border block rounded-md p-2 leading-none no-underline hover:bg-accent hover:text-accent-foreground active:border-primary border border-transparent',
-                        className
-                    )}
-                >
-                    <span class="text-sm leading-none font-medium">{title}</span>
-                </a>
+                <Button {href} variant="ghost" size="sm" className={`border box-border border-transparent ${active ? 'border-zinc' : ''}`}>
+                    {title}
+                </Button>
             {/snippet}
         </NavigationMenu.Link>
     </NavigationMenu.Item>
@@ -42,7 +36,7 @@
             {@render ListItem({
                 title: item.name,
                 href: item.href,
-                class: $page.url.pathname === item.href ? 'border-default' : ''
+                active: $page.url.pathname === item.href
             })}
         {/each}
     </NavigationMenu.List>
