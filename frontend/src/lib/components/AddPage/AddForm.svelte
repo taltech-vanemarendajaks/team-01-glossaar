@@ -44,7 +44,7 @@
                     {#if addingNew}
                         Cancel
                     {:else}
-                        <Plus class="w-4 h-4"/>
+                        <Plus />
                         Add new
                     {/if}
                 </Button>
@@ -55,7 +55,7 @@
                         size="sm"
                         on:click={() => (manageModalOpen = true)}
                 >
-                    <Pencil class="w-4 h-4"/>
+                    <Pencil />
                     Manage categories
                 </Button>
             </div>
@@ -85,10 +85,10 @@
                             on:click={fetchFromEki}
                     >
                         {#if ekiLoading}
-                            <Loader class="w-4 h-4 animate-spin" />
+                            <Loader class="animate-spin" />
                             Loading…
                         {:else}
-                            <BookOpen class="w-4 h-4" />
+                            <BookOpen />
                             EKI explanation (ET)
                         {/if}
                     </Button>
@@ -141,7 +141,7 @@
     </div>
 </div>
 
-
+<!-- TODO: decouple to another component  -->
 {#if manageModalOpen}
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-md max-w-md w-full">
@@ -160,16 +160,14 @@
                         </Button>
 
                         <!-- TODO: show some tooltip of why it can't be deleted -->
-                        <!-- TODO: unify remove icon button with list view -->
                         <Button
-                                size="icon-lg"
-                                variant="ghost"
-                                disabled={category.wordCount > 0}
-                                on:click={() => deleteCategory(category)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                            disabled={category.wordCount > 0}
+                            on:click={() => deleteCategory(category)}
                         >
-                             <span class="border-red-500 text-red-600 hover:bg-red-50">
-                                 <Trash2 class="w-4 h-4"/>
-                             </span>
+                            <Trash2 />
                         </Button>
 
                     </div>
