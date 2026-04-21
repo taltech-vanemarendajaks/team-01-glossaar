@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { Check } from '@lucide/svelte';
     import { GlossarClient, type QuizQuestion } from '$lib/api/glossarClient';
+    import Button from '$lib/components/ui/button/button.svelte';
 
     type Status = 'loading' | 'ready' | 'empty' | 'submitting' | 'error';
 
@@ -65,12 +66,13 @@
         <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-600">
             {error}
         </div>
-        <button
-            onclick={loadQuestion}
-            class="w-full rounded-xl border border-zinc-300 bg-white py-2.5 text-sm font-medium hover:bg-zinc-50"
+        <Button
+            on:click={loadQuestion}
+            variant="outline"
+            className="w-full"
         >
             Try again
-        </button>
+        </Button>
 
     {:else if status === 'empty'}
         <div class="py-12 text-center text-sm text-zinc-500">
@@ -107,12 +109,13 @@
             </div>
         {/if}
 
-        <button
-            onclick={next}
+        <Button
+            on:click={next}
             disabled={!isAnswered || status === 'submitting'}
-            class="w-full rounded-xl border border-zinc-300 bg-white py-2.5 text-sm font-medium hover:bg-zinc-50 disabled:opacity-50"
+            variant="outline"
+            className="w-full"
         >
             {status === 'submitting' ? 'Saving...' : 'Next'}
-        </button>
+        </Button>
     {/if}
 </div>
