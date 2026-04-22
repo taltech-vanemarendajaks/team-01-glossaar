@@ -3,6 +3,8 @@ package com.glossaar.backend.word;
 import com.glossaar.backend.category.CategoryEntity;
 import com.glossaar.backend.category.CategoryService;
 import com.glossaar.backend.user.UserEntity;
+import com.glossaar.backend.userword.UserWordScoreEntity;
+import com.glossaar.backend.userword.UserWordScoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,7 @@ public class WordService {
 
     private final WordRepository repo;
     private final CategoryService categoryService;
+    private final UserWordScoreRepository userWordScoreRepository;
 
     public Page<WordEntity> getAll(UserEntity user, String search, int page, int size, String sortBy, String sortDir) {
         if (page < 0) {
@@ -100,7 +103,9 @@ public class WordService {
         wordToBeAdded.setCategory(category);
         wordToBeAdded.setUser(user);
 
-        return repo.save(wordToBeAdded);
+        WordEntity savedWord = repo.save(wordToBeAdded);
+        userWordScoreRepository.save(new UserWordScoreEntity(user, savedWord, 0));
+        return savedWord;
     }
 
     @Transactional
