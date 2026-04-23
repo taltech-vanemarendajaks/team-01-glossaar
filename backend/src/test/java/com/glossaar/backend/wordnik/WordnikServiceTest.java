@@ -4,7 +4,6 @@ import com.glossaar.backend.wordnik.dto.WordnikExplanationsResponseDto.Explanati
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,12 +26,11 @@ class WordnikServiceTest {
         RestClient.Builder builder = RestClient.builder().baseUrl("https://api.wordnik.com/v4");
         mockServer = MockRestServiceServer.bindTo(builder).build();
         wordnikService = new WordnikService(builder.build());
-        ReflectionTestUtils.setField(wordnikService, "apiKey", "test-key");
     }
 
     @Test
     void getExplanations_groupsByPartOfSpeech() {
-        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions?api_key=test-key"))
+        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions"))
             .andRespond(withSuccess("""
                 [
                   {"partOfSpeech": "interjection", "text": "Used to attract attention."},
@@ -51,7 +49,7 @@ class WordnikServiceTest {
 
     @Test
     void getExplanations_nullPartOfSpeech_appendedToLastGroup() {
-        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions?api_key=test-key"))
+        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions"))
             .andRespond(withSuccess("""
                 [
                   {"partOfSpeech": "interjection", "text": "An exclamation."},
@@ -66,7 +64,7 @@ class WordnikServiceTest {
 
     @Test
     void getExplanations_onlyNullPartOfSpeech_singleGroup() {
-        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions?api_key=test-key"))
+        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions"))
             .andRespond(withSuccess("""
                 [
                   {"text": "First def."},
@@ -82,7 +80,7 @@ class WordnikServiceTest {
 
     @Test
     void getExplanations_emptyResponse_returnsEmptyList() {
-        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions?api_key=test-key"))
+        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions"))
             .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
 
         List<ExplanationGroup> result = wordnikService.getExplanations("hey");
@@ -92,7 +90,7 @@ class WordnikServiceTest {
 
     @Test
     void getExplanations_throwsBadGateway() {
-        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions?api_key=test-key"))
+        mockServer.expect(requestTo("https://api.wordnik.com/v4/word.json/hey/definitions"))
             .andRespond(withServerError());
 
         assertThatThrownBy(() -> wordnikService.getExplanations("hey"))
