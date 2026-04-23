@@ -82,26 +82,20 @@
                 <label for="explanation" class="block text-sm font-medium text-gray-700">Explanation</label>
                 <div class="relative flex gap-2" bind:this={lookupDropdownRef}>
                     {#each locales as localeObj (localeObj.code)}
-
-                        <div class="relative">
-                            <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={!word.trim() || Object.values(lookupLoading).some(Boolean)}
-                                    on:click={() => fetchLookup(localeObj)}
-                            >
-                                <span class="flex items-center gap-1.5 text-xs">
-                                    {#if lookupLoading[localeObj.code]}
-                                        <BookOpen class="w-3.5 h-3.5 animate-spin" />
-                                        Loading…
-                                    {:else}
-                                        <BookOpen class="w-3.5 h-3.5" />
-                                        {localeObj.source} ({localeObj.code.toUpperCase()})
-                                    {/if}
-                                </span>
-                            </Button>
-                        </div>
+                        <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={!word.trim() || Object.values(lookupLoading).some(Boolean)}
+                                on:click={() => fetchLookup(localeObj)}
+                        >
+                                {#if lookupLoading[localeObj.code]}
+                                    <Loader class="animate-spin" />
+                                {:else}
+                                    <BookOpen />
+                                {/if}
+                                {localeObj.code}
+                        </Button>
                     {/each}
                     <!-- TODO: set the error to notice/toast instead -->
                     {#if lookupError || lookupExplanations.length > 0}
@@ -122,7 +116,8 @@
                                             class="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors"
                                             on:click={() => selectExplanation(exp)}
                                         >
-                                            <span class="text-gray-400 mr-1">{j + 1}.</span>{exp}
+                                            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                                            <span class="text-gray-400 mr-1">{j + 1}.</span><span>{@html exp}</span>
                                         </button>
                                     {/each}
                                 {/each}
@@ -205,20 +200,23 @@
     import {Button} from '$lib/components/ui/button';
     import {GlossarClient, type ExplanationGroup} from '$lib/api/glossarClient';
     import {fetchCategories} from '$lib/services/categoryService';
-    import {Plus, Pencil, Trash2, BookOpen} from '@lucide/svelte';
+    import {Plus, Pencil, Trash2, BookOpen, Loader} from '@lucide/svelte';
     import {onMount} from 'svelte';
 
+    // TODO: use another locales object
     const locales = [
-        { code: 'et', name: 'Estonian', source: 'EKI', fetchAction: GlossarClient.fetchEkiExplanations },
-        { code: 'en', name: 'English', source: 'Wordnik', fetchAction: GlossarClient.fetchWordnikExplanations },
+        { code: 'ET', fetchAction: GlossarClient.fetchEkiExplanations },
+        { code: 'EN', fetchAction: GlossarClient.fetchWordnikExplanations },
     ];
 
     let word = '';
     let explanation = '';
     let loading = false;
+
+    // TODO: use another locales object
     let lookupLoading: { [K in typeof locales[number]['code']]: boolean } = {
-        et: false,
-        en: false,
+        ET: false,
+        EN: false,
     };
     let lookupError = '';
     let lookupExplanations: ExplanationGroup[] = [];
@@ -284,7 +282,7 @@
                 lookupExplanations = groups;
             }
         } catch {
-            lookupError = `${localeObj.source} search for explanation failed`;
+            lookupError = `${localeObj.code} search for explanation failed`;
         } finally {
             lookupLoading[localeObj.code] = false;
         }
