@@ -81,45 +81,29 @@
             <div class="flex items-center justify-between mb-1">
                 <label for="explanation" class="block text-sm font-medium text-gray-700">Explanation</label>
                 <div class="relative flex gap-2" bind:this={lookupDropdownRef}>
-                    <div class="relative">
-                        <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                disabled={!word.trim() || lookupLoading}
-                                on:click={() => fetchLookup('eki')}
-                        >
-                            <span class="flex items-center gap-1.5 text-xs">
-                                {#if lookupLoading && lookupSource === 'eki'}
-                                    <BookOpen class="w-3.5 h-3.5 animate-spin" />
-                                    Loading…
-                                {:else}
-                                    <BookOpen class="w-3.5 h-3.5" />
-                                    EKI (ET)
-                                {/if}
-                            </span>
-                        </Button>
-                    </div>
-                    <div class="relative">
-                        <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                disabled={!word.trim() || lookupLoading}
-                                on:click={() => fetchLookup('wordnik')}
-                        >
-                            <span class="flex items-center gap-1.5 text-xs">
-                                {#if lookupLoading && lookupSource === 'wordnik'}
-                                    <BookOpen class="w-3.5 h-3.5 animate-spin" />
-                                    Loading…
-                                {:else}
-                                    <BookOpen class="w-3.5 h-3.5" />
-                                    Wordnik (EN)
-                                {/if}
-                            </span>
-                        </Button>
-                    </div>
-                    <!-- TODO: set the error to notice/toast instaed -->
+                    {#each locales as localeObj (localeObj.code)}
+
+                        <div class="relative">
+                            <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={!word.trim() || Object.values(lookupLoading).some(Boolean)}
+                                    on:click={() => fetchLookup(localeObj)}
+                            >
+                                <span class="flex items-center gap-1.5 text-xs">
+                                    {#if lookupLoading[localeObj.code]}
+                                        <BookOpen class="w-3.5 h-3.5 animate-spin" />
+                                        Loading…
+                                    {:else}
+                                        <BookOpen class="w-3.5 h-3.5" />
+                                        {localeObj.source} ({localeObj.code.toUpperCase()})
+                                    {/if}
+                                </span>
+                            </Button>
+                        </div>
+                    {/each}
+                    <!-- TODO: set the error to notice/toast instead -->
                     {#if lookupError || lookupExplanations.length > 0}
                         <div class="absolute right-0 top-full mt-1 w-80 max-h-60 overflow-y-auto rounded-lg border bg-white p-2 shadow-sm z-50">
                             {#if lookupError}
@@ -224,14 +208,21 @@
     import {Plus, Pencil, Trash2, BookOpen} from '@lucide/svelte';
     import {onMount} from 'svelte';
 
+    const locales = [
+        { code: 'et', name: 'Estonian', source: 'EKI', fetchAction: GlossarClient.fetchEkiExplanations },
+        { code: 'en', name: 'English', source: 'Wordnik', fetchAction: GlossarClient.fetchWordnikExplanations },
+    ];
+
     let word = '';
     let explanation = '';
     let loading = false;
-    let lookupLoading = false;
+    let lookupLoading: { [K in typeof locales[number]['code']]: boolean } = {
+        et: false,
+        en: false,
+    };
     let lookupError = '';
     let lookupExplanations: ExplanationGroup[] = [];
     let lookupDropdownRef: HTMLDivElement;
-    let lookupSource: 'eki' | 'wordnik' | null = null; // TODO: replace with Locales from another issue
 
     let categories: { id: number; name: string; wordCount: number }[] = [];
     let selectedCategoryName = '';
@@ -239,8 +230,6 @@
     let addingNew = false;
 
     let manageModalOpen = false;
-
-    $: categoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
 
     onMount(async () => {
         try {
@@ -276,16 +265,17 @@
         }
     }
 
-    async function fetchLookup(source: 'eki' | 'wordnik') {
-        lookupLoading = true;
-        lookupSource = source;
+    async function fetchLookup(localeObj: typeof locales[number]) {
+        lookupLoading[localeObj.code] = true;
         lookupError = '';
         lookupExplanations = [];
+
         try {
-            const groups = source === 'eki'
-                ? await GlossarClient.fetchEkiExplanations(word.trim())
-                : await GlossarClient.fetchWordnikExplanations(word.trim());
+            const groups = await localeObj.fetchAction(word.trim());
+
             const allExplanations = groups.flatMap(g => g.explanations);
+
+            // TODO: display a toast/notice instead of setting the error in the dropdown
             if (allExplanations.length === 0) {
                 lookupError = `No explanation found for this word.`;
             } else if (allExplanations.length === 1) {
@@ -294,9 +284,9 @@
                 lookupExplanations = groups;
             }
         } catch {
-            lookupError = `${source === 'eki' ? 'EKI' : 'Wordnik'} search for explanation failed`;
+            lookupError = `${localeObj.source} search for explanation failed`;
         } finally {
-            lookupLoading = false;
+            lookupLoading[localeObj.code] = false;
         }
     }
 
