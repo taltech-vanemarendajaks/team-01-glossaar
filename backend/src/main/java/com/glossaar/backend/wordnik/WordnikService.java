@@ -28,7 +28,7 @@ public class WordnikService {
 
         try {
             definitions = wordnikRestClient.get()
-                .uri("/word.json/{word}/definitions?includeTags=false", word)
+                .uri("/word.json/{word}/definitions", word)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
         } catch (RestClientException e) {
