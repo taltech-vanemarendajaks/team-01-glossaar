@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { Check } from '@lucide/svelte';
     import { GlossarClient, type QuizQuestion } from '$lib/api/glossarClient';
+    import { _ } from 'svelte-i18n';
 
     type Status = 'loading' | 'ready' | 'empty' | 'submitting' | 'error';
 
@@ -37,7 +38,7 @@
             question = await GlossarClient.getQuizQuestion() ?? null;
             status = question ? 'ready' : 'empty';
         } catch (e) {
-            error = e instanceof Error ? e.message : 'Failed to load question';
+            error = e instanceof Error ? e.message : $_('quiz.failedLoad');
             status = 'error';
         }
     }
@@ -49,7 +50,7 @@
         try {
             await GlossarClient.submitQuizAnswer(question.wordId, selected === question.correctIndex);
         } catch (e) {
-            submitError = e instanceof Error ? e.message : 'Failed to save answer';
+            submitError = e instanceof Error ? e.message : $_('quiz.failedSave');
         }
         await loadQuestion();
     }
@@ -59,7 +60,7 @@
 
 <div class="space-y-6">
     {#if status === 'loading'}
-        <div class="py-12 text-center text-sm text-zinc-500">Loading...</div>
+        <div class="py-12 text-center text-sm text-zinc-500">{$_('common.loading')}</div>
 
     {:else if status === 'error'}
         <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-600">
@@ -69,17 +70,17 @@
             onclick={loadQuestion}
             class="w-full rounded-xl border border-zinc-300 bg-white py-2.5 text-sm font-medium hover:bg-zinc-50"
         >
-            Try again
+            {$_('common.tryAgain')}
         </button>
 
     {:else if status === 'empty'}
         <div class="py-12 text-center text-sm text-zinc-500">
-            Add some words to your dictionary to start quizzing!
+            {$_('quiz.empty')}
         </div>
 
     {:else if question}
         <p class="text-center text-base text-zinc-500">
-            What is: <span class="text-lg font-semibold text-zinc-900 underline">{question.word}</span>
+            {$_('quiz.whatIs')} <span class="text-lg font-semibold text-zinc-900 underline">{question.word}</span>
         </p>
 
         <div class="grid grid-cols-2 gap-2">
@@ -103,7 +104,7 @@
 
         {#if submitError}
             <div class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-center text-xs text-amber-700">
-                Answer may not have been saved — {submitError}
+                {$_('quiz.answerNotSaved', { values: { error: submitError } })}
             </div>
         {/if}
 
@@ -112,7 +113,7 @@
             disabled={!isAnswered || status === 'submitting'}
             class="w-full rounded-xl border border-zinc-300 bg-white py-2.5 text-sm font-medium hover:bg-zinc-50 disabled:opacity-50"
         >
-            {status === 'submitting' ? 'Saving...' : 'Next'}
+            {status === 'submitting' ? $_('common.saving') : $_('list.next')}
         </button>
     {/if}
 </div>

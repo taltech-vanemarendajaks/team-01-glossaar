@@ -1,0 +1,114 @@
+{
+    "common": {
+        "loading": "Laadimine...",
+        "cancel": "Tühista",
+        "confirm": "Kinnita",
+        "save": "Salvesta",
+        "saving": "Salvestamine...",
+        "delete": "Kustuta",
+        "deleting": "Kustutamine...",
+        "close": "Sulge",
+        "done": "Valmis",
+        "tryAgain": "Proovi uuesti",
+        "logout": "Logi välja"
+    },
+    "nav": {
+        "login": "Logi sisse",
+        "add": "Lisa",
+        "list": "Nimekiri",
+        "quiz": "Viktoriin"
+    },
+    "pages": {
+        "add": {
+            "title": "Loo uus sõna",
+            "subtitle": "Lisa uus sõna oma sõnastikku."
+        },
+        "list": {
+            "title": "Sõnade nimekiri",
+            "subtitle": "Siin on kõik sõnad, mille oled lisanud."
+        },
+        "login": {
+            "title": "Logi sisse",
+            "subtitle": "Logi sisse valitud OAuth pakkujaga."
+        },
+        "quiz": {
+            "title": "Viktoriin",
+            "subtitle": "Pane oma teadmised proovile ja õpi uusi sõnu!"
+        }
+    },
+    "add": {
+        "category": "Kategooria",
+        "selectCategory": "Vali kategooria",
+        "newCategoryPlaceholder": "Sisesta uus kategooria",
+        "addNew": "Lisa uus",
+        "manageCategories": "Halda kategooriaid",
+        "word": "Sõna",
+        "wordPlaceholder": "Sisesta sõna",
+        "explanation": "Selgitus",
+        "explanationPlaceholder": "Sisesta selgitus või kirjeldus",
+        "ekiLoading": "Laadimine…",
+        "ekiButton": "EKI selgitus (ET)",
+        "ekiNoResult": "Sellele sõnale ei leitud EKI-st selgitust.",
+        "ekiFailed": "EKI otsing ebaõnnestus",
+        "submit": "Salvesta sõna",
+        "editCategoriesTitle": "Muuda kategooriaid",
+        "usedInWords": "Kasutusel {count} sõnas",
+        "selectOrEnterCategory": "Palun vali või sisesta kategooria.",
+        "wordSaved": "Sõna salvestatud!",
+        "errorSavingWord": "Viga sõna salvestamisel.",
+        "categoryUpdated": "Kategooria uuendatud!",
+        "categoryDeleted": "Kategooria kustutatud!",
+        "confirmDeleteCategory": "Kas kustutada kategooria \"{name}\"?",
+        "invalidCategoryId": "Vigane kategooria ID",
+        "failedReloadCategories": "Kategooriate laadimine ebaõnnestus",
+        "failedUpdateCategory": "Kategooria uuendamine ebaõnnestus",
+        "failedDeleteCategory": "Kategooria kustutamine ebaõnnestus"
+    },
+    "list": {
+        "search": "Otsing",
+        "searchPlaceholder": "otsi sõna/selgituse järgi",
+        "perPage": "{count} lehe kohta",
+        "sortByWord": "Sorteeri sõna järgi",
+        "sortByExplanation": "Sorteeri selgituse järgi",
+        "ascending": "Kasvavalt (ASC)",
+        "descending": "Kahanevalt (DESC)",
+        "words": "Sõnad",
+        "totalPage": "{total} kokku | lehekülg {page} / {pages}",
+        "loadingWords": "Sõnade laadimine...",
+        "noWords": "Sõnu pole veel.",
+        "noExplanation": "Selgitus puudub",
+        "showingItems": "Näitan {count} kirjet",
+        "prev": "Eelmine",
+        "next": "Järgmine",
+        "editWordAria": "Muuda sõna {word}",
+        "deleteWordAria": "Kustuta sõna {word}",
+        "deleteTitle": "Kustuta sõna",
+        "deleteMessage": "Kas oled kindel, et soovid kustutada sõna: \"{word}\"?",
+        "deletedToast": "Kustutatud \"{word}\"",
+        "updatedToast": "Uuendatud \"{word}\""
+    },
+    "edit": {
+        "title": "Muuda sõna",
+        "word": "Sõna",
+        "explanation": "Selgitus",
+        "category": "Kategooria"
+    },
+    "login": {
+        "loginWith": "Logi sisse {provider}-ga"
+    },
+    "quiz": {
+        "empty": "Lisa oma sõnastikku sõnu, et alustada viktoriini!",
+        "whatIs": "Mis on:",
+        "answerNotSaved": "Vastust ei pruugitud salvestada — {error}",
+        "failedLoad": "Küsimuse laadimine ebaõnnestus",
+        "failedSave": "Vastuse salvestamine ebaõnnestus"
+    },
+    "confirm": {
+        "defaultTitle": "Palun kinnita"
+    },
+    "lang": {
+        "label": "Keel: {code}",
+        "et": "Eesti",
+        "en": "English"
+    }
+}

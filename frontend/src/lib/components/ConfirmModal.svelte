@@ -1,12 +1,17 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import { _ } from 'svelte-i18n';
 
     export let open = false;
-    export let title = 'Please confirm';
+    export let title: string | undefined = undefined;
     export let message = '';
-    export let confirmText = 'Confirm';
-    export let cancelText = 'Cancel';
+    export let confirmText: string | undefined = undefined;
+    export let cancelText: string | undefined = undefined;
     export let loading = false;
+
+    $: resolvedTitle = title ?? $_('confirm.defaultTitle');
+    $: resolvedConfirm = confirmText ?? $_('common.confirm');
+    $: resolvedCancel = cancelText ?? $_('common.cancel');
 
     const dispatch = createEventDispatcher<{
         confirm: void;
@@ -37,11 +42,11 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
         role="dialog"
         aria-modal="true"
-        aria-label={title}
+        aria-label={resolvedTitle}
         on:click={onBackdropClick}
     >
         <div class="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="text-lg font-semibold text-zinc-900">{title}</h3>
+            <h3 class="text-lg font-semibold text-zinc-900">{resolvedTitle}</h3>
             <p class="mt-2 text-sm text-zinc-600">{message}</p>
 
             <div class="mt-5 flex justify-end gap-2">
@@ -51,7 +56,7 @@
                     on:click={onCancel}
                     disabled={loading}
                 >
-                    {cancelText}
+                    {resolvedCancel}
                 </button>
                 <button
                     type="button"
@@ -59,7 +64,7 @@
                     on:click={onConfirm}
                     disabled={loading}
                 >
-                    {#if loading}Deleting...{:else}{confirmText}{/if}
+                    {#if loading}{$_('common.deleting')}{:else}{resolvedConfirm}{/if}
                 </button>
             </div>
         </div>
