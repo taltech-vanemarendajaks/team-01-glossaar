@@ -4,7 +4,6 @@ import com.glossaar.backend.wordnik.dto.WordnikDefinitionResponse;
 import com.glossaar.backend.wordnik.dto.WordnikExplanationsResponseDto.ExplanationGroup;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,14 +23,12 @@ public class WordnikService {
 
     private final RestClient wordnikRestClient;
 
-    @Value("${wordnik.api.key}")
-    private String apiKey;
-
     public List<ExplanationGroup> getExplanations(String word) {
         List<WordnikDefinitionResponse> definitions;
+
         try {
             definitions = wordnikRestClient.get()
-                .uri("/word.json/{word}/definitions?api_key={apiKey}", word, apiKey)
+                .uri("/word.json/{word}/definitions?includeTags=false", word)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
         } catch (RestClientException e) {

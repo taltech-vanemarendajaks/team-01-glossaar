@@ -13,7 +13,8 @@ import java.time.Duration;
 public class WordnikConfig {
 
     @Bean
-    public RestClient wordnikRestClient(@Value("${wordnik.api.base-url}") String baseUrl) {
+    public RestClient wordnikRestClient(@Value("${wordnik.api.base-url}") String baseUrl,
+                                    @Value("${wordnik.api.key}") String apiKey) {
         JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(
             HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
@@ -23,6 +24,7 @@ public class WordnikConfig {
 
         return RestClient.builder()
             .baseUrl(baseUrl)
+            .defaultHeader("api_key", apiKey)
             .requestFactory(requestFactory)
             .build();
     }
