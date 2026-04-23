@@ -1,8 +1,9 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import { _ } from 'svelte-i18n';
 
     export let open = false;
-    export let title = 'Edit word';
+    export let title: string | undefined = undefined;
     export let initialWord = '';
     export let initialExplanation = '';
     export let loading = false;
@@ -21,6 +22,8 @@
         save: { word: string; explanation: string; categoryName: string };
         cancel: void;
     }>();
+
+    $: resolvedTitle = title ?? $_('edit.title');
 
     $: if (open && (initialWord !== snapshotWord ||
             initialExplanation !== snapshotExplanation ||
@@ -69,14 +72,14 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
         role="dialog"
         aria-modal="true"
-        aria-label={title}
+        aria-label={resolvedTitle}
         on:click={onBackdropClick}
     >
         <form class="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-5 shadow-sm" on:submit={onSubmit}>
-            <h3 class="text-lg font-semibold text-zinc-900">{title}</h3>
+            <h3 class="text-lg font-semibold text-zinc-900">{resolvedTitle}</h3>
 
             <div class="mt-4 grid gap-3">
-                <label for="edit-word" class="text-sm font-medium text-zinc-700">Word</label>
+                <label for="edit-word" class="text-sm font-medium text-zinc-700">{$_('edit.word')}</label>
                 <input
                     id="edit-word"
                     class="h-10 rounded-lg border border-zinc-300 px-3 text-sm"
@@ -85,7 +88,7 @@
                     disabled={loading}
                 />
 
-                <label for="edit-explanation" class="text-sm font-medium text-zinc-700">Explanation</label>
+                <label for="edit-explanation" class="text-sm font-medium text-zinc-700">{$_('edit.explanation')}</label>
                 <textarea
                     id="edit-explanation"
                     class="min-h-24 rounded-lg border border-zinc-300 px-3 py-2 text-sm"
@@ -93,7 +96,7 @@
                     disabled={loading}
                 />
 
-                <label for="edit-category" class="text-sm font-medium text-zinc-700">Category</label>
+                <label for="edit-category" class="text-sm font-medium text-zinc-700">{$_('edit.category')}</label>
                 <select
                         id="edit-category"
                         class="h-10 rounded-lg border border-zinc-300 px-3 text-sm"
@@ -113,14 +116,14 @@
                     on:click={onCancel}
                     disabled={loading}
                 >
-                    Cancel
+                    {$_('common.cancel')}
                 </button>
                 <button
                     type="submit"
                     class="h-10 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white disabled:opacity-60"
                     disabled={loading || !word.trim()}
                 >
-                    {#if loading}Saving...{:else}Save{/if}
+                    {#if loading}{$_('common.saving')}{:else}{$_('common.save')}{/if}
                 </button>
             </div>
         </form>
