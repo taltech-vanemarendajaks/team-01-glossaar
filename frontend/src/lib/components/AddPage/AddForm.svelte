@@ -103,12 +103,12 @@
                             {#if ekiError}
                                 <p class="text-xs text-red-500 p-2">{ekiError}</p>
                             {:else}
-                                {#each ekiExplanations as ekiGroup, i (ekiGroup.groupNumber)}
+                                {#each ekiExplanations as ekiGroup, i (i)}
                                     {#if i > 0}
                                         <hr class="my-1 border-gray-200" />
                                     {/if}
                                     {#if ekiExplanations.length > 1}
-                                        <p class="text-xs font-medium text-gray-500 px-2 pt-1 pb-0.5">{word.trim()}<sup>{ekiGroup.groupNumber}</sup></p>
+                                        <p class="text-xs font-medium text-gray-500 px-2 pt-1 pb-0.5">{word.trim()}<sup>{i + 1}</sup></p>
                                     {/if}
                                     {#each ekiGroup.explanations as explanation, j (j)}
                                         <button
