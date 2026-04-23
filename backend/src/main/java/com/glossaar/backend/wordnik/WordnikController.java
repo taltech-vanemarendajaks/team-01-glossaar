@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/eki")
+@RequestMapping("/api/wordnik")
 @RequiredArgsConstructor
 public class WordnikController {
 
     private final WordnikService wordnikService;
 
     @GetMapping("/explanations/{word}")
-    @Operation(summary = "Get Estonian explanations from EKI")
+    @Operation(summary = "Get English definitions from Wordnik")
     public WordnikExplanationsResponseDto getExplanations(@PathVariable String word) {
         List<ExplanationGroup> explanationGroups = wordnikService.getExplanations(word);
         return new WordnikExplanationsResponseDto(word, explanationGroups);

@@ -1,92 +1,77 @@
 package com.glossaar.backend.wordnik;
 
-import com.glossaar.backend.wordnik.dto.EkiExplanationsResponseDto.ExplanationGroup;
-import com.glossaar.backend.wordnik.dto.EkiSearchResponse;
-import com.glossaar.backend.wordnik.dto.EkiSearchResponse.EkiWord;
-import com.glossaar.backend.wordnik.dto.EkiWordDetailsResponse;
-import com.glossaar.backend.wordnik.dto.EkiWordDetailsResponse.EkiLexeme;
+import com.glossaar.backend.wordnik.dto.WordnikDefinitionResponse;
+import com.glossaar.backend.wordnik.dto.WordnikExplanationsResponseDto.ExplanationGroup;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class WordnikService {
 
-    private final RestClient ekiRestClient;
+    private final RestClient wordnikRestClient;
 
+    @Value("${wordnik.api.key}")
+    private String apiKey;
 
-    public List<WordnikExplanationGroup> getExplanations(String word) {
-        EkiSearchResponse response;
+    public List<ExplanationGroup> getExplanations(String word) {
+        List<WordnikDefinitionResponse> definitions;
         try {
-            response = ekiRestClient.get()
-                .uri("/api/word/search/{word}", word)
+            definitions = wordnikRestClient.get()
+                .uri("/word.json/{word}/definitions?api_key={apiKey}", word, apiKey)
                 .retrieve()
-                .body(EkiSearchResponse.class);
-        } catch (Exception e) {
-            log.warn("EKI word search failed for '{}': {}", word, e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "EKI service unavailable");
-        }
-
-        if (response == null || response.words() == null) {
-            return List.of();
-        }
-
-        List<ExplanationGroup> explanationGroups = new ArrayList<>();
-        for (EkiWord ekiWord : response.words()) {
-            if (!"est".equals(ekiWord.lang())) continue;
-            List<String> explanations = getExplanationsForWord(ekiWord.wordId());
-            if (!explanations.isEmpty()) {
-                explanationGroups.add(new ExplanationGroup(ekiWord.homonymNr(), explanations));
-            }
-        }
-        return explanationGroups;
-    }
-
-    private List<String> getExplanationsForWord(long wordId) {
-        try {
-            EkiWordDetailsResponse response = ekiRestClient.get()
-                .uri("/api/word/details/{wordId}", wordId)
-                .retrieve()
-                .body(EkiWordDetailsResponse.class);
-
-            if (response == null || response.lexemes() == null) {
-                return List.of();
-            }
-
-            Set<Integer> usedLevels = new HashSet<>();
-            List<String> explanations = new ArrayList<>();
-
-            for (EkiLexeme ekiLexeme : response.lexemes()) {
-                if (!"eki".equals(ekiLexeme.datasetCode())) continue;
-                if (usedLevels.contains(ekiLexeme.level1())) continue;
-                usedLevels.add(ekiLexeme.level1());
-                findEstonianExplanation(ekiLexeme).ifPresent(explanations::add);
-            }
-            return explanations;
+                .body(new ParameterizedTypeReference<>() {});
         } catch (RestClientException e) {
-            log.warn("EKI word details fetch failed for wordId {}: {}", wordId, e.getMessage());
+            log.warn("Wordnik definitions fetch failed for '{}': {}", word, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Wordnik service unavailable");
+        }
+
+        if (definitions == null || definitions.isEmpty()) {
             return List.of();
         }
-    }
 
-    private Optional<String> findEstonianExplanation(EkiLexeme lexeme) {
-        if (lexeme.meaning() == null || lexeme.meaning().definitionLangGroups() == null) {
-            return Optional.empty();
+        Map<String, List<String>> grouped = new LinkedHashMap<>();
+        List<String> ungrouped = new ArrayList<>();
+
+        for (WordnikDefinitionResponse def : definitions) {
+            if (def.text() == null || def.text().isBlank()) continue;
+            String pos = def.partOfSpeech();
+            if (pos == null || pos.isBlank()) {
+                ungrouped.add(def.text());
+            } else {
+                grouped.computeIfAbsent(pos, k -> new ArrayList<>()).add(def.text());
+            }
         }
-        return lexeme.meaning().definitionLangGroups().stream()
-            .filter(group -> "est".equals(group.lang()) && group.definitions() != null)
-            .flatMap(group -> group.definitions().stream())
-            .map(EkiWordDetailsResponse.Definition::value)
-            .filter(value -> value != null && !value.isBlank())
-            .findFirst();
+
+        List<ExplanationGroup> result = new ArrayList<>();
+        int groupNumber = 1;
+        for (Map.Entry<String, List<String>> entry : grouped.entrySet()) {
+            result.add(new ExplanationGroup(groupNumber++, entry.getValue()));
+        }
+
+        if (!ungrouped.isEmpty()) {
+            if (result.isEmpty()) {
+                result.add(new ExplanationGroup(1, ungrouped));
+            } else {
+                List<String> lastExplanations = new ArrayList<>(result.getLast().explanations());
+                lastExplanations.addAll(ungrouped);
+                result.set(result.size() - 1, new ExplanationGroup(result.getLast().groupNumber(), lastExplanations));
+            }
+        }
+
+        return result;
     }
 }

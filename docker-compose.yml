@@ -38,6 +38,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       EKI_API_KEY: ${EKI_API_KEY}
+      WORDNIK_API_KEY: ${WORDNIK_API_KEY}
     ports:
       - "8080:8080"
     command: mvn -q -DskipTests spring-boot:run
