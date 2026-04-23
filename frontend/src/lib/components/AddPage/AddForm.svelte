@@ -80,43 +80,65 @@
         <div class="mb-5 mt-8">
             <div class="flex items-center justify-between mb-1">
                 <label for="explanation" class="block text-sm font-medium text-gray-700">Explanation</label>
-                <div class="relative" bind:this={ekiDropdownRef}>
-                    <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            disabled={!word.trim() || ekiLoading}
-                            on:click={fetchFromEki}
-                    >
-                        <span class="flex items-center gap-1.5 text-xs">
-                            {#if ekiLoading}
-                                <BookOpen class="w-3.5 h-3.5 animate-spin" />
-                                Loading…
-                            {:else}
-                                <BookOpen class="w-3.5 h-3.5" />
-                                EKI explanation (ET)
-                            {/if}
-                        </span>
-                    </Button>
-                    {#if ekiError || ekiExplanations.length > 0}
+                <div class="relative flex gap-2" bind:this={lookupDropdownRef}>
+                    <div class="relative">
+                        <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={!word.trim() || lookupLoading}
+                                on:click={() => fetchLookup('eki')}
+                        >
+                            <span class="flex items-center gap-1.5 text-xs">
+                                {#if lookupLoading && lookupSource === 'eki'}
+                                    <BookOpen class="w-3.5 h-3.5 animate-spin" />
+                                    Loading…
+                                {:else}
+                                    <BookOpen class="w-3.5 h-3.5" />
+                                    EKI (ET)
+                                {/if}
+                            </span>
+                        </Button>
+                    </div>
+                    <div class="relative">
+                        <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={!word.trim() || lookupLoading}
+                                on:click={() => fetchLookup('wordnik')}
+                        >
+                            <span class="flex items-center gap-1.5 text-xs">
+                                {#if lookupLoading && lookupSource === 'wordnik'}
+                                    <BookOpen class="w-3.5 h-3.5 animate-spin" />
+                                    Loading…
+                                {:else}
+                                    <BookOpen class="w-3.5 h-3.5" />
+                                    Wordnik (EN)
+                                {/if}
+                            </span>
+                        </Button>
+                    </div>
+                    <!-- TODO: set the error to notice/toast instaed -->
+                    {#if lookupError || lookupExplanations.length > 0}
                         <div class="absolute right-0 top-full mt-1 w-80 max-h-60 overflow-y-auto rounded-lg border bg-white p-2 shadow-sm z-50">
-                            {#if ekiError}
-                                <p class="text-xs text-red-500 p-2">{ekiError}</p>
+                            {#if lookupError}
+                                <p class="text-xs text-red-500 p-2">{lookupError}</p>
                             {:else}
-                                {#each ekiExplanations as ekiGroup, i (i)}
+                                {#each lookupExplanations as group, i (i)}
                                     {#if i > 0}
                                         <hr class="my-1 border-gray-200" />
                                     {/if}
-                                    {#if ekiExplanations.length > 1}
+                                    {#if lookupExplanations.length > 1}
                                         <p class="text-xs font-medium text-gray-500 px-2 pt-1 pb-0.5">{word.trim()}<sup>{i + 1}</sup></p>
                                     {/if}
-                                    {#each ekiGroup.explanations as explanation, j (j)}
+                                    {#each group.explanations as exp, j (j)}
                                         <button
                                             type="button"
                                             class="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                                            on:click={() => selectExplanation(explanation)}
+                                            on:click={() => selectExplanation(exp)}
                                         >
-                                            <span class="text-gray-400 mr-1">{j + 1}.</span>{explanation}
+                                            <span class="text-gray-400 mr-1">{j + 1}.</span>{exp}
                                         </button>
                                     {/each}
                                 {/each}
@@ -205,10 +227,11 @@
     let word = '';
     let explanation = '';
     let loading = false;
-    let ekiLoading = false;
-    let ekiError = '';
-    let ekiExplanations: ExplanationGroup[] = [];
-    let ekiDropdownRef: HTMLDivElement;
+    let lookupLoading = false;
+    let lookupError = '';
+    let lookupExplanations: ExplanationGroup[] = [];
+    let lookupDropdownRef: HTMLDivElement;
+    let lookupSource: 'eki' | 'wordnik' | null = null; // TODO: replace with Locales from another issue
 
     let categories: { id: number; name: string; wordCount: number }[] = [];
     let selectedCategoryName = '';
@@ -253,40 +276,43 @@
         }
     }
 
-    async function fetchFromEki() {
-        ekiLoading = true;
-        ekiError = '';
-        ekiExplanations = [];
+    async function fetchLookup(source: 'eki' | 'wordnik') {
+        lookupLoading = true;
+        lookupSource = source;
+        lookupError = '';
+        lookupExplanations = [];
         try {
-            const explanationGroups = await GlossarClient.fetchEkiExplanations(word.trim());
-            const allExplanations = explanationGroups.flatMap(group => group.explanations);
+            const groups = source === 'eki'
+                ? await GlossarClient.fetchEkiExplanations(word.trim())
+                : await GlossarClient.fetchWordnikExplanations(word.trim());
+            const allExplanations = groups.flatMap(g => g.explanations);
             if (allExplanations.length === 0) {
-                ekiError = 'No explanation found in EKI for this word.';
+                lookupError = `No explanation found for this word.`;
             } else if (allExplanations.length === 1) {
                 explanation = allExplanations[0];
             } else {
-                ekiExplanations = explanationGroups;
+                lookupExplanations = groups;
             }
         } catch {
-            ekiError = 'EKI search for explanation failed';
+            lookupError = `${source === 'eki' ? 'EKI' : 'Wordnik'} search for explanation failed`;
         } finally {
-            ekiLoading = false;
+            lookupLoading = false;
         }
     }
 
     function selectExplanation(selected: string) {
         explanation = selected;
-        ekiExplanations = [];
+        lookupExplanations = [];
     }
 
-    function dismissEki() {
-        ekiExplanations = [];
-        ekiError = '';
+    function dismissLookup() {
+        lookupExplanations = [];
+        lookupError = '';
     }
 
     function handleWindowClick(e: MouseEvent) {
-        if (ekiDropdownRef && !ekiDropdownRef.contains(e.target as Node)) {
-            dismissEki();
+        if (lookupDropdownRef && !lookupDropdownRef.contains(e.target as Node)) {
+            dismissLookup();
         }
     }
 

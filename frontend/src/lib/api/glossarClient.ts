@@ -199,6 +199,15 @@ export const GlossarClient = {
         return data.explanationGroups;
     },
 
+    async fetchWordnikExplanations(word: string): Promise<ExplanationGroup[]> {
+        const response = await fetch(`${API_BASE}/wordnik/explanations/${encodeURIComponent(word)}`);
+        if (!response.ok) {
+            throw new Error(`Wordnik explanation lookup failed: ${response.status}`);
+        }
+        const data: { word: string; explanationGroups: ExplanationGroup[] } = await response.json();
+        return data.explanationGroups;
+    },
+
     async getMe(): Promise<MeResponse> {
         const response = await fetch(`${API_BASE}/auth/me`, {
             credentials: 'include'
