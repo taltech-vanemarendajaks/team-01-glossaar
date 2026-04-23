@@ -186,7 +186,7 @@
         <form on:submit|preventDefault={applyFilter} class="mt-4 rounded-md border border-zinc-200 bg-white p-4 shadow-sm">
             <h2 class="mb-3 text-base font-semibold">Filter</h2>
             <div class="grid gap-3 sm:grid-cols-2">
-                <input bind:value={listSearch} placeholder="filter by word/explanation"
+                <input bind:value={listSearch} placeholder="Search by word/explanation"
                        class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2"/>
                 <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
                     <option value={5}>5 per page</option>
