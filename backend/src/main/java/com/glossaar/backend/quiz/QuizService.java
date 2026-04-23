@@ -58,8 +58,7 @@ public class QuizService {
             List<String> options = new ArrayList<>(OPTIONS_PER_QUESTION);
             options.add(question.getExplanation());
 
-            List<String> distractors = quizRepository.findRandomDistractorExplanations(
-                    question.getId(),
+            List<String> distractors = quizRepository.findRandomDistractorExplanationsFromEki(
                     question.getExplanation(),
                     OPTIONS_PER_QUESTION - 1
             );
@@ -68,7 +67,7 @@ public class QuizService {
             if (options.size() < OPTIONS_PER_QUESTION) {
                 throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "At least " + OPTIONS_PER_QUESTION + " unique explanations are required in the vocabulary for quiz options"
+                    "At least " + OPTIONS_PER_QUESTION + " unique explanations are required in EKI cache for quiz options"
                 );
             }
 

@@ -3,6 +3,9 @@ package com.glossaar.backend.quiz;
 import com.glossaar.backend.IntegrationTest;
 import com.glossaar.backend.category.CategoryEntity;
 import com.glossaar.backend.category.CategoryRepository;
+import com.glossaar.backend.eki.EkiWordEntity;
+import com.glossaar.backend.eki.EkiWordRepository;
+import com.glossaar.backend.quiz.dto.QuizQuestionResponseDto;
 import com.glossaar.backend.user.UserEntity;
 import com.glossaar.backend.user.UserRepository;
 import com.glossaar.backend.userword.UserWordScoreEntity;
@@ -35,11 +38,15 @@ class QuizServiceTest extends IntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EkiWordRepository ekiWordRepository;
+
     @BeforeEach
     void setup() {
         userWordScoreRepository.deleteAll();
         wordRepository.deleteAll();
         categoryRepository.deleteAll();
+        ekiWordRepository.deleteAll();
     }
 
     @Test
@@ -59,5 +66,38 @@ class QuizServiceTest extends IntegrationTest {
 
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(exception.getReason()).contains("Category not found");
+    }
+
+    @Test
+    void getQuestionSet_usesEkiWordsTableForDistractors() {
+        WordEntity questionWord = wordRepository.save(new WordEntity("kass", "correct-expl", testUser));
+        userWordScoreRepository.save(new UserWordScoreEntity(testUser, questionWord, 0));
+
+        ekiWordRepository.save(new EkiWordEntity("koer", "koer", "est", 1, "wrong-1"));
+        ekiWordRepository.save(new EkiWordEntity("hunt", "hunt", "est", 1, "wrong-2"));
+        ekiWordRepository.save(new EkiWordEntity("rebane", "rebane", "est", 1, "wrong-3"));
+
+        QuizQuestionResponseDto question = quizService.getQuestionSet(testUser.getId(), 1, null).getFirst();
+
+        assertThat(question.word()).isEqualTo("kass");
+        assertThat(question.options()).hasSize(4);
+        assertThat(question.options()).contains("correct-expl", "wrong-1", "wrong-2", "wrong-3");
+    }
+
+    @Test
+    void getQuestionSet_whenEkiDistractorsInsufficient_returnsBadRequest() {
+        WordEntity questionWord = wordRepository.save(new WordEntity("kass", "correct-expl", testUser));
+        userWordScoreRepository.save(new UserWordScoreEntity(testUser, questionWord, 0));
+
+        ekiWordRepository.save(new EkiWordEntity("koer", "koer", "est", 1, "wrong-1"));
+        ekiWordRepository.save(new EkiWordEntity("hunt", "hunt", "est", 1, "wrong-2"));
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> quizService.getQuestionSet(testUser.getId(), 1, null)
+        );
+
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(exception.getReason()).contains("EKI cache");
     }
 }
