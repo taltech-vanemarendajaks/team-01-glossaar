@@ -165,8 +165,13 @@ export const GlossarClient = {
         return response.json();
     },
 
-    async getQuizQuestion(): Promise<QuizQuestion> {
-        const response = await fetch(`${API_BASE}/quiz?size=1`, {
+    async getQuizQuestion(categoryId?: number): Promise<QuizQuestion> {
+        const query = new URLSearchParams({ size: '1' });
+        if (categoryId !== undefined) {
+            query.set('categoryId', String(categoryId));
+        }
+
+        const response = await fetch(`${API_BASE}/quiz?${query.toString()}`, {
             credentials: 'include'
         });
         if (!response.ok) {

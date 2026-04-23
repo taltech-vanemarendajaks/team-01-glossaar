@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { Check } from '@lucide/svelte';
-    import { GlossarClient, type QuizQuestion } from '$lib/api/glossarClient';
+    import { GlossarClient, type Category, type QuizQuestion } from '$lib/api/glossarClient';
 
     type Status = 'loading' | 'ready' | 'empty' | 'submitting' | 'error';
 
@@ -10,6 +10,10 @@
     let selected: number | undefined = $state(undefined);
     let error: string | null = $state(null);
     let submitError: string | null = $state(null);
+    let categories: Category[] = $state([]);
+    let selectedCategoryId: number | null = $state(null);
+    let categoriesLoading: boolean = $state(true);
+    let categoriesError: string | null = $state(null);
 
     let isAnswered = $derived(selected !== undefined);
 
@@ -34,12 +38,31 @@
         selected = undefined;
         question = null;
         try {
-            question = await GlossarClient.getQuizQuestion() ?? null;
+            question = await GlossarClient.getQuizQuestion(selectedCategoryId ?? undefined) ?? null;
             status = question ? 'ready' : 'empty';
         } catch (e) {
             error = e instanceof Error ? e.message : 'Failed to load question';
             status = 'error';
         }
+    }
+
+    async function loadCategories() {
+        categoriesLoading = true;
+        categoriesError = null;
+        try {
+            categories = await GlossarClient.getCategories();
+        } catch (e) {
+            categoriesError = e instanceof Error ? e.message : 'Failed to load categories';
+            categories = [];
+        } finally {
+            categoriesLoading = false;
+        }
+    }
+
+    async function handleCategoryChange(event: Event) {
+        const target = event.target as HTMLSelectElement;
+        selectedCategoryId = target.value === '' ? null : Number(target.value);
+        await loadQuestion();
     }
 
     async function next() {
@@ -54,10 +77,32 @@
         await loadQuestion();
     }
 
-    onMount(() => loadQuestion());
+    onMount(async () => {
+        await loadCategories();
+        await loadQuestion();
+    });
 </script>
 
 <div class="space-y-6">
+    <div class="space-y-2">
+        <label for="quiz-category" class="block text-sm font-medium text-zinc-700">Category</label>
+        <select
+            id="quiz-category"
+            value={selectedCategoryId === null ? '' : String(selectedCategoryId)}
+            onchange={handleCategoryChange}
+            disabled={categoriesLoading || status === 'submitting'}
+            class="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm disabled:opacity-50"
+        >
+            <option value="">All categories</option>
+            {#each categories as category (category.id)}
+                <option value={String(category.id)}>{category.name}</option>
+            {/each}
+        </select>
+        {#if categoriesError}
+            <p class="text-xs text-amber-700">Could not load categories: {categoriesError}</p>
+        {/if}
+    </div>
+
     {#if status === 'loading'}
         <div class="py-12 text-center text-sm text-zinc-500">Loading...</div>
 
@@ -74,7 +119,11 @@
 
     {:else if status === 'empty'}
         <div class="py-12 text-center text-sm text-zinc-500">
-            Add some words to your dictionary to start quizzing!
+            {#if selectedCategoryId !== null}
+                No quiz-ready words in this category yet.
+            {:else}
+                Add some words to your dictionary to start quizzing!
+            {/if}
         </div>
 
     {:else if question}

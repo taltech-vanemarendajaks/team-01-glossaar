@@ -4,6 +4,7 @@ import com.glossaar.backend.category.CategoryRepository;
 import com.glossaar.backend.quiz.dto.QuizBatchAnswerRequestDto;
 import com.glossaar.backend.quiz.dto.QuizQuestionResponseDto;
 import com.glossaar.backend.quiz.dto.QuizSubmitResponseDto;
+import com.glossaar.backend.user.UserEntity;
 import com.glossaar.backend.user.UserRepository;
 import com.glossaar.backend.userword.UserWordScoreRepository;
 import com.glossaar.backend.word.WordEntity;
@@ -33,10 +34,10 @@ public class QuizService {
     private final UserWordScoreRepository userWordScoreRepository;
 
     public List<QuizQuestionResponseDto> getQuestionSet(Long userId, int requestedSize, Long categoryId) {
-        if (!userRepository.existsById(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId);
-        }
-        if (categoryId != null && !categoryRepository.existsById(categoryId)) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
+
+        if (categoryId != null && categoryRepository.findByIdAndUser(categoryId, user).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found: " + categoryId);
         }
 
