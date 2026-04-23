@@ -38,6 +38,7 @@
     let hasPrevious = false;
     let sortBy = 'word';
     let sortDir = 'asc';
+    let isFilterOpen = false;
 
     async function loadWords(targetPage = page) {
         error = null;
@@ -172,31 +173,42 @@
         <div class="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
     {/if}
 
-    <form on:submit|preventDefault={applyFilter} class="rounded-md border border-zinc-200 bg-white p-4 shadow-sm">
-        <h2 class="mb-3 text-base font-semibold">Search</h2>
-        <div class="grid gap-3 sm:grid-cols-2">
-            <input bind:value={listSearch} placeholder="search by word/explanation"
-                   class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2"/>
-            <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value={5}>5 per page</option>
-                <option value={10}>10 per page</option>
-                <option value={20}>20 per page</option>
-                <option value={50}>50 per page</option>
-            </select>
-            <select bind:value={sortBy} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value="word">Sort by word</option>
-                <option value="explanation">Sort by explanation</option>
-            </select>
-            <select bind:value={sortDir} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value="asc">Ascending (ASC)</option>
-                <option value="desc">Descending (DESC)</option>
-            </select>
-            <button type="submit" disabled={filterLoading || wordsLoading}
-                    class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
-                Done
-            </button>
-        </div>
-    </form>
+    <button
+            type="button"
+            class="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium"
+            aria-expanded={isFilterOpen}
+            on:click={() => (isFilterOpen = !isFilterOpen)}
+    >
+        {isFilterOpen ? 'Hide filter' : 'Filter'}
+    </button>
+
+    {#if isFilterOpen}
+        <form on:submit|preventDefault={applyFilter} class="mt-4 rounded-md border border-zinc-200 bg-white p-4 shadow-sm">
+            <h2 class="mb-3 text-base font-semibold">Filter</h2>
+            <div class="grid gap-3 sm:grid-cols-2">
+                <input bind:value={listSearch} placeholder="filter by word/explanation"
+                       class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2"/>
+                <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                    <option value={5}>5 per page</option>
+                    <option value={10}>10 per page</option>
+                    <option value={20}>20 per page</option>
+                    <option value={50}>50 per page</option>
+                </select>
+                <select bind:value={sortBy} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                    <option value="word">Sort by word</option>
+                    <option value="explanation">Sort by explanation</option>
+                </select>
+                <select bind:value={sortDir} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+                    <option value="asc">Ascending (ASC)</option>
+                    <option value="desc">Descending (DESC)</option>
+                </select>
+                <button type="submit" disabled={filterLoading || wordsLoading}
+                        class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
+                    Apply filter
+                </button>
+            </div>
+        </form>
+    {/if}
 
     <div class="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
         <div class="mb-3 flex items-center justify-between">
