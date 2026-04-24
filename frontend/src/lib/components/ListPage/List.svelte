@@ -175,7 +175,7 @@
     {/if}
 
     <form on:submit|preventDefault={applyFilter} class="rounded-md border border-zinc-200 bg-white p-4 shadow-sm flex flex-col gap-3">
-        <h2 class="text-base font-semibold">$_('list.search')</h2>
+        <h2 class="text-base font-semibold">{$_('list.search')}</h2>
 
         <input bind:value={listSearch} placeholder={$_('list.searchPlaceholder')}
         class="h-10 rounded-lg border border-zinc-300 px-3 text-sm w-full"/>
