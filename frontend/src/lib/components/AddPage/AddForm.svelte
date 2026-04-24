@@ -4,7 +4,7 @@
     <div class="w-full max-w-2xl p-6 rounded-xl border border-gray-200 bg-white shadow-sm">
 
         <div class="mb-5">
-            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">{$_('add.category')}</label>
 
             {#if !addingNew && categories.length > 0}
                 <select class="flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm
@@ -12,7 +12,7 @@
                 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
                 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
                         bind:value={selectedCategoryName}>
-                    <option value="" disabled>Select category</option>
+                    <option value="" disabled>{$_('add.selectCategory')}</option>
                     {#each categories as category (category.id)}
                         <option value={category.name}>{category.name}</option>
                     {/each}
@@ -22,7 +22,7 @@
             {#if addingNew}
                 <Input
                         class="flex-1"
-                        placeholder="Enter new category"
+                        placeholder={$_('add.newCategoryPlaceholder')}
                         bind:value={newCategoryName}
                 />
             {/if}
@@ -43,10 +43,10 @@
                 >
                     <span class="flex items-center gap-2">
                         {#if addingNew}
-                            Cancel
+                            {$_('common.cancel')}
                         {:else}
                             <Plus class="w-4 h-4"/>
-                            Add new
+                            {$_('add.addNew')}
                         {/if}
                     </span>
                 </Button>
@@ -59,7 +59,7 @@
                 >
                     <span class="flex items-center gap-2">
                         <Pencil class="w-4 h-4"/>
-                        Manage categories
+                        {$_('add.manageCategories')}
                     </span>
                 </Button>
             </div>
@@ -67,12 +67,12 @@
 
 
         <div class="mb-5">
-            <label for="word" class="block text-sm font-medium text-gray-700 mb-1">Word</label>
+            <label for="word" class="block text-sm font-medium text-gray-700 mb-1">{$_('add.word')}</label>
             <Input
                     id="word"
                     type="text"
                     bind:value={word}
-                    placeholder="Enter the word"
+                    placeholder={$_('add.wordPlaceholder')}
                     class="w-full border-gray-300 focus:ring-blue-400 focus:border-blue-400"
             />
         </div>
@@ -129,7 +129,7 @@
             <Textarea
                     id="explanation"
                     bind:value={explanation}
-                    placeholder="Enter the explanation or description"
+                    placeholder={$_('add.explanationPlaceholder')}
                     class="w-full border-gray-300 focus:ring-blue-400 focus:border-blue-400 rounded-md min-h-[120px]"
             />
         </div>
@@ -141,7 +141,7 @@
                     disabled={!word.trim() || !explanation || !(selectedCategoryName || newCategoryName.trim()) || loading}
                     on:click={saveWord}
             >
-                {#if loading}Saving...{:else}Submit{/if}
+                {#if loading}{$_('common.saving')}{:else}{$_('add.submit')}{/if}
             </Button>
         </div>
 
@@ -152,7 +152,7 @@
 {#if manageModalOpen}
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-md max-w-md w-full">
-            <h2 class="text-lg font-semibold mb-4">Edit Categories</h2>
+            <h2 class="text-lg font-semibold mb-4">{$_('add.editCategoriesTitle')}</h2>
 
             <div class="space-y-2 max-h-80 overflow-y-auto">
                 {#each categories as category (category.id)}
@@ -163,7 +163,7 @@
                         />
 
                         <Button size="sm" variant="outline" on:click={() => saveCategory(category)}>
-                            Save
+                            {$_('common.save')}
                         </Button>
 
                         <Button
@@ -181,14 +181,14 @@
 
                     {#if category.wordCount > 0}
                         <p class="text-xs text-gray-500 ml-1">
-                            Used in {category.wordCount} word(s)
+                            {$_('add.usedInWords', { values: { count: category.wordCount } })}
                         </p>
                     {/if}
                 {/each}
             </div>
 
             <div class="flex justify-end mt-4">
-                <Button variant="outline" on:click={closeManageModal}>Close</Button>
+                <Button variant="outline" on:click={closeManageModal}>{$_('common.close')}</Button>
             </div>
         </div>
     </div>
@@ -202,6 +202,7 @@
     import {fetchCategories} from '$lib/services/categoryService';
     import {Plus, Pencil, Trash2, BookOpen, Loader} from '@lucide/svelte';
     import {onMount} from 'svelte';
+    import { _ } from 'svelte-i18n';
 
     // TODO: use another locales object
     const locales = [
@@ -243,14 +244,14 @@
 
     async function saveCategory(category: { id: number; name: string }) {
         if (!category.id) {
-            alert('Invalid category ID');
+            alert($_('add.invalidCategoryId'));
             return;
         }
         try {
             await GlossarClient.updateCategory(category.id, category.name);
-            alert('Category updated!');
+            alert($_('add.categoryUpdated'));
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to update category');
+            alert(err instanceof Error ? err.message : $_('add.failedUpdateCategory'));
         }
     }
 
@@ -259,7 +260,7 @@
         try {
             await reloadCategories();
         } catch (err) {
-            alert('Failed to reload categories');
+            alert($_('add.failedReloadCategories'));
         }
     }
 
@@ -275,14 +276,14 @@
 
             // TODO: display a toast/notice instead of setting the error in the dropdown
             if (allExplanations.length === 0) {
-                lookupError = `No explanation found for this word.`;
+                lookupError =  $_('add.ekiNoResult');
             } else if (allExplanations.length === 1) {
                 explanation = allExplanations[0];
             } else {
                 lookupExplanations = groups;
             }
         } catch {
-            lookupError = `${localeObj.code} search for explanation failed`;
+            lookupError = $_('add.ekiFailed');
         } finally {
             lookupLoading[localeObj.code] = false;
         }
@@ -310,7 +311,7 @@
             const finalCategoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
 
             if (!finalCategoryName) {
-                alert('Please select or enter a category.');
+                alert($_('add.selectOrEnterCategory'));
                 return;
             }
 
@@ -326,27 +327,27 @@
             try {
                 await reloadCategories();
             } catch (err) {
-                alert('Failed to reload categories');
+                alert($_('add.failedReloadCategories'));
             }
 
-            alert('Word saved successfully!');
+            alert($_('add.wordSaved'));
         } catch (err) {
-            alert('Error saving word.');
+            alert($_('add.errorSavingWord'));
         } finally {
             loading = false;
         }
     }
 
     async function deleteCategory(category: { id: number; name: string }) {
-        if (!confirm(`Delete category "${category.name}"?`)) return;
+        if (!confirm($_('add.confirmDeleteCategory', { values: { name: category.name } }))) return;
 
         try {
             await GlossarClient.deleteCategory(category.id);
             await reloadCategories();
 
-            alert('Category deleted!');
+            alert($_('add.categoryDeleted'));
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete category');
+            alert(err instanceof Error ? err.message : $_('add.failedDeleteCategory'));
         }
     }
 
