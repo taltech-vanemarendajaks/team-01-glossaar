@@ -4,7 +4,7 @@
     <div class="w-full max-w-2xl p-6 rounded-xl border border-gray-200 bg-white shadow-sm">
 
         <div class="mb-5">
-            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">{$_('add.category')}</label>
 
             {#if !addingNew && categories.length > 0}
                 <select class="flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm
@@ -12,7 +12,7 @@
                 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
                 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
                         bind:value={selectedCategoryName}>
-                    <option value="" disabled>Select category</option>
+                    <option value="" disabled>{$_('add.selectCategory')}</option>
                     {#each categories as category (category.id)}
                         <option value={category.name}>{category.name}</option>
                     {/each}
@@ -22,7 +22,7 @@
             {#if addingNew}
                 <Input
                         class="flex-1"
-                        placeholder="Enter new category"
+                        placeholder={$_('add.newCategoryPlaceholder')}
                         bind:value={newCategoryName}
                 />
             {/if}
@@ -41,12 +41,12 @@
                             }
                         }}
                 >
-                    {#if addingNew}
-                        Cancel
-                    {:else}
-                        <Plus />
-                        Add new
-                    {/if}
+					{#if addingNew}
+						{$_('common.cancel')}
+					{:else}
+						<Plus />
+						{$_('add.addNew')}
+					{/if}
                 </Button>
 
                 <Button
@@ -56,26 +56,26 @@
                         on:click={() => (manageModalOpen = true)}
                 >
                     <Pencil />
-                    Manage categories
+                    {$_('add.manageCategories')}
                 </Button>
             </div>
         </div>
 
 
         <div class="mb-5">
-            <label for="word" class="block text-sm font-medium text-gray-700 mb-1">Word</label>
+            <label for="word" class="block text-sm font-medium text-gray-700 mb-1">{$_('add.word')}</label>
             <Input
                     id="word"
                     type="text"
                     bind:value={word}
-                    placeholder="Enter the word"
+                    placeholder={$_('add.wordPlaceholder')}
                     class="w-full border-gray-300 focus:ring-blue-400 focus:border-blue-400"
             />
         </div>
 
         <div class="mb-5 mt-8">
             <div class="flex items-center justify-between mb-1">
-                <label for="explanation" class="block text-sm font-medium text-gray-700">Explanation</label>
+                <label for="explanation" class="block text-sm font-medium text-gray-700">{$_('add.explanation')}</label>
                 <div class="relative" bind:this={ekiDropdownRef}>
                     <Button
                             type="button"
@@ -86,10 +86,10 @@
                     >
                         {#if ekiLoading}
                             <Loader class="animate-spin" />
-                            Loading…
+                            {$_('add.ekiLoading')}
                         {:else}
                             <BookOpen />
-                            EKI explanation (ET)
+                            {$_('add.ekiButton')}
                         {/if}
                     </Button>
                     {#if ekiError || ekiExplanations.length > 0}
@@ -97,12 +97,12 @@
                             {#if ekiError}
                                 <p class="text-xs text-red-500 p-2">{ekiError}</p>
                             {:else}
-                                {#each ekiExplanations as ekiGroup, i (ekiGroup.groupNumber)}
+                                {#each ekiExplanations as ekiGroup, i (i)}
                                     {#if i > 0}
                                         <hr class="my-1 border-gray-200" />
                                     {/if}
                                     {#if ekiExplanations.length > 1}
-                                        <p class="text-xs font-medium text-gray-500 px-2 pt-1 pb-0.5">{word.trim()}<sup>{ekiGroup.groupNumber}</sup></p>
+                                        <p class="text-xs font-medium text-gray-500 px-2 pt-1 pb-0.5">{word.trim()}<sup>{i + 1}</sup></p>
                                     {/if}
                                     {#each ekiGroup.explanations as explanation, j (j)}
                                         <button
@@ -122,7 +122,7 @@
             <Textarea
                     id="explanation"
                     bind:value={explanation}
-                    placeholder="Enter the explanation or description"
+                    placeholder={$_('add.explanationPlaceholder')}
                     class="w-full border-gray-300 focus:ring-blue-400 focus:border-blue-400 rounded-md min-h-[120px]"
             />
         </div>
@@ -134,7 +134,7 @@
                     disabled={!word.trim() || !explanation || !(selectedCategoryName || newCategoryName.trim()) || loading}
                     on:click={saveWord}
             >
-                {#if loading}Saving...{:else}Submit{/if}
+                {#if loading}{$_('common.saving')}{:else}{$_('add.submit')}{/if}
             </Button>
         </div>
 
@@ -145,7 +145,7 @@
 {#if manageModalOpen}
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-md max-w-md w-full">
-            <h2 class="text-lg font-semibold mb-4">Edit Categories</h2>
+            <h2 class="text-lg font-semibold mb-4">{$_('add.editCategoriesTitle')}</h2>
 
             <div class="space-y-2 max-h-80 overflow-y-auto">
                 {#each categories as category (category.id)}
@@ -156,7 +156,7 @@
                         />
 
                         <Button size="sm" variant="outline" on:click={() => saveCategory(category)}>
-                            Save
+                            {$_('common.save')}
                         </Button>
 
                         <!-- TODO: show some tooltip of why it can't be deleted -->
@@ -174,14 +174,14 @@
 
                     {#if category.wordCount > 0}
                         <p class="text-xs text-gray-500 ml-1">
-                            Used in {category.wordCount} word(s)
+                            {$_('add.usedInWords', { values: { count: category.wordCount } })}
                         </p>
                     {/if}
                 {/each}
             </div>
 
             <div class="flex justify-end mt-4">
-                <Button variant="outline" on:click={closeManageModal}>Close</Button>
+                <Button variant="outline" on:click={closeManageModal}>{$_('common.close')}</Button>
             </div>
         </div>
     </div>
@@ -195,6 +195,7 @@
     import {fetchCategories} from '$lib/services/categoryService';
     import {Plus, Pencil, Trash2, BookOpen, Loader} from '@lucide/svelte';
     import {onMount} from 'svelte';
+    import { _ } from 'svelte-i18n';
 
     let word = '';
     let explanation = '';
@@ -225,14 +226,14 @@
 
     async function saveCategory(category: { id: number; name: string }) {
         if (!category.id) {
-            alert('Invalid category ID'); // TODO: replace with a nicer notification
+            alert($_('add.invalidCategoryId'));  // TODO: replace with a nicer notification
             return;
         }
         try {
             await GlossarClient.updateCategory(category.id, category.name);
-            alert('Category updated!'); // TODO: replace with a nicer notification
+            alert($_('add.categoryUpdated'));  // TODO: replace with a nicer notification
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to update category'); // TODO: replace with a nicer notification
+            alert(err instanceof Error ? err.message : $_('add.failedUpdateCategory')); // TODO: replace with a nicer notification
         }
     }
 
@@ -241,7 +242,7 @@
         try {
             await reloadCategories();
         } catch (err) {
-            alert('Failed to reload categories'); // TODO: replace with a nicer notification
+            alert($_('add.failedReloadCategories')); // TODO: replace with a nicer notification
         }
     }
 
@@ -253,14 +254,14 @@
             const explanationGroups = await GlossarClient.fetchEkiExplanations(word.trim());
             const allExplanations = explanationGroups.flatMap(group => group.explanations);
             if (allExplanations.length === 0) {
-                ekiError = 'No explanation found in EKI for this word.';
+                ekiError = $_('add.ekiNoResult');
             } else if (allExplanations.length === 1) {
                 explanation = allExplanations[0];
             } else {
                 ekiExplanations = explanationGroups;
             }
         } catch {
-            ekiError = 'EKI search for explanation failed';
+            ekiError = $_('add.ekiFailed');
         } finally {
             ekiLoading = false;
         }
@@ -288,7 +289,7 @@
             const finalCategoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
 
             if (!finalCategoryName) {
-                alert('Please select or enter a category.');
+                alert($_('add.selectOrEnterCategory'));
                 return;
             }
 
@@ -304,27 +305,27 @@
             try {
                 await reloadCategories();
             } catch (err) {
-                alert('Failed to reload categories'); // TODO: replace with a nicer notification
+                alert($_('add.failedReloadCategories'));  // TODO: replace with a nicer notification
             }
 
-            alert('Word saved successfully!'); // TODO: replace with a nicer notification
+            alert($_('add.wordSaved'));  // TODO: replace with a nicer notification
         } catch (err) {
-            alert('Error saving word.'); // TODO: replace with a nicer notification
+            alert($_('add.errorSavingWord'));  // TODO: replace with a nicer notification
         } finally {
             loading = false;
         }
     }
 
     async function deleteCategory(category: { id: number; name: string }) {
-        if (!confirm(`Delete category "${category.name}"?`)) return; // TODO: replace with a nicer confirmation dialog
+        if (!confirm($_('add.confirmDeleteCategory', { values: { name: category.name } }))) return;
 
         try {
             await GlossarClient.deleteCategory(category.id);
             await reloadCategories();
 
-            alert('Category deleted!'); // TODO: replace with a nicer notification
+            alert($_('add.categoryDeleted')); // TODO: replace with a nicer notification
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Failed to delete category'); // TODO: replace with a nicer notification
+            alert(err instanceof Error ? err.message : $_('add.failedDeleteCategory')); // TODO: replace with a nicer notification
         }
     }
 

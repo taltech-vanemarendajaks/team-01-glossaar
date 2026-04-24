@@ -3,12 +3,13 @@
     import Button from '$lib/components/ui/button/button.svelte';
     import { page } from '$app/stores'; // TODO: deprecated
     import { isAuthenticated } from '$lib/stores/auth';
+    import { _ } from 'svelte-i18n';
 
     const routes = [
-        { name: 'Login', href: '/login', authenticated: false },
-        { name: 'Add', href: '/add', authenticated: true },
-        { name: 'List', href: '/list', authenticated: true },
-        { name: 'Quiz', href: '/quiz', authenticated: true },
+        { key: 'login', href: '/login', authenticated: false },
+        { key: 'add', href: '/add', authenticated: true },
+        { key: 'list', href: '/list', authenticated: true },
+        { key: 'quiz', href: '/quiz', authenticated: true },
     ];
 
     type ListItemProps = {
@@ -34,7 +35,7 @@
     <NavigationMenu.List class="flex w-full p-1">
         {#each routes.filter((item) => !('authenticated' in item) || item.authenticated === $isAuthenticated) as item (item.href)}
             {@render ListItem({
-                title: item.name,
+                title: $_(`nav.${item.key}`),
                 href: item.href,
                 active: $page.url.pathname === item.href
             })}

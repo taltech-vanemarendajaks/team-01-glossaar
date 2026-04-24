@@ -1,23 +1,16 @@
 name: Deploy
 
 on:
-  # workflow_dispatch:
-  #   inputs:
-  #     component:
-  #       description: Application component to do a pull and restart on the server
-  #       type: choice
-  #       required: true
-  #       options:
-  #         - frontend
-  #         - backend
-
   workflow_dispatch:
-  workflow_call:
-  #   inputs:
-  #     component:
-  #       description: Application component to do a pull and restart on the server
-  #       type: string
-  #       required: true
+    inputs:
+      component:
+        description: Application component to do a pull and restart on the server
+        type: choice
+        required: true
+        options:
+          - frontend
+          - backend
+
 jobs:
   trigger:
     runs-on: ubuntu-latest
@@ -34,6 +27,7 @@ jobs:
             cd /home/ubuntu/team-01-glossaar/infra
 
             git pull
-            docker compose pull
-            docker compose up --detach --force-recreate
+
+            docker compose pull ${{ inputs.component }}
+            docker compose up --detach
 

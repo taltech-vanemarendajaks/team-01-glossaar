@@ -1,6 +1,7 @@
 
 <script lang="ts">
     import { Button } from "$lib/components/ui/button/index.js";
+    import { _ } from 'svelte-i18n';
 
     type Provider = {
         name: string;
@@ -18,7 +19,7 @@
     {#each providers as provider (provider.name)}
         <Button variant="outline" href={provider.href}>
             <img src={provider.icon} alt={provider.name + " logo"} class="w-5 h-5" />
-            Login with {provider.name}
+            {$_('login.loginWith', { values: { provider: provider.name } })}
         </Button>
     {/each}
 </div>
