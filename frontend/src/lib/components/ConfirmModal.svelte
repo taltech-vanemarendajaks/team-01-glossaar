@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import Button from './ui/button/button.svelte';
     import { _ } from 'svelte-i18n';
 
     export let open = false;
@@ -50,22 +51,20 @@
             <p class="mt-2 text-sm text-zinc-600">{message}</p>
 
             <div class="mt-5 flex justify-end gap-2">
-                <button
-                    type="button"
-                    class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 disabled:opacity-60"
+                <Button
+                    variant="outline"
                     on:click={onCancel}
                     disabled={loading}
                 >
                     {resolvedCancel}
-                </button>
-                <button
-                    type="button"
-                    class="h-10 rounded-lg bg-red-600 px-4 text-sm font-semibold text-white disabled:opacity-60"
+                </Button>
+                <Button
+                    variant="destructive"
                     on:click={onConfirm}
                     disabled={loading}
                 >
                     {#if loading}{$_('common.deleting')}{:else}{resolvedConfirm}{/if}
-                </button>
+                </Button>
             </div>
         </div>
     </div>

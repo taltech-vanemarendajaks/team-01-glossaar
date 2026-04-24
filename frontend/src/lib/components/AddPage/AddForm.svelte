@@ -41,14 +41,12 @@
                             }
                         }}
                 >
-                    <span class="flex items-center gap-2">
-                        {#if addingNew}
-                            {$_('common.cancel')}
-                        {:else}
-                            <Plus class="w-4 h-4"/>
-                            {$_('add.addNew')}
-                        {/if}
-                    </span>
+					{#if addingNew}
+						{$_('common.cancel')}
+					{:else}
+						<Plus />
+						{$_('add.addNew')}
+					{/if}
                 </Button>
 
                 <Button
@@ -57,10 +55,8 @@
                         size="sm"
                         on:click={() => (manageModalOpen = true)}
                 >
-                    <span class="flex items-center gap-2">
-                        <Pencil class="w-4 h-4"/>
-                        {$_('add.manageCategories')}
-                    </span>
+                    <Pencil />
+                    {$_('add.manageCategories')}
                 </Button>
             </div>
         </div>
@@ -134,7 +130,7 @@
             />
         </div>
 
-        <div class="mt-6 flex justify-center">
+        <div class="mt-6 flex justify-end">
             <Button
                     variant="default"
                     size="lg"
@@ -148,7 +144,7 @@
     </div>
 </div>
 
-
+<!-- TODO: decouple to another component  -->
 {#if manageModalOpen}
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-md max-w-md w-full">
@@ -166,15 +162,15 @@
                             {$_('common.save')}
                         </Button>
 
+                        <!-- TODO: show some tooltip of why it can't be deleted -->
                         <Button
-                                size="sm"
-                                variant="outline"
-                                disabled={category.wordCount > 0}
-                                on:click={() => deleteCategory(category)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                            disabled={category.wordCount > 0}
+                            on:click={() => deleteCategory(category)}
                         >
-                             <span class="border-red-500 text-red-600 hover:bg-red-50">
-                                 <Trash2 class="w-4 h-4"/>
-                             </span>
+                            <Trash2 />
                         </Button>
 
                     </div>
@@ -251,14 +247,14 @@
 
     async function saveCategory(category: { id: number; name: string }) {
         if (!category.id) {
-            alert($_('add.invalidCategoryId'));
+            alert($_('add.invalidCategoryId'));  // TODO: replace with a nicer notification
             return;
         }
         try {
             await GlossarClient.updateCategory(category.id, category.name);
-            alert($_('add.categoryUpdated'));
+            alert($_('add.categoryUpdated'));  // TODO: replace with a nicer notification
         } catch (err) {
-            alert(err instanceof Error ? err.message : $_('add.failedUpdateCategory'));
+            alert(err instanceof Error ? err.message : $_('add.failedUpdateCategory')); // TODO: replace with a nicer notification
         }
     }
 
@@ -267,7 +263,7 @@
         try {
             await reloadCategories();
         } catch (err) {
-            alert($_('add.failedReloadCategories'));
+            alert($_('add.failedReloadCategories')); // TODO: replace with a nicer notification
         }
     }
 
@@ -334,12 +330,12 @@
             try {
                 await reloadCategories();
             } catch (err) {
-                alert($_('add.failedReloadCategories'));
+                alert($_('add.failedReloadCategories'));  // TODO: replace with a nicer notification
             }
 
-            alert($_('add.wordSaved'));
+            alert($_('add.wordSaved'));  // TODO: replace with a nicer notification
         } catch (err) {
-            alert($_('add.errorSavingWord'));
+            alert($_('add.errorSavingWord'));  // TODO: replace with a nicer notification
         } finally {
             loading = false;
         }
@@ -352,9 +348,9 @@
             await GlossarClient.deleteCategory(category.id);
             await reloadCategories();
 
-            alert($_('add.categoryDeleted'));
+            alert($_('add.categoryDeleted')); // TODO: replace with a nicer notification
         } catch (err) {
-            alert(err instanceof Error ? err.message : $_('add.failedDeleteCategory'));
+            alert(err instanceof Error ? err.message : $_('add.failedDeleteCategory')); // TODO: replace with a nicer notification
         }
     }
 
