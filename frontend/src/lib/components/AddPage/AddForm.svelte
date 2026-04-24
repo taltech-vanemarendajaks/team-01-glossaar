@@ -276,14 +276,14 @@
 
             // TODO: display a toast/notice instead of setting the error in the dropdown
             if (allExplanations.length === 0) {
-                lookupError =  $_('add.ekiNoResult');
+                lookupError =  $_('add.lookupNoResult');
             } else if (allExplanations.length === 1) {
                 explanation = allExplanations[0];
             } else {
                 lookupExplanations = groups;
             }
         } catch {
-            lookupError = $_('add.ekiFailed');
+            lookupError = $_('add.lookupFailed');
         } finally {
             lookupLoading[localeObj.code] = false;
         }
