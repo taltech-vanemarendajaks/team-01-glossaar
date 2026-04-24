@@ -46,7 +46,7 @@
         "wordPlaceholder": "Sisesta sõna",
         "explanation": "Selgitus",
         "explanationPlaceholder": "Sisesta selgitus või kirjeldus",
-        "lookupNoResult": "Sellele sõnale ei leitud \"{source}\"}-st selgitust.",
+        "lookupNoResult": "Sellele sõnale ei leitud \"{source}\"-st selgitust.",
         "lookupFailed": "\"{source}\" otsing ebaõnnestus",
         "submit": "Salvesta sõna",
         "editCategoriesTitle": "Muuda kategooriaid",

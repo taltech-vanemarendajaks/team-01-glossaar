@@ -86,10 +86,10 @@
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                disabled={!word.trim() || Object.values(lookupLoading).some(Boolean)}
-                                on:click={() => fetchLookup(localeObj)}
+                                disabled={!word.trim() || lookupLoading}
+                                on:click={() => lookUpWord(localeObj)}
                         >
-                                {#if lookupLoading[localeObj.code]}
+                                {#if lookupLoadingMap[localeObj.code]}
                                     <Loader class="animate-spin" />
                                 {:else}
                                     <BookOpen />
@@ -138,7 +138,7 @@
             <Button
                     variant="default"
                     size="lg"
-                    disabled={!word.trim() || !explanation || !(selectedCategoryName || newCategoryName.trim()) || loading}
+                    disabled={!word.trim() || !explanation || !(selectedCategoryName || newCategoryName.trim()) || loading || lookupLoading}
                     on:click={saveWord}
             >
                 {#if loading}{$_('common.saving')}{:else}{$_('add.submit')}{/if}
@@ -203,22 +203,29 @@
     import {Plus, Pencil, Trash2, BookOpen, Loader} from '@lucide/svelte';
     import {onMount} from 'svelte';
     import { _ } from 'svelte-i18n';
+    import type { SupportedLocale } from '$lib/i18n';
 
-    // TODO: use another locales object
-    const locales = [
-        { code: 'ET', fetchAction: GlossarClient.fetchEkiExplanations },
-        { code: 'EN', fetchAction: GlossarClient.fetchWordnikExplanations },
+    type LocaleObj = {
+        code: SupportedLocale;
+        fetchAction: (word: string) => Promise<ExplanationGroup[]>;
+        source: string
+    };
+
+    const locales: LocaleObj[] = [
+        { code: 'et', fetchAction: GlossarClient.fetchEkiExplanations, source: 'EKI' },
+        { code: 'en', fetchAction: GlossarClient.fetchWordnikExplanations, source: 'Wordnik' },
     ];
 
     let word = '';
     let explanation = '';
     let loading = false;
 
-    // TODO: use another locales object
-    let lookupLoading: { [K in typeof locales[number]['code']]: boolean } = {
-        ET: false,
-        EN: false,
+    let lookupLoadingMap: { [K in SupportedLocale]: boolean } = {
+        et: false,
+        en: false,
     };
+
+    $: lookupLoading = Object.values(lookupLoadingMap).some(Boolean);
     let lookupError = '';
     let lookupExplanations: ExplanationGroup[] = [];
     let lookupDropdownRef: HTMLDivElement;
@@ -264,8 +271,8 @@
         }
     }
 
-    async function fetchLookup(localeObj: typeof locales[number]) {
-        lookupLoading[localeObj.code] = true;
+    async function lookUpWord(localeObj: typeof locales[number]) {
+        lookupLoadingMap[localeObj.code] = true;
         lookupError = '';
         lookupExplanations = [];
 
@@ -276,16 +283,16 @@
 
             // TODO: display a toast/notice instead of setting the error in the dropdown
             if (allExplanations.length === 0) {
-                lookupError =  $_('add.lookupNoResult');
+                lookupError =  $_('add.lookupNoResult', { values: { source: localeObj.source } });
             } else if (allExplanations.length === 1) {
                 explanation = allExplanations[0];
             } else {
                 lookupExplanations = groups;
             }
         } catch {
-            lookupError = $_('add.lookupFailed');
+            lookupError = $_('add.lookupFailed', { values: { source: localeObj.source } });
         } finally {
-            lookupLoading[localeObj.code] = false;
+            lookupLoadingMap[localeObj.code] = false;
         }
     }
 
