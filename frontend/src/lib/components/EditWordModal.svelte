@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import Button from '$lib/components/ui/button/button.svelte';
     import { _ } from 'svelte-i18n';
 
     export let open = false;
@@ -110,21 +111,20 @@
             </div>
 
             <div class="mt-5 flex justify-end gap-2">
-                <button
+                <Button
                     type="button"
-                    class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 disabled:opacity-60"
+                    variant="outline"
                     on:click={onCancel}
                     disabled={loading}
                 >
                     {$_('common.cancel')}
-                </button>
-                <button
+                </Button>
+                <Button
                     type="submit"
-                    class="h-10 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white disabled:opacity-60"
                     disabled={loading || !word.trim()}
                 >
                     {#if loading}{$_('common.saving')}{:else}{$_('common.save')}{/if}
-                </button>
+                </Button>
             </div>
         </form>
     </div>

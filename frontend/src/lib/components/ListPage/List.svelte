@@ -5,6 +5,7 @@
     import EditWordModal from '$lib/components/EditWordModal.svelte';
     import {GlossarClient} from "$lib/api/glossarClient";
     import { _ } from 'svelte-i18n';
+    import Button from '$lib/components/ui/button/button.svelte';
 
     type Word = {
         id: number;
@@ -173,11 +174,13 @@
         <div class="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
     {/if}
 
-    <form on:submit|preventDefault={applyFilter} class="rounded-md border border-zinc-200 bg-white p-4 shadow-sm">
-        <h2 class="mb-3 text-base font-semibold">{$_('list.search')}</h2>
-        <div class="grid gap-3 sm:grid-cols-2">
-            <input bind:value={listSearch} placeholder={$_('list.searchPlaceholder')}
-                   class="h-10 rounded-lg border border-zinc-300 px-3 text-sm sm:col-span-2"/>
+    <form on:submit|preventDefault={applyFilter} class="rounded-md border border-zinc-200 bg-white p-4 shadow-sm flex flex-col gap-3">
+        <h2 class="text-base font-semibold">{$_('list.search')}</h2>
+
+        <input bind:value={listSearch} placeholder={$_('list.searchPlaceholder')}
+        class="h-10 rounded-lg border border-zinc-300 px-3 text-sm w-full"/>
+
+        <div class="grid gap-3 grid-cols-2">
             <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
                 <option value={5}>{$_('list.perPage', { values: { count: 5 } })}</option>
                 <option value={10}>{$_('list.perPage', { values: { count: 10 } })}</option>
@@ -192,11 +195,11 @@
                 <option value="asc">{$_('list.ascending')}</option>
                 <option value="desc">{$_('list.descending')}</option>
             </select>
-            <button type="submit" disabled={filterLoading || wordsLoading}
-                    class="h-10 rounded-lg border border-zinc-300 bg-white text-sm font-medium sm:col-span-2">
-                {$_('common.done')}
-            </button>
         </div>
+
+        <Button type="submit" size="lg" className="self-end" disabled={filterLoading || wordsLoading || listSearch?.length === 0} >
+            Search
+        </Button>
     </form>
 
     <div class="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
@@ -225,22 +228,23 @@
                         <div class="flex items-center justify-between gap-3">
                             <div class="text-sm font-semibold text-zinc-900">{item.word}</div>
                             <div class="flex items-center gap-1">
-                                <button
-                                        type="button"
-                                        class="rounded-lg p-2 text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800"
+                                <Button
+                                        size="xs"
+                                        variant="ghost"
                                         aria-label={$_('list.editWordAria', { values: { word: item.word } })}
                                         on:click={() => openEditModal(item)}
                                 >
-                                    <Pencil class="h-4 w-4"/>
-                                </button>
-                                <button
-                                        type="button"
-                                        class="rounded-lg p-2 text-zinc-500 transition hover:bg-red-50 hover:text-red-600"
+                                    <Pencil />
+                                </Button>
+                                <Button
+                                        size="xs"
+                                        variant="ghost"
+                                        className="text-red-500 hover:bg-red-50 hover:text-red-600"
                                         aria-label={$_('list.deleteWordAria', { values: { word: item.word } })}
                                         on:click={() => openDeleteModal(item)}
                                 >
-                                    <Trash2 class="h-4 w-4"/>
-                                </button>
+                                    <Trash2 />
+                                </Button>
                             </div>
                         </div>
                         <div class="mt-1 text-sm text-zinc-600">
@@ -255,16 +259,14 @@
                 {/each}
             </ul>
 
-            <div class="mt-4 flex items-center justify-between gap-3">
-                <button type="button" on:click={previousPage} disabled={!hasPrevious || wordsLoading}
-                        class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium disabled:opacity-50">
+            <div class="mt-4 flex items-center justify-between">
+                <Button variant="outline" on:click={previousPage} disabled={!hasPrevious || wordsLoading}>
                     {$_('list.prev')}
-                </button>
+                </Button>
                 <div class="text-sm text-zinc-600">{$_('list.showingItems', { values: { count: words.length } })}</div>
-                <button type="button" on:click={nextPage} disabled={!hasNext || wordsLoading}
-                        class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium disabled:opacity-50">
+                <Button variant="outline" on:click={nextPage} disabled={!hasNext || wordsLoading}>
                     {$_('list.next')}
-                </button>
+                </Button>
             </div>
         {/if}
     </div>
