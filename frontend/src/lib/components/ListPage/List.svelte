@@ -6,6 +6,7 @@
     import {GlossarClient} from "$lib/api/glossarClient";
     import { _ } from 'svelte-i18n';
     import Button from '$lib/components/ui/button/button.svelte';
+    import { toast } from '$lib/stores/toast';
 
     type Word = {
         id: number;
@@ -24,8 +25,6 @@
     let words: Word[] = [];
     let wordsLoading = false;
     let filterLoading = false;
-    let error: string | null = null;
-    let success: string | null = null;
     let deleteLoading = false;
     let deleteTarget: Word | null = null;
     let editLoading = false;
@@ -42,7 +41,6 @@
     let sortDir = 'asc';
 
     async function loadWords(targetPage = page) {
-        error = null;
         wordsLoading = true;
         try {
             const data = await GlossarClient.getWords({
@@ -62,7 +60,7 @@
             sortBy = data.sortBy || sortBy;
             sortDir = data.sortDir || sortDir;
         } catch (e) {
-            error = e instanceof Error ? e.message : String(e);
+            toast.error(e instanceof Error ? e.message : String(e));
         } finally {
             wordsLoading = false;
         }
@@ -102,8 +100,6 @@
     async function confirmDelete() {
         if (!deleteTarget) return;
 
-        error = null;
-        success = null;
         deleteLoading = true;
         const target = deleteTarget;
         const fallbackPage = words.length === 1 && page > 0 ? page - 1 : page;
@@ -112,10 +108,10 @@
             await GlossarClient.deleteWord(target.id);
 
             deleteTarget = null;
-            success = $_('list.deletedToast', { values: { word: target.word } });
+            toast.success($_('list.deletedToast', { values: { word: target.word } }));
             await loadWords(fallbackPage);
         } catch (e) {
-            error = e instanceof Error ? e.message : String(e);
+            toast.error(e instanceof Error ? e.message : String(e));
         } finally {
             deleteLoading = false;
         }
@@ -135,8 +131,6 @@
 
         if (!editTarget) return;
 
-        error = null;
-        success = null;
         editLoading = true;
         const target = editTarget;
         const payload = event.detail;
@@ -149,10 +143,10 @@
             });
 
             editTarget = null;
-            success = $_('list.updatedToast', { values: { word: payload.word } });
+            toast.success($_('list.updatedToast', { values: { word: payload.word } }));
             await loadWords(page);
         } catch (e) {
-            error = e instanceof Error ? e.message : String(e);
+            toast.error(e instanceof Error ? e.message : String(e));
         } finally {
             editLoading = false;
         }
@@ -166,14 +160,6 @@
 </script>
 
 <div>
-    {#if error}
-        <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
-    {/if}
-
-    {#if success}
-        <div class="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>
-    {/if}
-
     <form on:submit|preventDefault={applyFilter} class="rounded-md border border-zinc-200 bg-white p-4 shadow-sm flex flex-col gap-3">
         <h2 class="text-base font-semibold">{$_('list.search')}</h2>
 
@@ -215,7 +201,8 @@
         </div>
 
         {#if wordsLoading}
-            <div class="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">{$_('list.loadingWords')}
+            <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">
+                {$_('list.loadingWords')}
             </div>
         {:else if words.length === 0}
             <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">

@@ -19,6 +19,7 @@
     let categoryName = '';
     let snapshotCategory = '';
 
+    // TODO: deprecated
     const dispatch = createEventDispatcher<{
         save: { word: string; explanation: string; categoryName: string };
         cancel: void;

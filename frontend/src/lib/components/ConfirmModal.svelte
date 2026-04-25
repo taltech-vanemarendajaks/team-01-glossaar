@@ -14,6 +14,7 @@
     $: resolvedConfirm = confirmText ?? $_('common.confirm');
     $: resolvedCancel = cancelText ?? $_('common.cancel');
 
+    // TODO: deprecated
     const dispatch = createEventDispatcher<{
         confirm: void;
         cancel: void;
