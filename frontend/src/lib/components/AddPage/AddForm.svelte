@@ -93,31 +93,26 @@
                                 {localeObj.code}
                         </Button>
                     {/each}
-                    <!-- TODO: set the error to notice/toast instead -->
-                    {#if lookupError || lookupExplanations.length > 0}
+                    {#if lookupExplanations.length > 0}
                         <div class="absolute right-0 top-full mt-1 w-80 max-h-60 overflow-y-auto rounded-lg border bg-white p-2 shadow-sm z-50">
-                            {#if lookupError}
-                                <p class="text-xs text-red-500 p-2">{lookupError}</p>
-                            {:else}
-                                {#each lookupExplanations as group, i (i)}
-                                    {#if i > 0}
-                                        <hr class="my-1 border-gray-200" />
-                                    {/if}
-                                    {#if lookupExplanations.length > 1}
-                                        <p class="text-xs font-medium text-gray-500 px-2 pt-1 pb-0.5">{word.trim()}<sup>{i + 1}</sup></p>
-                                    {/if}
-                                    {#each group.explanations as exp, j (j)}
-                                        <button
-                                            type="button"
-                                            class="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                                            on:click={() => selectExplanation(exp)}
-                                        >
-                                            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-                                            <span class="text-gray-400 mr-1">{j + 1}.</span><span>{@html exp}</span>
-                                        </button>
-                                    {/each}
+                            {#each lookupExplanations as group, i (i)}
+                                {#if i > 0}
+                                    <hr class="my-1 border-gray-200" />
+                                {/if}
+                                {#if lookupExplanations.length > 1}
+                                    <p class="text-xs font-medium text-gray-500 px-2 pt-1 pb-0.5">{word.trim()}<sup>{i + 1}</sup></p>
+                                {/if}
+                                {#each group.explanations as exp, j (j)}
+                                    <button
+                                        type="button"
+                                        class="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                                        on:click={() => selectExplanation(exp)}
+                                    >
+                                        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                                        <span class="text-gray-400 mr-1">{j + 1}.</span><span>{@html exp}</span>
+                                    </button>
                                 {/each}
-                            {/if}
+                            {/each}
                         </div>
                     {/if}
                 </div>
@@ -199,6 +194,7 @@
     import {Plus, Pencil, Trash2, BookOpen, Loader} from '@lucide/svelte';
     import {onMount} from 'svelte';
     import { _ } from 'svelte-i18n';
+    import { toast } from '$lib/stores/toast';
     import type { SupportedLocale } from '$lib/i18n';
 
     type LocaleObj = {
@@ -222,7 +218,6 @@
     };
 
     $: lookupLoading = Object.values(lookupLoadingMap).some(Boolean);
-    let lookupError = '';
     let lookupExplanations: ExplanationGroup[] = [];
     let lookupDropdownRef: HTMLDivElement;
 
@@ -247,14 +242,15 @@
 
     async function saveCategory(category: { id: number; name: string }) {
         if (!category.id) {
-            alert($_('add.invalidCategoryId'));  // TODO: replace with a nicer notification
+            toast.error($_('add.invalidCategoryId'));
             return;
         }
+
         try {
             await GlossarClient.updateCategory(category.id, category.name);
-            alert($_('add.categoryUpdated'));  // TODO: replace with a nicer notification
+            toast.success($_('add.categoryUpdated'));
         } catch (err) {
-            alert(err instanceof Error ? err.message : $_('add.failedUpdateCategory')); // TODO: replace with a nicer notification
+            toast.error(err instanceof Error ? err.message : $_('add.failedUpdateCategory'));
         }
     }
 
@@ -263,13 +259,12 @@
         try {
             await reloadCategories();
         } catch (err) {
-            alert($_('add.failedReloadCategories')); // TODO: replace with a nicer notification
+            toast.error($_('add.failedReloadCategories'));
         }
     }
 
     async function lookUpWord(localeObj: typeof locales[number]) {
         lookupLoadingMap[localeObj.code] = true;
-        lookupError = '';
         lookupExplanations = [];
 
         try {
@@ -279,14 +274,14 @@
 
             // TODO: display a toast/notice instead of setting the error in the dropdown
             if (allExplanations.length === 0) {
-                lookupError =  $_('add.lookupNoResult', { values: { source: localeObj.source } });
+                toast.error($_('add.lookupNoResult', { values: { source: localeObj.source } }));
             } else if (allExplanations.length === 1) {
                 explanation = allExplanations[0];
             } else {
                 lookupExplanations = groups;
             }
         } catch {
-            lookupError = $_('add.lookupFailed', { values: { source: localeObj.source } });
+            toast.error($_('add.lookupFailed', { values: { source: localeObj.source } }));
         } finally {
             lookupLoadingMap[localeObj.code] = false;
         }
@@ -299,7 +294,6 @@
 
     function dismissLookup() {
         lookupExplanations = [];
-        lookupError = '';
     }
 
     function handleWindowClick(e: MouseEvent) {
@@ -314,7 +308,7 @@
             const finalCategoryName = addingNew ? newCategoryName.trim() : selectedCategoryName;
 
             if (!finalCategoryName) {
-                alert($_('add.selectOrEnterCategory'));
+                toast.error($_('add.selectOrEnterCategory'));
                 return;
             }
 
@@ -330,12 +324,12 @@
             try {
                 await reloadCategories();
             } catch (err) {
-                alert($_('add.failedReloadCategories'));  // TODO: replace with a nicer notification
+                toast.error($_('add.failedReloadCategories'));
             }
 
-            alert($_('add.wordSaved'));  // TODO: replace with a nicer notification
+            toast.success($_('add.wordSaved'));
         } catch (err) {
-            alert($_('add.errorSavingWord'));  // TODO: replace with a nicer notification
+            toast.error($_('add.errorSavingWord'));
         } finally {
             loading = false;
         }
@@ -348,9 +342,9 @@
             await GlossarClient.deleteCategory(category.id);
             await reloadCategories();
 
-            alert($_('add.categoryDeleted')); // TODO: replace with a nicer notification
+            toast.success($_('add.categoryDeleted'));
         } catch (err) {
-            alert(err instanceof Error ? err.message : $_('add.failedDeleteCategory')); // TODO: replace with a nicer notification
+            toast.error(err instanceof Error ? err.message : $_('add.failedDeleteCategory'));
         }
     }
 

@@ -7,7 +7,7 @@
     // TODO: Add some fade-in/out animation to the toast
 
     const toastVariants = tv({
-        base: 'absolute flex flex-row justify-between items-center bg-white shadow-sm rounded-md border pr-1 gap-1 min-h-10 w-full z-100 p-2',
+        base: 'absolute flex flex-row justify-between items-center bg-white shadow-sm rounded-md border gap-1 min-h-10 w-full z-100 p-2 pr-8',
         variants: {
             type: {
                 success: 'border-emerald-200 bg-emerald-50 text-emerald-700',

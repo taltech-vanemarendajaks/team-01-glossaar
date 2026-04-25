@@ -42,8 +42,8 @@
     </div>
 {:else}
     <div class="mx-auto my-2 h-full w-full max-w-[24.5rem] flex flex-col p-2 rounded-md border">
-        <div class="sticky top-1 relative z-10">
-            <div class="flex flex-row justify-between items-center bg-white shadow-sm rounded-md border pr-1 gap-1">
+        <div class="flex flex-col sticky top-1 relative gap-2">
+            <div class="flex flex-row justify-between items-center bg-white shadow-sm rounded-md border pr-1 gap-1 h-10">
                 <Navigation />
                 <div class="flex flex-row items-center gap-1">
                     <DropdownMenu.Root>
