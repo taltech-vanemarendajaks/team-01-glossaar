@@ -4,6 +4,5 @@ public record WordResponseDto(
     Long id,
     String word,
     String explanation,
-    String categoryName) {
-}
-
+    Long categoryId
+) {}

@@ -14,9 +14,7 @@ public class WordMapper {
             entity.getId(),
             entity.getWord(),
             entity.getExplanation(),
-            entity.getCategory() != null
-                ? entity.getCategory().getName()
-                : null
+            entity.getCategory() != null ? entity.getCategory().getId() : null
         );
     }
 

@@ -1,7 +1,5 @@
 package com.glossaar.backend.word;
 
-import com.glossaar.backend.user.UserEntity;
-import com.glossaar.backend.user.UserPrincipal;
 import com.glossaar.backend.word.dto.CreateWordRequestDto;
 import com.glossaar.backend.word.dto.GetWordsResponseDto;
 import com.glossaar.backend.word.dto.UpdateWordRequestDto;
@@ -19,7 +17,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -55,11 +52,9 @@ public class WordController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "word") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @AuthenticationPrincipal UserPrincipal principal
+            @RequestParam(defaultValue = "asc") String sortDir
     ) {
-        UserEntity user = principal.getUser();
-        Page<WordEntity> result = service.getAll(user, search, page, size, sortBy, sortDir);
+        Page<WordEntity> result = service.getAll(search, page, size, sortBy, sortDir);
         return mapper.toGetWordsResponseDto(result, search, sortBy, sortDir);
     }
 
@@ -90,9 +85,8 @@ public class WordController {
     })
     @BadRequestApiResponse
     @InternalServerErrorApiResponse
-    public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req, @AuthenticationPrincipal UserPrincipal principal) {
-        UserEntity user = principal.getUser();
-        WordEntity word = service.create(req.word(), req.explanation(), req.categoryName(), user);
+    public WordResponseDto create(@Valid @RequestBody CreateWordRequestDto req) {
+        WordEntity word = service.create(req.word(), req.explanation(), req.categoryName());
         return mapper.toResponseDto(word);
     }
 
@@ -108,11 +102,8 @@ public class WordController {
     @BadRequestApiResponse
     @NotFoundApiResponse
     @InternalServerErrorApiResponse
-    public WordResponseDto patch(@PathVariable Long id,
-                                 @Valid @RequestBody UpdateWordRequestDto req,
-                                 @AuthenticationPrincipal UserPrincipal principal
-    ) {
-        return mapper.toResponseDto(service.patch(id, req.word(), req.explanation(), req.categoryName(), principal.getUser()));
+    public WordResponseDto patch(@PathVariable Long id, @Valid @RequestBody UpdateWordRequestDto request) {
+        return mapper.toResponseDto(service.patch(id, request));
     }
 
     @DeleteMapping("/{id}")
@@ -127,7 +118,7 @@ public class WordController {
     })
     @NotFoundApiResponse
     @InternalServerErrorApiResponse
-    public void delete(@PathVariable Long id,@AuthenticationPrincipal UserPrincipal principal) {
-        service.delete(id, principal.getUser());
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }

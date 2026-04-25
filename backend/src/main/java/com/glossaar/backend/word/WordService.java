@@ -2,9 +2,7 @@ package com.glossaar.backend.word;
 
 import com.glossaar.backend.category.CategoryEntity;
 import com.glossaar.backend.category.CategoryService;
-import com.glossaar.backend.user.UserEntity;
-import com.glossaar.backend.userword.UserWordScoreEntity;
-import com.glossaar.backend.userword.UserWordScoreRepository;
+import com.glossaar.backend.word.dto.UpdateWordRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +21,8 @@ public class WordService {
 
     private final WordRepository repo;
     private final CategoryService categoryService;
-    private final UserWordScoreRepository userWordScoreRepository;
 
-    public Page<WordEntity> getAll(UserEntity user, String search, int page, int size, String sortBy, String sortDir) {
+    public Page<WordEntity> getAll(String search, int page, int size, String sortBy, String sortDir) {
         if (page < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page must be >= 0");
         }
@@ -39,15 +36,13 @@ public class WordService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, normalizedSortBy));
 
         if (normalizedSearch.isEmpty()) {
-            return repo.findAllByUser(user, pageable);
+            return repo.findAll(pageable);
         }
 
-        return repo.findByUserAndWordContainingIgnoreCaseOrUserAndExplanationContainingIgnoreCase(
-            user,
-            normalizedSearch,
-            user,
-            normalizedSearch,
-            pageable
+        return repo.findByWordContainingIgnoreCaseOrExplanationContainingIgnoreCase(
+                normalizedSearch,
+                normalizedSearch,
+                pageable
         );
     }
 
@@ -82,58 +77,53 @@ public class WordService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id));
     }
 
-    public List<WordEntity> getAllByCategoryIds(List<Long> categoryIds, UserEntity user) {
+    public List<WordEntity> getAllByCategoryIds(List<Long> categoryIds) {
         if (categoryIds == null || categoryIds.isEmpty()) {
             return List.of();
         }
-        return repo.findAllByCategoryIdsAndUser(categoryIds, user);
+        return repo.findAllByCategoryIds(categoryIds);
     }
 
     @Transactional
-    public WordEntity create(String word, String explanation, String categoryName, UserEntity user) {
+    public WordEntity create(String word, String explanation, String categoryName) {
         String validWord = requireNonBlank("word", word);
         String validExplanation = normalizeOptional(explanation);
         String validCategoryName = requireNonBlank("category", categoryName);
 
-        CategoryEntity category = categoryService.create(validCategoryName, user);
+        CategoryEntity category = categoryService.create(validCategoryName);
 
         WordEntity wordToBeAdded = new WordEntity();
         wordToBeAdded.setWord(validWord);
         wordToBeAdded.setExplanation(validExplanation);
         wordToBeAdded.setCategory(category);
-        wordToBeAdded.setUser(user);
 
-        WordEntity savedWord = repo.save(wordToBeAdded);
-        userWordScoreRepository.save(new UserWordScoreEntity(user, savedWord, 0));
-        return savedWord;
+        return repo.save(wordToBeAdded);
     }
 
     @Transactional
-    public WordEntity patch(Long id, String word, String explanation, String categoryName, UserEntity user) {
-        WordEntity entity = repo.findByIdAndUser(id, user)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id));
+    public WordEntity patch(Long id, UpdateWordRequestDto request) {
+        WordEntity entity = getById(id);
 
-
-        if (word != null) {
-            entity.setWord(requireNonBlank("word", word));
+        if (request.word() != null) {
+            entity.setWord(requireNonBlank("word",request.word()));
         }
-        if (explanation != null) {
-            entity.setExplanation(normalizeOptional(explanation));
+        if (request.explanation() != null) {
+            entity.setExplanation(normalizeOptional(request.explanation()));
         }
 
-        String validCategoryName = requireNonBlank("category", categoryName);
-        CategoryEntity category = categoryService.create(validCategoryName, user);
-        entity.setCategory(category);
-
+        if (request.categoryId() != null) {
+            CategoryEntity category = categoryService.getById(request.categoryId());
+            entity.setCategory(category);
+        }
         return repo.save(entity);
     }
 
     @Transactional
-    public void delete(Long id, UserEntity user) {
-        WordEntity entity = repo.findByIdAndUser(id, user)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id));
-
-        repo.delete(entity);
+    public void delete(Long id) {
+        if (!repo.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Word not found: " + id);
+        }
+        repo.deleteById(id);
     }
 
     private static String requireNonBlank(String field, String value) {
