@@ -10,7 +10,8 @@ flowchart TB
 	NginxContainer -->|/| FeContainer
 
 	BeContainer --> DbContainer
-	BeContainer --> EKI_SERVER
+	BeContainer --> Eki[external Estonian API]
+	BeContainer --> Wordnik[external English API]
 
 	subgraph Server
 		cron

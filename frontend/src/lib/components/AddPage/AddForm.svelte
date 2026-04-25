@@ -75,42 +75,45 @@
 
         <div class="mb-5 mt-8">
             <div class="flex items-center justify-between mb-1">
-                <label for="explanation" class="block text-sm font-medium text-gray-700">{$_('add.explanation')}</label>
-                <div class="relative" bind:this={ekiDropdownRef}>
-                    <Button
-                            type="button"
-                            variant="outline"
-                            size="xs"
-                            disabled={!word.trim() || ekiLoading}
-                            on:click={fetchFromEki}
-                    >
-                        {#if ekiLoading}
-                            <Loader class="animate-spin" />
-                            {$_('add.ekiLoading')}
-                        {:else}
-                            <BookOpen />
-                            {$_('add.ekiButton')}
-                        {/if}
-                    </Button>
-                    {#if ekiError || ekiExplanations.length > 0}
+                <label for="explanation" class="block text-sm font-medium text-gray-700">Explanation</label>
+                <div class="relative flex gap-2" bind:this={lookupDropdownRef}>
+                    {#each locales as localeObj (localeObj.code)}
+                        <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={!word.trim() || lookupLoading}
+                                on:click={() => lookUpWord(localeObj)}
+                        >
+                                {#if lookupLoadingMap[localeObj.code]}
+                                    <Loader class="animate-spin" />
+                                {:else}
+                                    <BookOpen />
+                                {/if}
+                                {localeObj.code}
+                        </Button>
+                    {/each}
+                    <!-- TODO: set the error to notice/toast instead -->
+                    {#if lookupError || lookupExplanations.length > 0}
                         <div class="absolute right-0 top-full mt-1 w-80 max-h-60 overflow-y-auto rounded-lg border bg-white p-2 shadow-sm z-50">
-                            {#if ekiError}
-                                <p class="text-xs text-red-500 p-2">{ekiError}</p>
+                            {#if lookupError}
+                                <p class="text-xs text-red-500 p-2">{lookupError}</p>
                             {:else}
-                                {#each ekiExplanations as ekiGroup, i (i)}
+                                {#each lookupExplanations as group, i (i)}
                                     {#if i > 0}
                                         <hr class="my-1 border-gray-200" />
                                     {/if}
-                                    {#if ekiExplanations.length > 1}
+                                    {#if lookupExplanations.length > 1}
                                         <p class="text-xs font-medium text-gray-500 px-2 pt-1 pb-0.5">{word.trim()}<sup>{i + 1}</sup></p>
                                     {/if}
-                                    {#each ekiGroup.explanations as explanation, j (j)}
+                                    {#each group.explanations as exp, j (j)}
                                         <button
                                             type="button"
-                                            class="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors cursor-pointer"
-                                            on:click={() => selectExplanation(explanation)}
+                                            class="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                                            on:click={() => selectExplanation(exp)}
                                         >
-                                            <span class="text-gray-400 mr-1">{j + 1}.</span>{explanation}
+                                            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                                            <span class="text-gray-400 mr-1">{j + 1}.</span><span>{@html exp}</span>
                                         </button>
                                     {/each}
                                 {/each}
@@ -131,7 +134,7 @@
             <Button
                     variant="default"
                     size="lg"
-                    disabled={!word.trim() || !explanation || !(selectedCategoryName || newCategoryName.trim()) || loading}
+                    disabled={!word.trim() || !explanation || !(selectedCategoryName || newCategoryName.trim()) || loading || lookupLoading}
                     on:click={saveWord}
             >
                 {#if loading}{$_('common.saving')}{:else}{$_('add.submit')}{/if}
@@ -196,14 +199,32 @@
     import {Plus, Pencil, Trash2, BookOpen, Loader} from '@lucide/svelte';
     import {onMount} from 'svelte';
     import { _ } from 'svelte-i18n';
+    import type { SupportedLocale } from '$lib/i18n';
+
+    type LocaleObj = {
+        code: SupportedLocale;
+        fetchAction: (word: string) => Promise<ExplanationGroup[]>;
+        source: string
+    };
+
+    const locales: LocaleObj[] = [
+        { code: 'et', fetchAction: GlossarClient.fetchEkiExplanations, source: 'EKI' },
+        { code: 'en', fetchAction: GlossarClient.fetchWordnikExplanations, source: 'Wordnik' },
+    ];
 
     let word = '';
     let explanation = '';
     let loading = false;
-    let ekiLoading = false;
-    let ekiError = '';
-    let ekiExplanations: ExplanationGroup[] = [];
-    let ekiDropdownRef: HTMLDivElement;
+
+    let lookupLoadingMap: { [K in SupportedLocale]: boolean } = {
+        et: false,
+        en: false,
+    };
+
+    $: lookupLoading = Object.values(lookupLoadingMap).some(Boolean);
+    let lookupError = '';
+    let lookupExplanations: ExplanationGroup[] = [];
+    let lookupDropdownRef: HTMLDivElement;
 
     let categories: { id: number; name: string; wordCount: number }[] = [];
     let selectedCategoryName = '';
@@ -246,40 +267,44 @@
         }
     }
 
-    async function fetchFromEki() {
-        ekiLoading = true;
-        ekiError = '';
-        ekiExplanations = [];
+    async function lookUpWord(localeObj: typeof locales[number]) {
+        lookupLoadingMap[localeObj.code] = true;
+        lookupError = '';
+        lookupExplanations = [];
+
         try {
-            const explanationGroups = await GlossarClient.fetchEkiExplanations(word.trim());
-            const allExplanations = explanationGroups.flatMap(group => group.explanations);
+            const groups = await localeObj.fetchAction(word.trim());
+
+            const allExplanations = groups.flatMap(g => g.explanations);
+
+            // TODO: display a toast/notice instead of setting the error in the dropdown
             if (allExplanations.length === 0) {
-                ekiError = $_('add.ekiNoResult');
+                lookupError =  $_('add.lookupNoResult', { values: { source: localeObj.source } });
             } else if (allExplanations.length === 1) {
                 explanation = allExplanations[0];
             } else {
-                ekiExplanations = explanationGroups;
+                lookupExplanations = groups;
             }
         } catch {
-            ekiError = $_('add.ekiFailed');
+            lookupError = $_('add.lookupFailed', { values: { source: localeObj.source } });
         } finally {
-            ekiLoading = false;
+            lookupLoadingMap[localeObj.code] = false;
         }
     }
 
     function selectExplanation(selected: string) {
         explanation = selected;
-        ekiExplanations = [];
+        lookupExplanations = [];
     }
 
-    function dismissEki() {
-        ekiExplanations = [];
-        ekiError = '';
+    function dismissLookup() {
+        lookupExplanations = [];
+        lookupError = '';
     }
 
     function handleWindowClick(e: MouseEvent) {
-        if (ekiDropdownRef && !ekiDropdownRef.contains(e.target as Node)) {
-            dismissEki();
+        if (lookupDropdownRef && !lookupDropdownRef.contains(e.target as Node)) {
+            dismissLookup();
         }
     }
 
