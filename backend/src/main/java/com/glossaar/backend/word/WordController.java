@@ -102,8 +102,8 @@ public class WordController {
     @BadRequestApiResponse
     @NotFoundApiResponse
     @InternalServerErrorApiResponse
-    public WordResponseDto patch(@PathVariable Long id, @Valid @RequestBody UpdateWordRequestDto req) {
-        return mapper.toResponseDto(service.patch(id, req.word(), req.explanation()));
+    public WordResponseDto patch(@PathVariable Long id, @Valid @RequestBody UpdateWordRequestDto request) {
+        return mapper.toResponseDto(service.patch(id, request));
     }
 
     @DeleteMapping("/{id}")

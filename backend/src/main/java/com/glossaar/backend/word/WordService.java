@@ -2,6 +2,7 @@ package com.glossaar.backend.word;
 
 import com.glossaar.backend.category.CategoryEntity;
 import com.glossaar.backend.category.CategoryService;
+import com.glossaar.backend.word.dto.UpdateWordRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -100,16 +101,20 @@ public class WordService {
     }
 
     @Transactional
-    public WordEntity patch(Long id, String word, String explanation) {
+    public WordEntity patch(Long id, UpdateWordRequestDto request) {
         WordEntity entity = getById(id);
 
-        if (word != null) {
-            entity.setWord(requireNonBlank("word", word));
+        if (request.word() != null) {
+            entity.setWord(requireNonBlank("word",request.word()));
         }
-        if (explanation != null) {
-            entity.setExplanation(normalizeOptional(explanation));
+        if (request.explanation() != null) {
+            entity.setExplanation(normalizeOptional(request.explanation()));
         }
 
+        if (request.categoryId() != null) {
+            CategoryEntity category = categoryService.getById(request.categoryId());
+            entity.setCategory(category);
+        }
         return repo.save(entity);
     }
 

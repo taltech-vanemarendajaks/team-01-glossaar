@@ -8,6 +8,7 @@ public record UpdateWordRequestDto(
         @Size(max = 255, message = "word must be at most 255 characters")
         String word,
         @Size(max = 1000, message = "explanation must be at most 1000 characters")
-        String explanation
+        String explanation,
+        Long categoryId
 ) {
 }
