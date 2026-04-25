@@ -1,4 +1,6 @@
 import { writable } from 'svelte/store';
+import { _ } from 'svelte-i18n';
+
 
 export type ToastType = 'success' | 'error';
 
@@ -14,6 +16,7 @@ const TOAST_TIMEOUTS: Record<ToastType, number> = {
     error: 5000,
 };
 
+// TODO: consider allowing multiple toasts at once
 function createToastStore() {
     const { subscribe, update } = writable<Toast | null>();
 
@@ -29,7 +32,8 @@ function createToastStore() {
         subscribe,
         clear,
         success: (title: string, subtitle: string | null = null) => add(title, subtitle, 'success'),
-        error: (title: string, subtitle: string | null = null) => add(title, subtitle, 'error'),
+        // TODO: handle destructuring message from API error here?
+        error: (title: string | null = null, subtitle: string | null = null) => add(title || _('common.error'), subtitle, 'error'),
     };
 }
 

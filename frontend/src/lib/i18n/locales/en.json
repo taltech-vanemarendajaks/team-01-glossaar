@@ -10,7 +10,8 @@
         "close": "Close",
         "done": "Done",
         "tryAgain": "Try again",
-        "logout": "Log out"
+        "logout": "Log out",
+        "error": "Technical error, please try again"
     },
     "nav": {
         "login": "Login",
