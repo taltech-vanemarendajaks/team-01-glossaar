@@ -4,6 +4,7 @@
     import { GlossarClient, type QuizQuestion } from '$lib/api/glossarClient';
     import Button from '$lib/components/ui/button/button.svelte';
     import { _ } from 'svelte-i18n';
+    import { toast } from '$lib/stores/toast';
 
     type Status = 'loading' | 'ready' | 'empty' | 'submitting' | 'error';
 
@@ -11,7 +12,6 @@
     let question: QuizQuestion | null = $state(null);
     let selected: number | undefined = $state(undefined);
     let error: string | null = $state(null);
-    let submitError: string | null = $state(null);
 
     let isAnswered = $derived(selected !== undefined);
 
@@ -32,7 +32,6 @@
     async function loadQuestion() {
         status = 'loading';
         error = null;
-        submitError = null;
         selected = undefined;
         question = null;
         try {
@@ -47,11 +46,10 @@
     async function next() {
         if (!question || selected === undefined || status === 'submitting') return;
         status = 'submitting';
-        submitError = null;
         try {
             await GlossarClient.submitQuizAnswer(question.wordId, selected === question.correctIndex);
         } catch (e) {
-            submitError = e instanceof Error ? e.message : $_('quiz.failedSave');
+            toast.error(e instanceof Error ? e.message : $_('quiz.failedSave'));
         }
         await loadQuestion();
     }
@@ -103,12 +101,6 @@
                 </button>
             {/each}
         </div>
-
-        {#if submitError}
-            <div class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-center text-xs text-amber-700">
-                {$_('quiz.answerNotSaved', { values: { error: submitError } })}
-            </div>
-        {/if}
 
         <Button
             on:click={next}
