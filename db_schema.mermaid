@@ -1,6 +1,8 @@
 erDiagram
     USERS ||--o{ USER_AUTH_PROVIDERS : registers
     USERS ||--o{ USER_WORD_SCORES : tracks
+    USERS ||--o{ WORDS : owns
+    USERS ||--o{ CATEGORIES : owns
     CATEGORIES ||--o{ WORDS : contains
     WORDS ||--o{ QUIZ_WORDS : "included in"
     QUIZZES ||--o{ QUIZ_WORDS : has
@@ -18,11 +20,13 @@ erDiagram
         bigint user_id FK
         string provider_name
         string provider_user_id
+        string avatar_url "nullable"
     }
 
     CATEGORIES {
         bigint id PK
         string name "unique"
+        bigint user_id FK
     }
 
     WORDS {
@@ -30,6 +34,7 @@ erDiagram
         string word
         string explanation "nullable"
         bigint category_id FK "nullable"
+        bigint user_id FK
     }
 
     QUIZZES {
