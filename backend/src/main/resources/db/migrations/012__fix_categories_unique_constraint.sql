@@ -1,3 +1,6 @@
+--liquibase formatted sql
+
+--changeset glossaar:012 dbms:postgresql
 ALTER TABLE categories
     DROP CONSTRAINT categories_name_key;
 
