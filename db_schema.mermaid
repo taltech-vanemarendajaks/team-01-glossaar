@@ -4,8 +4,8 @@ erDiagram
     USERS ||--o{ WORDS : owns
     USERS ||--o{ CATEGORIES : owns
     CATEGORIES ||--o{ WORDS : contains
-    WORDS ||--o{ QUIZ_WORDS : "included in"
-    QUIZZES ||--o{ QUIZ_WORDS : has
+    %% WORDS ||--o{ QUIZ_WORDS : "included in"
+    %% QUIZZES ||--o{ QUIZ_WORDS : has
     WORDS ||--o{ USER_WORD_SCORES : scores
 
     USERS {
@@ -37,16 +37,16 @@ erDiagram
         bigint user_id FK
     }
 
-    QUIZZES {
-        bigint id PK
-        string title
-        timestamp created_at
-    }
+    %% QUIZZES {
+    %%     bigint id PK
+    %%     string title
+    %%     timestamp created_at
+    %% }
 
-    QUIZ_WORDS {
-        bigint quiz_id FK
-        bigint word_id FK
-    }
+    %% QUIZ_WORDS {
+    %%     bigint quiz_id FK
+    %%     bigint word_id FK
+    %% }
 
     USER_WORD_SCORES {
         bigint id PK
