@@ -10,7 +10,8 @@
         "close": "Sulge",
         "done": "Valmis",
         "tryAgain": "Proovi uuesti",
-        "logout": "Logi välja"
+        "logout": "Logi välja",
+        "error": "Tehniline tõrge, proovi uuesti"
     },
     "nav": {
         "login": "Logi sisse",

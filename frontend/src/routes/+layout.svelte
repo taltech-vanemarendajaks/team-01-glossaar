@@ -12,6 +12,7 @@
     import { locale, _ } from 'svelte-i18n';
     import { buttonVariants } from '$lib/components/ui/button';
     import { setLocale, SUPPORTED_LOCALES } from '$lib/i18n';
+    import ToastContainer from '$lib/components/ToastContainer.svelte';
 
     onMount(async () => {
         await auth.init();
@@ -41,37 +42,40 @@
     </div>
 {:else}
     <div class="mx-auto my-2 h-full w-full max-w-[24.5rem] flex flex-col p-2 rounded-md border">
-        <div class="flex flex-row justify-between items-center sticky top-1 bg-white shadow-sm rounded-md border pr-1 gap-1 z-10">
-            <Navigation />
-            <div class="flex flex-row items-center gap-1">
-                <DropdownMenu.Root>
-                    <DropdownMenu.Trigger
-                        class={buttonVariants({ variant: 'ghost', size: 'sm' }) + ' hover:cursor-pointer'}
-                    >
-                        {$_('lang.label', { values: { code: ($locale ?? '').slice(0, 2) } })}
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content align="end">
-                        {#each SUPPORTED_LOCALES as code (code)}
-                            <DropdownMenu.Item
-                                class="hover:cursor-pointer"
-                                onSelect={() => setLocale(code)}
-                            >
-                                {$_(`lang.${code}`)} ({code.toUpperCase()})
-                            </DropdownMenu.Item>
-                        {/each}
-                    </DropdownMenu.Content>
-                </DropdownMenu.Root>
-                {#if $isAuthenticated}
+        <div class="flex flex-col sticky top-1 relative gap-2">
+            <div class="flex flex-row justify-between items-center bg-white shadow-sm rounded-md border pr-1 gap-1 h-10">
+                <Navigation />
+                <div class="flex flex-row items-center gap-1">
                     <DropdownMenu.Root>
-                        <DropdownMenu.Trigger class="hover:cursor-pointer" >
-                            <UserAvatar />
+                        <DropdownMenu.Trigger
+                            class={buttonVariants({ variant: 'ghost', size: 'sm' }) + ' hover:cursor-pointer'}
+                        >
+                            {$_('lang.label', { values: { code: ($locale ?? '').slice(0, 2) } })}
                         </DropdownMenu.Trigger>
-                        <DropdownMenu.Content class="w-28" align="end">
-                            <DropdownMenu.Item class="hover:cursor-pointer" variant="destructive" onSelect={logout}>{$_('common.logout')}</DropdownMenu.Item>
+                        <DropdownMenu.Content align="end">
+                            {#each SUPPORTED_LOCALES as code (code)}
+                                <DropdownMenu.Item
+                                    class="hover:cursor-pointer"
+                                    onSelect={() => setLocale(code)}
+                                >
+                                    {$_(`lang.${code}`)} ({code.toUpperCase()})
+                                </DropdownMenu.Item>
+                            {/each}
                         </DropdownMenu.Content>
                     </DropdownMenu.Root>
-                {/if}
+                    {#if $isAuthenticated}
+                        <DropdownMenu.Root>
+                            <DropdownMenu.Trigger class="hover:cursor-pointer" >
+                                <UserAvatar />
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content class="w-28" align="end">
+                                <DropdownMenu.Item class="hover:cursor-pointer" variant="destructive" onSelect={logout}>{$_('common.logout')}</DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                        </DropdownMenu.Root>
+                    {/if}
+                </div>
             </div>
+            <ToastContainer />
         </div>
         <main class="rounded-md py-4 flex flex-col gap-4">
             {@render children()}
