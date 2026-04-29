@@ -5,6 +5,7 @@
     import Button from '$lib/components/ui/button/button.svelte';
     import { _ } from 'svelte-i18n';
     import { toast } from '$lib/stores/toast';
+    import { translateError } from '$lib/i18n/translateError';
 
     type Status = 'loading' | 'ready' | 'empty' | 'submitting' | 'error';
 
@@ -38,7 +39,7 @@
             question = await GlossarClient.getQuizQuestion() ?? null;
             status = question ? 'ready' : 'empty';
         } catch (e) {
-            error = e instanceof Error ? e.message : $_('quiz.failedLoad');
+            error = translateError(e, 'request: failed');
             status = 'error';
         }
     }
@@ -49,7 +50,7 @@
         try {
             await GlossarClient.submitQuizAnswer(question.wordId, selected === question.correctIndex);
         } catch (e) {
-            toast.error(e instanceof Error ? e.message : $_('quiz.failedSave'));
+            toast.error(translateError(e, 'quiz: submitFailed'));
         }
         await loadQuestion();
     }

@@ -15,11 +15,22 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.List;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ValidationErrorResponse> handleValidation(ValidationException ex, HttpServletRequest request) {
+        ValidationErrorResponse body = new ValidationErrorResponse(
+                "ValidationException." + ex.getMessage(),
+                ex.getArgs(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ApiErrorResponse> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request) {
@@ -78,6 +89,13 @@ public class ApiExceptionHandler {
             int status,
             String error,
             String message,
+            String path
+    ) {
+    }
+
+    public record ValidationErrorResponse(
+            String error,
+            List<String> args,
             String path
     ) {
     }

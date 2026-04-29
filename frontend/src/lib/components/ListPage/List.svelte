@@ -5,6 +5,7 @@
     import EditWordModal from '$lib/components/EditWordModal.svelte';
     import {GlossarClient} from "$lib/api/glossarClient";
     import { _ } from 'svelte-i18n';
+    import { translateError } from '$lib/i18n/translateError';
     import Button from '$lib/components/ui/button/button.svelte';
     import { toast } from '$lib/stores/toast';
 
@@ -60,7 +61,7 @@
             sortBy = data.sortBy || sortBy;
             sortDir = data.sortDir || sortDir;
         } catch (e) {
-            toast.error(e instanceof Error ? e.message : String(e));
+            toast.error(translateError(e, 'words: loadFailed'));
         } finally {
             wordsLoading = false;
         }
@@ -111,7 +112,7 @@
             toast.success($_('list.deletedToast', { values: { word: target.word } }));
             await loadWords(fallbackPage);
         } catch (e) {
-            toast.error(e instanceof Error ? e.message : String(e));
+            toast.error(translateError(e, 'word: deleteFailed'));
         } finally {
             deleteLoading = false;
         }
@@ -146,7 +147,7 @@
             toast.success($_('list.updatedToast', { values: { word: payload.word } }));
             await loadWords(page);
         } catch (e) {
-            toast.error(e instanceof Error ? e.message : String(e));
+            toast.error(translateError(e, 'word: updateFailed'));
         } finally {
             editLoading = false;
         }

@@ -1,5 +1,6 @@
 package com.glossaar.backend.quiz;
 
+import com.glossaar.backend.ValidationException;
 import com.glossaar.backend.category.CategoryRepository;
 import com.glossaar.backend.quiz.dto.QuizBatchAnswerRequestDto;
 import com.glossaar.backend.quiz.dto.QuizQuestionResponseDto;
@@ -45,10 +46,7 @@ public class QuizService {
                 ? quizRepository.findLowestScoreQuizWordsByUserId(userId, quizSetSize)
                 : quizRepository.findLowestScoreQuizWordsByUserIdAndCategoryId(userId, categoryId, quizSetSize);
         if (quizWords.size() < quizSetSize) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "At least " + quizSetSize + " words with explanations are required for quiz for user: " + userId
-            );
+            throw new ValidationException("quiz: notEnoughWords", String.valueOf(quizSetSize));
         }
 
         List<QuizQuestionResponseDto> questionSet = new ArrayList<>(quizSetSize);
@@ -65,10 +63,7 @@ public class QuizService {
             options.addAll(distractors);
 
             if (options.size() < OPTIONS_PER_QUESTION) {
-                throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "At least " + OPTIONS_PER_QUESTION + " unique explanations are required in the vocabulary for quiz options"
-                );
+                throw new ValidationException("quiz: notEnoughDistractors", String.valueOf(OPTIONS_PER_QUESTION));
             }
 
             Collections.shuffle(options);
@@ -81,13 +76,10 @@ public class QuizService {
 
     private static int normalizeQuizSetSize(int requestedSize) {
         if (requestedSize < 1) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "size must be at least 1");
+            throw new ValidationException("size: outOfRange", "1", String.valueOf(MAX_QUIZ_SET_SIZE));
         }
         if (requestedSize > MAX_QUIZ_SET_SIZE) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "size must be between 1 and " + MAX_QUIZ_SET_SIZE
-            );
+            throw new ValidationException("size: outOfRange", "1", String.valueOf(MAX_QUIZ_SET_SIZE));
         }
         return requestedSize;
     }
@@ -99,19 +91,13 @@ public class QuizService {
         }
 
         if (request.answers().size() > MAX_SUBMIT_BATCH_SIZE) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "answers must contain at most " + MAX_SUBMIT_BATCH_SIZE + " items"
-            );
+            throw new ValidationException("answers: tooMany", String.valueOf(MAX_SUBMIT_BATCH_SIZE));
         }
 
         Set<Long> seenWordIds = new HashSet<>();
         for (QuizBatchAnswerRequestDto.QuizAnswerItemDto answer : request.answers()) {
             if (!seenWordIds.add(answer.wordId())) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "answers must not contain duplicate wordId values"
-                );
+                throw new ValidationException("answers: duplicateWordId");
             }
         }
 

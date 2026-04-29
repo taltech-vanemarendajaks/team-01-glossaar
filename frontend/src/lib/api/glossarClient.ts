@@ -26,10 +26,10 @@ export interface Category {
 }
 
 export interface QuizQuestion {
-  wordId: number;
-  word: string;
-  options: string[];
-  correctIndex: number;
+    wordId: number;
+    word: string;
+    options: string[];
+    correctIndex: number;
 }
 
 export interface ExplanationGroup {
@@ -47,13 +47,43 @@ export interface MeResponse {
 }
 
 const API_BASE = '/api';
+const VALIDATION_PREFIX = 'ValidationException.';
+
+export class ValidationError extends Error {
+    readonly key: string;
+    readonly args: string[];
+    constructor(key: string, args: string[]) {
+        super(key);
+        this.name = 'ValidationError';
+        this.key = key;
+        this.args = args;
+    }
+}
+
+async function throwIfError(response: Response, fallbackKey: string): Promise<void> {
+    if (response.ok) return;
+
+    let body: unknown = null;
+    try {
+        body = await response.json();
+    } catch {
+        body = null;
+    }
+
+    const error = (body as { error?: string } | null)?.error;
+    if (typeof error === 'string' && error.startsWith(VALIDATION_PREFIX)) {
+        const key = error.slice(VALIDATION_PREFIX.length);
+        const args = (body as { args?: unknown }).args;
+        throw new ValidationError(key, Array.isArray(args) ? args.map(String) : []);
+    }
+
+    throw new ValidationError(fallbackKey, [String(response.status)]);
+}
 
 export const GlossarClient = {
     async getCategories(): Promise<Category[]> {
         const response = await fetch(`${API_BASE}/categories`);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch categories: ${response.status}`);
-        }
+        await throwIfError(response, 'categories: loadFailed');
         return response.json();
     },
 
@@ -64,11 +94,7 @@ export const GlossarClient = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name })
         });
-
-        if (!response.ok) {
-            const text = await response.text().catch(() => '');
-            throw new Error(`Failed to save category: ${response.status} ${text}`);
-        }
+        await throwIfError(response, 'category: updateFailed');
     },
 
     async deleteCategory(id: number): Promise<void> {
@@ -76,18 +102,7 @@ export const GlossarClient = {
             method: 'DELETE',
             credentials: 'include'
         });
-
-        if (!response.ok) {
-            let message = `Failed to delete category (${response.status})`;
-            try {
-                const data = await response.json();
-                if (data?.message) message = data.message;
-            } catch {
-                const text = await response.text();
-                if (text) message = text;
-            }
-            throw new Error(message);
-        }
+        await throwIfError(response, 'category: deleteFailed');
     },
 
     async createWord(word: string, explanation: string, categoryName: string) {
@@ -101,12 +116,7 @@ export const GlossarClient = {
                 categoryName
             })
         });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed to create word: ${response.status} ${errorText}`);
-        }
-
+        await throwIfError(response, 'word: createFailed');
         return response.json() as Promise<Word>;
     },
 
@@ -115,10 +125,7 @@ export const GlossarClient = {
             method: 'DELETE',
             credentials: 'include'
         });
-
-        if (!response.ok) {
-            throw new Error(`Failed to delete word: ${response.status}`);
-        }
+        await throwIfError(response, 'word: deleteFailed');
     },
 
     async updateWord(id: number, payload: {
@@ -132,10 +139,7 @@ export const GlossarClient = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-
-        if (!response.ok) {
-            throw new Error(`Failed to update word: ${response.status}`);
-        }
+        await throwIfError(response, 'word: updateFailed');
     },
 
 
@@ -157,11 +161,7 @@ export const GlossarClient = {
         const response = await fetch(`${API_BASE}/words?${query.toString()}`, {
             credentials: 'include'
         });
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch words: ${response.status}`);
-        }
-
+        await throwIfError(response, 'words: loadFailed');
         return response.json();
     },
 
@@ -169,9 +169,7 @@ export const GlossarClient = {
         const response = await fetch(`${API_BASE}/quiz?size=1`, {
             credentials: 'include'
         });
-        if (!response.ok) {
-            throw new Error(`Failed to fetch quiz question: ${response.status}`);
-        }
+        await throwIfError(response, 'quiz: loadFailed');
         const questions: QuizQuestion[] = await response.json();
         return questions[0];
     },
@@ -185,25 +183,19 @@ export const GlossarClient = {
                 answers: [{ wordId, correct }]
             })
         });
-        if (!response.ok) {
-            throw new Error(`Failed to submit quiz answer: ${response.status}`);
-        }
+        await throwIfError(response, 'quiz: submitFailed');
     },
 
     async fetchEkiExplanations(word: string): Promise<ExplanationGroup[]> {
         const response = await fetch(`${API_BASE}/eki/explanations/${encodeURIComponent(word)}`);
-        if (!response.ok) {
-            throw new Error(`EKI explanation lookup failed: ${response.status}`);
-        }
+        await throwIfError(response, 'eki: lookupFailed');
         const data: { word: string; explanationGroups: ExplanationGroup[] } = await response.json();
         return data.explanationGroups;
     },
 
     async fetchWordnikExplanations(word: string): Promise<ExplanationGroup[]> {
         const response = await fetch(`${API_BASE}/wordnik/explanations/${encodeURIComponent(word)}`);
-        if (!response.ok) {
-            throw new Error(`Wordnik explanation lookup failed: ${response.status}`);
-        }
+        await throwIfError(response, 'wordnik: lookupFailed');
         const data: { word: string; explanationGroups: ExplanationGroup[] } = await response.json();
         return data.explanationGroups;
     },
@@ -212,11 +204,7 @@ export const GlossarClient = {
         const response = await fetch(`${API_BASE}/auth/me`, {
             credentials: 'include'
         });
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch user info: ${response.status}`);
-        }
-
+        await throwIfError(response, 'auth: meFailed');
         return response.json();
     },
 };
