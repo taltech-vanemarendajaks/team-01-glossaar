@@ -196,6 +196,7 @@
     import { _ } from 'svelte-i18n';
     import { toast } from '$lib/stores/toast';
     import type { SupportedLocale } from '$lib/i18n';
+    import { translateError } from '$lib/i18n/translateError';
 
     type LocaleObj = {
         code: SupportedLocale;
@@ -250,7 +251,7 @@
             await GlossarClient.updateCategory(category.id, category.name);
             toast.success($_('add.categoryUpdated'));
         } catch (err) {
-            toast.error(err instanceof Error ? err.message : $_('add.failedUpdateCategory'));
+            toast.error(translateError(err, 'category: updateFailed'));
         }
     }
 
@@ -259,7 +260,7 @@
         try {
             await reloadCategories();
         } catch (err) {
-            toast.error($_('add.failedReloadCategories'));
+            toast.error(translateError(err, 'categories: loadFailed'));
         }
     }
 
@@ -324,12 +325,12 @@
             try {
                 await reloadCategories();
             } catch (err) {
-                toast.error($_('add.failedReloadCategories'));
+                toast.error(translateError(err, 'categories: loadFailed'));
             }
 
             toast.success($_('add.wordSaved'));
         } catch (err) {
-            toast.error($_('add.errorSavingWord'));
+            toast.error(translateError(err, 'word: createFailed'));
         } finally {
             loading = false;
         }
@@ -344,7 +345,7 @@
 
             toast.success($_('add.categoryDeleted'));
         } catch (err) {
-            toast.error(err instanceof Error ? err.message : $_('add.failedDeleteCategory'));
+            toast.error(translateError(err, 'category: deleteFailed'));
         }
     }
 

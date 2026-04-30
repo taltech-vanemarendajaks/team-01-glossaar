@@ -54,14 +54,10 @@
         "usedInWords": "Used in {count} word(s)",
         "selectOrEnterCategory": "Please select or enter a category.",
         "wordSaved": "Word saved successfully!",
-        "errorSavingWord": "Error saving word.",
         "categoryUpdated": "Category updated!",
         "categoryDeleted": "Category deleted!",
         "confirmDeleteCategory": "Delete category \"{name}\"?",
-        "invalidCategoryId": "Invalid category ID",
-        "failedReloadCategories": "Failed to reload categories",
-        "failedUpdateCategory": "Failed to update category",
-        "failedDeleteCategory": "Failed to delete category"
+        "invalidCategoryId": "Invalid category ID"
     },
     "list": {
         "search": "Search",
@@ -97,10 +93,7 @@
     },
     "quiz": {
         "empty": "Add some words to your dictionary to start quizzing!",
-        "whatIs": "What is:",
-        "answerNotSaved": "Answer may not have been saved — {error}",
-        "failedLoad": "Failed to load question",
-        "failedSave": "Failed to save answer"
+        "whatIs": "What is:"
     },
     "confirm": {
         "defaultTitle": "Please confirm"
@@ -109,5 +102,42 @@
         "label": "Lang: {code}",
         "et": "Eesti",
         "en": "English"
+    },
+    "fields": {
+        "word": "Word",
+        "category": "Category",
+        "explanation": "Explanation",
+        "name": "Name",
+        "username": "Username"
+    },
+    "errors": {
+        "field: blank": "{0} must not be blank",
+        "page: negative": "Page must be 0 or greater",
+        "size: outOfRange": "Size must be between {0} and {1}",
+        "sortBy: invalid": "Invalid sort field",
+        "sortDir: invalid": "Sort direction must be ascending or descending",
+        "answers: tooMany": "You can submit at most {0} answers at once",
+        "answers: duplicateWordId": "Duplicate answers detected",
+
+        "username: exists": "Username already exists",
+        "category: hasWords": "Cannot delete: {0} word(s) still use this category",
+
+        "quiz: notEnoughWords": "You need at least {0} words with explanations to start a quiz",
+        "quiz: notEnoughDistractors": "Add more unique explanations to your dictionary to enable quizzes",
+
+        "request: failed": "Request failed. Please try again.",
+        "lookup: failed": "Lookup failed. Please try again.",
+        "categories: loadFailed": "Failed to load categories ({0})",
+        "category: updateFailed": "Failed to update category ({0})",
+        "category: deleteFailed": "Failed to delete category ({0})",
+        "word: createFailed": "Failed to create word ({0})",
+        "word: updateFailed": "Failed to update word ({0})",
+        "word: deleteFailed": "Failed to delete word ({0})",
+        "words: loadFailed": "Failed to load words ({0})",
+        "quiz: loadFailed": "Failed to load quiz question ({0})",
+        "quiz: submitFailed": "Failed to submit answer ({0})",
+        "eki: lookupFailed": "EKI explanation lookup failed ({0})",
+        "wordnik: lookupFailed": "Wordnik explanation lookup failed ({0})",
+        "auth: meFailed": "Failed to fetch user info ({0})"
     }
 }

@@ -1,5 +1,6 @@
 package com.glossaar.backend.category;
 
+import com.glossaar.backend.ValidationException;
 import com.glossaar.backend.user.UserEntity;
 import com.glossaar.backend.word.WordRepository;
 import jakarta.transaction.Transactional;
@@ -44,7 +45,7 @@ public class CategoryService {
 
         String newName = name.trim();
         if (newName.isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be empty");
+            throw new ValidationException("field: blank", "name");
         }
 
         category.setName(newName);
@@ -53,10 +54,7 @@ public class CategoryService {
 
     private static String normalizeName(String field, String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                field + " must not be blank"
-            );
+            throw new ValidationException("field: blank", field);
         }
 
         String trimmed = value.trim();
@@ -80,10 +78,7 @@ public class CategoryService {
         long wordCount = wordRepository.countByCategory_IdAndUser(id, user);
 
         if (wordCount > 0) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Cannot delete category: " + wordCount + " words reference it"
-            );
+            throw new ValidationException("category: hasWords", String.valueOf(wordCount));
         }
 
         repository.delete(category);
