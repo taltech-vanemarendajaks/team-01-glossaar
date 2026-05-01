@@ -61,7 +61,7 @@
     "list": {
         "search": "Otsing",
         "searchAction": "Otsi",
-        "searchPlaceholder": "otsi sõna/selgituse järgi",
+        "searchPlaceholder": "Otsi sõna/selgituse järgi",
         "perPage": "{count} lehe kohta",
         "sortByWord": "Sorteeri sõna järgi",
         "sortByExplanation": "Sorteeri selgituse järgi",
