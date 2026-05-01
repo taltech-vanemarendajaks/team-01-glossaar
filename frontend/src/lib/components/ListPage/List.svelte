@@ -8,6 +8,7 @@
     import { translateError } from '$lib/i18n/translateError';
     import Button from '$lib/components/ui/button/button.svelte';
     import { toast } from '$lib/stores/toast';
+    import Card from '../ui/card/card.svelte';
 
     type Word = {
         id: number;
@@ -160,8 +161,8 @@
 
 </script>
 
-<div>
-    <form on:submit|preventDefault={applyFilter} class="rounded-md border border-zinc-200 bg-white p-4 shadow-sm flex flex-col gap-3">
+<Card>
+    <form on:submit|preventDefault={applyFilter} class="flex flex-col gap-3">
         <h2 class="text-base font-semibold">{$_('list.search')}</h2>
 
         <input bind:value={listSearch} placeholder={$_('list.searchPlaceholder')}
@@ -185,80 +186,82 @@
         </div>
 
         <Button type="submit" size="lg" className="self-end" disabled={filterLoading || wordsLoading || listSearch?.length === 0} >
-            Search
+            {$_('list.searchAction')}
         </Button>
     </form>
+</Card>
 
-    <div class="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-        <div class="mb-3 flex items-center justify-between">
-            <h2 class="text-base font-semibold">{$_('list.words')}</h2>
-            <span class="text-sm text-zinc-600">
-                {#if wordsLoading}
-                    {$_('common.loading')}
-                {:else}
-                    {$_('list.totalPage', { values: { total: totalItems, page: page + 1, pages: Math.max(totalPages, 1) } })}
-                {/if}
-            </span>
-        </div>
 
-        {#if wordsLoading}
-            <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">
-                {$_('list.loadingWords')}
-            </div>
-        {:else if words.length === 0}
-            <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">
-                {$_('list.noWords')}
-            </div>
-        {:else}
-            <ul class="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200">
-                {#each words as item (item.id)}
-                    <li class="px-4 py-3">
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="text-sm font-semibold text-zinc-900">{item.word}</div>
-                            <div class="flex items-center gap-1">
-                                <Button
-                                        size="xs"
-                                        variant="ghost"
-                                        aria-label={$_('list.editWordAria', { values: { word: item.word } })}
-                                        on:click={() => openEditModal(item)}
-                                >
-                                    <Pencil />
-                                </Button>
-                                <Button
-                                        size="xs"
-                                        variant="ghost"
-                                        className="text-red-500 hover:bg-red-50 hover:text-red-600"
-                                        aria-label={$_('list.deleteWordAria', { values: { word: item.word } })}
-                                        on:click={() => openDeleteModal(item)}
-                                >
-                                    <Trash2 />
-                                </Button>
-                            </div>
-                        </div>
-                        <div class="mt-1 text-sm text-zinc-600">
-                            {item.explanation || $_('list.noExplanation')}
-                        </div>
-                        <div class="mt-3">
-                            <span class="rounded-full bg-blue-100 px-3 py-0.5 text-xs text-zinc-600">
-                                {item.categoryName}
-                            </span>
-                        </div>
-                    </li>
-                {/each}
-            </ul>
-
-            <div class="mt-4 flex items-center justify-between">
-                <Button variant="outline" on:click={previousPage} disabled={!hasPrevious || wordsLoading}>
-                    {$_('list.prev')}
-                </Button>
-                <div class="text-sm text-zinc-600">{$_('list.showingItems', { values: { count: words.length } })}</div>
-                <Button variant="outline" on:click={nextPage} disabled={!hasNext || wordsLoading}>
-                    {$_('list.next')}
-                </Button>
-            </div>
-        {/if}
+<Card>
+    <div class="mb-3 flex items-center justify-between">
+        <h2 class="text-base font-semibold">{$_('list.words')}</h2>
+        <span class="text-sm text-zinc-600">
+            {#if wordsLoading}
+                {$_('common.loading')}
+            {:else}
+                {$_('list.totalPage', { values: { total: totalItems, page: page + 1, pages: Math.max(totalPages, 1) } })}
+            {/if}
+        </span>
     </div>
-</div>
+
+    {#if wordsLoading}
+        <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">
+            {$_('list.loadingWords')}
+        </div>
+    {:else if words.length === 0}
+        <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-600">
+            {$_('list.noWords')}
+        </div>
+    {:else}
+        <ul class="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200">
+            {#each words as item (item.id)}
+                <li class="px-4 py-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="text-sm font-semibold text-zinc-900">{item.word}</div>
+                        <div class="flex items-center gap-1">
+                            <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    aria-label={$_('list.editWordAria', { values: { word: item.word } })}
+                                    on:click={() => openEditModal(item)}
+                            >
+                                <Pencil />
+                            </Button>
+                            <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                                    aria-label={$_('list.deleteWordAria', { values: { word: item.word } })}
+                                    on:click={() => openDeleteModal(item)}
+                            >
+                                <Trash2 />
+                            </Button>
+                        </div>
+                    </div>
+                    <div class="mt-1 text-sm text-zinc-600">
+                        {item.explanation || $_('list.noExplanation')}
+                    </div>
+                    <div class="mt-3">
+                        <span class="rounded-full bg-blue-100 px-3 py-0.5 text-xs text-zinc-600">
+                            {item.categoryName}
+                        </span>
+                    </div>
+                </li>
+            {/each}
+        </ul>
+
+        <div class="mt-4 flex items-center justify-between">
+            <Button variant="outline" on:click={previousPage} disabled={!hasPrevious || wordsLoading}>
+                {$_('list.prev')}
+            </Button>
+            <div class="text-sm text-zinc-600">{$_('list.showingItems', { values: { count: words.length } })}</div>
+            <Button variant="outline" on:click={nextPage} disabled={!hasNext || wordsLoading}>
+                {$_('list.next')}
+            </Button>
+        </div>
+    {/if}
+</Card>
+
 
 <ConfirmModal
         open={deleteTarget !== null}

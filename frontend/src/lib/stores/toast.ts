@@ -8,7 +8,10 @@ export type Toast = {
     title: string;
     subtitle: string | null;
     type: ToastType;
+    timeout: number;
 };
+
+export const TOAST_ANIMATION_DURATION = 400;
 
 const TOAST_TIMEOUT: Record<ToastType, number> = {
     success: 3000,
@@ -28,9 +31,9 @@ function createToastStore() {
     const add = (title: string, subtitle: string | null = null, type: ToastType = 'success') => {
         clear();
 
-        const timeout = TOAST_TIMEOUT[type];
+        const timeout = TOAST_TIMEOUT[type] + 2 * TOAST_ANIMATION_DURATION;
         timeoutId = setTimeout(clear, timeout);
-        update(() => ({ title, subtitle, type }));
+        update(() => ({ title, subtitle, type, timeout }));
     };
 
     return {

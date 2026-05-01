@@ -56,12 +56,12 @@
         "wordSaved": "Sõna salvestatud!",
         "categoryUpdated": "Kategooria uuendatud!",
         "categoryDeleted": "Kategooria kustutatud!",
-        "confirmDeleteCategory": "Kas kustutada kategooria \"{name}\"?",
         "invalidCategoryId": "Vigane kategooria ID"
     },
     "list": {
         "search": "Otsing",
-        "searchPlaceholder": "otsi sõna/selgituse järgi",
+        "searchAction": "Otsi",
+        "searchPlaceholder": "Otsi sõna/selgituse järgi",
         "perPage": "{count} lehe kohta",
         "sortByWord": "Sorteeri sõna järgi",
         "sortByExplanation": "Sorteeri selgituse järgi",

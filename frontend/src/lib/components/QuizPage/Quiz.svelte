@@ -86,10 +86,11 @@
 
         <div class="grid grid-cols-2 gap-2">
             {#each question.options as option, idx (idx)}
+                <!-- TODO: use card component? -->
                 <button
                     onclick={() => { selected = idx; }}
                     disabled={isAnswered}
-                    class="relative flex aspect-square cursor-pointer items-center justify-center rounded-xl p-3 text-center text-sm transition-colors disabled:cursor-default {cardClass(idx)}"
+                    class="relative flex aspect-square cursor-pointer items-center justify-center rounded-xl p-3 text-center text-sm transition-colors disabled:cursor-default shadow-sm {cardClass(idx)}"
                 >
                     <span class="line-clamp-6" title={option}>{option}</span>
                     {#if selected === idx}
