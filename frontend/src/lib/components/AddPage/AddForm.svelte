@@ -6,10 +6,11 @@
         <label for="category" class="block text-sm font-medium text-gray-700 mb-2">{$_('add.category')}</label>
 
         {#if !addingNew && categories.length > 0}
-            <select class="flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm
-            ring-offset-background transition outline-none
-            focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
-            aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40"
+            <select class={`flex h-9 w-full min-w-0 rounded-md border border-input px-3 py-1 text-base shadow-sm
+                    ring-offset-background transition outline-none
+                    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+                    border border-zinc-300 px-3 text-sm w-full
+                    ${selectedCategoryName === '' ? 'text-muted-foreground' : ''}`}
                     bind:value={selectedCategoryName}>
                 <option value="" disabled>{$_('add.selectCategory')}</option>
                 {#each categories as category (category.id)}
