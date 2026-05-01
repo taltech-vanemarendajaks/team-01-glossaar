@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { toast } from '$lib/stores/toast';
+    import { toast, TOAST_ANIMATION_DURATION } from '$lib/stores/toast';
     import { tv } from 'tailwind-variants';
     import Button from './ui/button/button.svelte';
     import { X } from '@lucide/svelte';
-
-    // TODO: Add some fade-in/out animation to the toast
+    import { fly } from 'svelte/transition';
 
     const toastVariants = tv({
-        base: 'absolute flex flex-row justify-between items-center bg-white shadow-sm rounded-md border gap-1 min-h-10 w-full z-100 p-2 pr-8',
+        base: 'absolute flex flex-row justify-between items-center bg-white shadow-sm rounded-md border gap-1 min-h-10 w-full z-100 p-2 pr-8 transition-all',
         variants: {
             type: {
                 success: 'border-emerald-200 bg-emerald-50 text-emerald-700',
@@ -21,7 +20,7 @@
 </script>
 
 {#if $toast}
-  <div class={toastVariants({ type: $toast.type })}>
+  <div class={toastVariants({ type: $toast.type })} in:fly={{ y: -200, duration: TOAST_ANIMATION_DURATION }} out:fly={{ y: -200, duration: TOAST_ANIMATION_DURATION }}>
     <div class="flex flex-col">
         <h3>{$toast.title}</h3>
         {#if $toast.subtitle}
