@@ -74,7 +74,7 @@
 
     <div class="mb-5 mt-8">
         <div class="flex items-center justify-between mb-1">
-            <label for="explanation" class="block text-sm font-medium text-gray-700">Explanation</label>
+            <label for="explanation" class="block text-sm font-medium text-gray-700">{$_('add.explanation')}</label>
             <div class="relative flex gap-2" bind:this={lookupDropdownRef}>
                 {#each locales as localeObj (localeObj.code)}
                     <Button
@@ -336,7 +336,6 @@
     }
 
     async function deleteCategory(category: { id: number; name: string }) {
-        if (!confirm($_('add.confirmDeleteCategory', { values: { name: category.name } }))) return;
 
         try {
             await GlossarClient.deleteCategory(category.id);

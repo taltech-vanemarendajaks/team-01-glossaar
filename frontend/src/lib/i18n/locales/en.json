@@ -56,7 +56,6 @@
         "wordSaved": "Word saved successfully!",
         "categoryUpdated": "Category updated!",
         "categoryDeleted": "Category deleted!",
-        "confirmDeleteCategory": "Delete category \"{name}\"?",
         "invalidCategoryId": "Invalid category ID"
     },
     "list": {
