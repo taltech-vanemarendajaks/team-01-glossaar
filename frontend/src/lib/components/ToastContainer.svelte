@@ -6,7 +6,7 @@
     import { fly } from 'svelte/transition';
 
     const toastVariants = tv({
-        base: 'absolute flex flex-row justify-between items-center bg-white shadow-sm rounded-md border gap-1 min-h-10 w-full z-100 p-2 pr-8 transition-all',
+        base: 'absolute flex flex-row justify-between items-center bg-white shadow-sm rounded-md border gap-1 min-h-10 w-full z-100 p-2 pr-8 transition-all overflow-hidden',
         variants: {
             type: {
                 success: 'border-emerald-200 bg-emerald-50 text-emerald-700',
@@ -15,6 +15,26 @@
         },
         defaultVariants: {
             type: 'success'
+        }
+    });
+
+    const STEPS = 100;
+    let progress = $state(0);
+
+    const progressBarWidthPercentage = $derived((progress / STEPS) * 100);
+
+    $effect(() => {
+        progress = 0;
+
+        if ($toast) {
+            const tick = $toast.timeout / STEPS;
+
+            const id = setInterval(() => {
+                progress += 1;
+                if (progress >= STEPS) clearInterval(id);
+            }, tick);
+
+            return () => clearInterval(id);
         }
     });
 </script>
@@ -30,5 +50,9 @@
     <Button on:click={toast.clear} size="xs" variant="ghost" className="hover:bg-transparent absolute top-2 right-1">
         <X />
     </Button>
+    <div
+        class="absolute bottom-0 left-0 h-0.5 transition-[width] ease-linear {$toast.type === 'error' ? 'bg-red-400' : 'bg-emerald-400'}"
+        style="width: {progressBarWidthPercentage}%;"
+    ></div>
   </div>
 {/if}
