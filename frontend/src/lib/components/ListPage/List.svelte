@@ -185,7 +185,7 @@
         </div>
 
         <Button type="submit" size="lg" className="self-end" disabled={filterLoading || wordsLoading || listSearch?.length === 0} >
-            Search
+            {$_('list.searchAction')}
         </Button>
     </form>
 

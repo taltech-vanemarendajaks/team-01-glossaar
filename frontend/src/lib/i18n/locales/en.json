@@ -61,6 +61,7 @@
     },
     "list": {
         "search": "Search",
+        "searchAction": "Search",
         "searchPlaceholder": "search by word/explanation",
         "perPage": "{count} per page",
         "sortByWord": "Sort by word",
