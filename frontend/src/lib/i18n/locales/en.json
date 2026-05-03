@@ -1,0 +1,143 @@
+{
+    "common": {
+        "loading": "Loading...",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "save": "Save",
+        "saving": "Saving...",
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "close": "Close",
+        "done": "Done",
+        "tryAgain": "Try again",
+        "logout": "Log out",
+        "error": "Technical error, please try again"
+    },
+    "nav": {
+        "login": "Login",
+        "add": "Add",
+        "list": "List",
+        "quiz": "Quiz"
+    },
+    "pages": {
+        "add": {
+            "title": "Create a new word",
+            "subtitle": "Add a new word to your glossary."
+        },
+        "list": {
+            "title": "Word list",
+            "subtitle": "Here you can find all the words you have added."
+        },
+        "login": {
+            "title": "Log in",
+            "subtitle": "Log in with an OAuth provider of your choice."
+        },
+        "quiz": {
+            "title": "Quiz",
+            "subtitle": "Test your knowledge and learn new words!"
+        }
+    },
+    "add": {
+        "category": "Category",
+        "selectCategory": "Select category",
+        "newCategoryPlaceholder": "Enter new category",
+        "addNew": "Add new",
+        "manageCategories": "Manage categories",
+        "word": "Word",
+        "wordPlaceholder": "Enter the word",
+        "explanation": "Explanation",
+        "explanationPlaceholder": "Enter the explanation or description",
+        "lookupNoResult": "No explanation found in \"{source}\" for this word.",
+        "lookupFailed": "\"{source}\" search for explanation failed",
+        "submit": "Submit",
+        "editCategoriesTitle": "Edit Categories",
+        "usedInWords": "Used in {count} word(s)",
+        "selectOrEnterCategory": "Please select or enter a category.",
+        "wordSaved": "Word saved successfully!",
+        "categoryUpdated": "Category updated!",
+        "categoryDeleted": "Category deleted!",
+        "invalidCategoryId": "Invalid category ID"
+    },
+    "list": {
+        "search": "Search",
+        "searchAction": "Search",
+        "searchPlaceholder": "search by word/explanation",
+        "perPage": "{count} per page",
+        "sortByWord": "Sort by word",
+        "sortByExplanation": "Sort by explanation",
+        "ascending": "Ascending (ASC)",
+        "descending": "Descending (DESC)",
+        "words": "Words",
+        "totalPage": "{total} total | page {page} / {pages}",
+        "loadingWords": "Loading words...",
+        "noWords": "No words yet.",
+        "noExplanation": "No explanation",
+        "showingItems": "Showing {count} item(s)",
+        "prev": "Prev",
+        "next": "Next",
+        "editWordAria": "Edit word {word}",
+        "deleteWordAria": "Delete word {word}",
+        "deleteTitle": "Delete word",
+        "deleteMessage": "Are you sure you want to delete word: \"{word}\"?",
+        "deletedToast": "Deleted \"{word}\"",
+        "updatedToast": "Updated \"{word}\""
+    },
+    "edit": {
+        "title": "Edit word",
+        "word": "Word",
+        "explanation": "Explanation",
+        "category": "Category"
+    },
+    "login": {
+        "loginWith": "Login with {provider}"
+    },
+    "quiz": {
+        "empty": "Add some words to your dictionary to start quizzing!",
+        "whatIs": "What is:"
+    },
+    "confirm": {
+        "defaultTitle": "Please confirm"
+    },
+    "lang": {
+        "label": "Lang: {code}",
+        "et": "Eesti",
+        "en": "English"
+    },
+    "fields": {
+        "word": "Word",
+        "category": "Category",
+        "explanation": "Explanation",
+        "name": "Name",
+        "username": "Username"
+    },
+    "errors": {
+        "field: blank": "{0} must not be blank",
+        "page: negative": "Page must be 0 or greater",
+        "size: outOfRange": "Size must be between {0} and {1}",
+        "sortBy: invalid": "Invalid sort field",
+        "sortDir: invalid": "Sort direction must be ascending or descending",
+        "answers: tooMany": "You can submit at most {0} answers at once",
+        "answers: duplicateWordId": "Duplicate answers detected",
+
+        "username: exists": "Username already exists",
+        "category: hasWords": "Cannot delete: {0} word(s) still use this category",
+
+        "quiz: notEnoughWords": "You need at least {0} words with explanations to start a quiz",
+        "quiz: notEnoughDistractors": "Add more unique explanations to your dictionary to enable quizzes",
+
+        "request: failed": "Request failed. Please try again.",
+        "lookup: failed": "Lookup failed. Please try again.",
+        "categories: loadFailed": "Failed to load categories ({0})",
+        "category: updateFailed": "Failed to update category ({0})",
+        "category: deleteFailed": "Failed to delete category ({0})",
+        "word: createFailed": "Failed to create word ({0})",
+        "word: updateFailed": "Failed to update word ({0})",
+        "word: deleteFailed": "Failed to delete word ({0})",
+        "words: loadFailed": "Failed to load words ({0})",
+        "quiz: loadFailed": "Failed to load quiz question ({0})",
+        "quiz: submitFailed": "Failed to submit answer ({0})",
+        "eki: lookupFailed": "EKI explanation lookup failed ({0})",
+        "wordnik: lookupFailed": "Wordnik explanation lookup failed ({0})",
+        "auth: meFailed": "Failed to fetch user info ({0})"
+    }
+}

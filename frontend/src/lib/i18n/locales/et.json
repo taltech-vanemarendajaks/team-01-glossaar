@@ -1,0 +1,143 @@
+{
+    "common": {
+        "loading": "Laadimine...",
+        "cancel": "Tühista",
+        "confirm": "Kinnita",
+        "save": "Salvesta",
+        "saving": "Salvestamine...",
+        "delete": "Kustuta",
+        "deleting": "Kustutamine...",
+        "close": "Sulge",
+        "done": "Valmis",
+        "tryAgain": "Proovi uuesti",
+        "logout": "Logi välja",
+        "error": "Tehniline tõrge, proovi uuesti"
+    },
+    "nav": {
+        "login": "Logi sisse",
+        "add": "Lisa",
+        "list": "Nimekiri",
+        "quiz": "Viktoriin"
+    },
+    "pages": {
+        "add": {
+            "title": "Loo uus sõna",
+            "subtitle": "Lisa uus sõna oma sõnastikku."
+        },
+        "list": {
+            "title": "Sõnade nimekiri",
+            "subtitle": "Siin on kõik sõnad, mille oled lisanud."
+        },
+        "login": {
+            "title": "Logi sisse",
+            "subtitle": "Logi sisse valitud OAuth pakkujaga."
+        },
+        "quiz": {
+            "title": "Viktoriin",
+            "subtitle": "Pane oma teadmised proovile ja õpi uusi sõnu!"
+        }
+    },
+    "add": {
+        "category": "Kategooria",
+        "selectCategory": "Vali kategooria",
+        "newCategoryPlaceholder": "Sisesta uus kategooria",
+        "addNew": "Lisa uus",
+        "manageCategories": "Halda kategooriaid",
+        "word": "Sõna",
+        "wordPlaceholder": "Sisesta sõna",
+        "explanation": "Selgitus",
+        "explanationPlaceholder": "Sisesta selgitus või kirjeldus",
+        "lookupNoResult": "Sellele sõnale ei leitud \"{source}\"-st selgitust.",
+        "lookupFailed": "\"{source}\" otsing ebaõnnestus",
+        "submit": "Salvesta sõna",
+        "editCategoriesTitle": "Muuda kategooriaid",
+        "usedInWords": "Kasutusel {count} sõnas",
+        "selectOrEnterCategory": "Palun vali või sisesta kategooria.",
+        "wordSaved": "Sõna salvestatud!",
+        "categoryUpdated": "Kategooria uuendatud!",
+        "categoryDeleted": "Kategooria kustutatud!",
+        "invalidCategoryId": "Vigane kategooria ID"
+    },
+    "list": {
+        "search": "Otsing",
+        "searchAction": "Otsi",
+        "searchPlaceholder": "Otsi sõna/selgituse järgi",
+        "perPage": "{count} lehe kohta",
+        "sortByWord": "Sorteeri sõna järgi",
+        "sortByExplanation": "Sorteeri selgituse järgi",
+        "ascending": "Kasvavalt (ASC)",
+        "descending": "Kahanevalt (DESC)",
+        "words": "Sõnad",
+        "totalPage": "{total} kokku | lehekülg {page} / {pages}",
+        "loadingWords": "Sõnade laadimine...",
+        "noWords": "Sõnu pole veel.",
+        "noExplanation": "Selgitus puudub",
+        "showingItems": "Näitan {count} kirjet",
+        "prev": "Eelmine",
+        "next": "Järgmine",
+        "editWordAria": "Muuda sõna {word}",
+        "deleteWordAria": "Kustuta sõna {word}",
+        "deleteTitle": "Kustuta sõna",
+        "deleteMessage": "Kas oled kindel, et soovid kustutada sõna: \"{word}\"?",
+        "deletedToast": "Kustutatud \"{word}\"",
+        "updatedToast": "Uuendatud \"{word}\""
+    },
+    "edit": {
+        "title": "Muuda sõna",
+        "word": "Sõna",
+        "explanation": "Selgitus",
+        "category": "Kategooria"
+    },
+    "login": {
+        "loginWith": "Logi sisse {provider}-ga"
+    },
+    "quiz": {
+        "empty": "Lisa oma sõnastikku sõnu, et alustada viktoriini!",
+        "whatIs": "Mis on:"
+    },
+    "confirm": {
+        "defaultTitle": "Palun kinnita"
+    },
+    "lang": {
+        "label": "Keel: {code}",
+        "et": "Eesti",
+        "en": "English"
+    },
+    "fields": {
+        "word": "Sõna",
+        "category": "Kategooria",
+        "explanation": "Selgitus",
+        "name": "Nimi",
+        "username": "Kasutajanimi"
+    },
+    "errors": {
+        "field: blank": "{0} ei tohi olla tühi",
+        "page: negative": "Lehekülje number peab olema 0 või suurem",
+        "size: outOfRange": "Suurus peab olema vahemikus {0} kuni {1}",
+        "sortBy: invalid": "Vigane sorteerimisväli",
+        "sortDir: invalid": "Sorteerimissuund peab olema kasvav või kahanev",
+        "answers: tooMany": "Korraga saab esitada kuni {0} vastust",
+        "answers: duplicateWordId": "Tuvastati korduvad vastused",
+
+        "username: exists": "Kasutajanimi on juba kasutusel",
+        "category: hasWords": "Ei saa kustutada: {0} sõna kasutab seda kategooriat",
+
+        "quiz: notEnoughWords": "Viktoriini alustamiseks on vaja vähemalt {0} sõna selgitustega",
+        "quiz: notEnoughDistractors": "Lisa rohkem unikaalseid selgitusi, et viktoriin oleks võimalik",
+
+        "request: failed": "Päring ebaõnnestus. Palun proovi uuesti.",
+        "lookup: failed": "Otsing ebaõnnestus. Palun proovi uuesti.",
+        "categories: loadFailed": "Kategooriate laadimine ebaõnnestus ({0})",
+        "category: updateFailed": "Kategooria uuendamine ebaõnnestus ({0})",
+        "category: deleteFailed": "Kategooria kustutamine ebaõnnestus ({0})",
+        "word: createFailed": "Sõna lisamine ebaõnnestus ({0})",
+        "word: updateFailed": "Sõna uuendamine ebaõnnestus ({0})",
+        "word: deleteFailed": "Sõna kustutamine ebaõnnestus ({0})",
+        "words: loadFailed": "Sõnade laadimine ebaõnnestus ({0})",
+        "quiz: loadFailed": "Küsimuse laadimine ebaõnnestus ({0})",
+        "quiz: submitFailed": "Vastuse salvestamine ebaõnnestus ({0})",
+        "eki: lookupFailed": "EKI selgituse otsing ebaõnnestus ({0})",
+        "wordnik: lookupFailed": "Wordniku selgituse otsing ebaõnnestus ({0})",
+        "auth: meFailed": "Kasutaja andmete laadimine ebaõnnestus ({0})"
+    }
+}

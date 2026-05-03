@@ -1,6 +1,7 @@
 package com.glossaar.backend.word;
 
 import com.glossaar.backend.IntegrationTest;
+import com.glossaar.backend.ValidationException;
 import com.glossaar.backend.word.dto.CreateWordRequestDto;
 import com.glossaar.backend.word.dto.GetWordsResponseDto;
 import com.glossaar.backend.word.dto.WordResponseDto;
@@ -10,8 +11,6 @@ import com.glossaar.backend.userword.UserWordScoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -99,12 +98,12 @@ class WordControllerTest extends IntegrationTest {
             "Bar"
         );
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             controller.create(request, testUserPrincipal);
         });
 
-        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(exception.getReason()).contains("word must not be blank");
+        assertThat(exception.getMessage()).isEqualTo("field: blank");
+        assertThat(exception.getArgs()).containsExactly("word");
 
         List<CategoryEntity> categories = categoryRepository.findAll();
         List<WordEntity> words = wordRepository.findAll();
@@ -120,12 +119,12 @@ class WordControllerTest extends IntegrationTest {
             "Bar"
         );
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             controller.create(request, testUserPrincipal);
         });
 
-        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(exception.getReason()).contains("explanation must not be blank");
+        assertThat(exception.getMessage()).isEqualTo("field: blank");
+        assertThat(exception.getArgs()).containsExactly("explanation");
 
         List<CategoryEntity> categories = categoryRepository.findAll();
         List<WordEntity> words = wordRepository.findAll();
@@ -141,12 +140,12 @@ class WordControllerTest extends IntegrationTest {
             "   "
         );
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             controller.create(request, testUserPrincipal);
         });
 
-        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(exception.getReason()).contains("category must not be blank");
+        assertThat(exception.getMessage()).isEqualTo("field: blank");
+        assertThat(exception.getArgs()).containsExactly("category");
 
         List<CategoryEntity> categories = categoryRepository.findAll();
         List<WordEntity> words = wordRepository.findAll();

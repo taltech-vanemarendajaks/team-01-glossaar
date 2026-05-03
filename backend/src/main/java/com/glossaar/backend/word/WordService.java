@@ -1,5 +1,6 @@
 package com.glossaar.backend.word;
 
+import com.glossaar.backend.ValidationException;
 import com.glossaar.backend.category.CategoryEntity;
 import com.glossaar.backend.category.CategoryService;
 import com.glossaar.backend.user.UserEntity;
@@ -27,10 +28,10 @@ public class WordService {
 
     public Page<WordEntity> getAll(UserEntity user, String search, int page, int size, String sortBy, String sortDir) {
         if (page < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page must be >= 0");
+            throw new ValidationException("page: negative");
         }
         if (size < 1 || size > 100) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "size must be between 1 and 100");
+            throw new ValidationException("size: outOfRange", "1", "100");
         }
 
         String normalizedSearch = search == null ? "" : search.trim();
@@ -58,10 +59,7 @@ public class WordService {
         String value = sortBy.trim().toLowerCase();
         return switch (value) {
             case "word", "explanation", "id" -> value;
-            default -> throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "sortBy must be one of: word, explanation, id"
-            );
+            default -> throw new ValidationException("sortBy: invalid");
         };
     }
 
@@ -73,7 +71,7 @@ public class WordService {
         return switch (value) {
             case "asc" -> Sort.Direction.ASC;
             case "desc", "dsc" -> Sort.Direction.DESC;
-            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "sortDir must be asc or desc");
+            default -> throw new ValidationException("sortDir: invalid");
         };
     }
 
@@ -138,7 +136,7 @@ public class WordService {
 
     private static String requireNonBlank(String field, String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, field + " must not be blank");
+            throw new ValidationException("field: blank", field);
         }
         return value.trim();
     }

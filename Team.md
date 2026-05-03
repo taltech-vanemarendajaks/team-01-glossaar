@@ -2,7 +2,6 @@
 
 ## Team Members & GH Usernames
 
-- **Daniil** --- `retr0mouse`
 - **Katri** --- `katri`
 - **Kenert** --- `karukenert`
 - **Liisi** --- `liisieenmaa`

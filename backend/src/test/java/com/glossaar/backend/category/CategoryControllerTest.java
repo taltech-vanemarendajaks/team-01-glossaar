@@ -1,6 +1,7 @@
 package com.glossaar.backend.category;
 
 import com.glossaar.backend.IntegrationTest;
+import com.glossaar.backend.ValidationException;
 import com.glossaar.backend.category.dto.CategoryResponseDto;
 import com.glossaar.backend.category.dto.CategoryUpdateDto;
 import com.glossaar.backend.userword.UserWordScoreRepository;
@@ -9,8 +10,6 @@ import com.glossaar.backend.word.WordRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -93,11 +92,12 @@ class CategoryControllerTest extends IntegrationTest {
         assertEquals(1, allCategoriesBeforeUpdate.size());
         assertEquals(existingCategory, allCategoriesBeforeUpdate.get(0));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             controller.update(existingCategory.getId(), new CategoryUpdateDto("   "), testUserPrincipal);
         });
 
-        assertEquals("Category name cannot be empty", exception.getMessage());
+        assertEquals("field: blank", exception.getMessage());
+        assertThat(exception.getArgs()).containsExactly("name");
 
         List<CategoryEntity> allCategoriesAfterUpdate = categoryRepository.findAll();
         assertEquals(1, allCategoriesAfterUpdate.size());
@@ -128,12 +128,12 @@ class CategoryControllerTest extends IntegrationTest {
         word.setCategory(food);
         wordRepository.save(word);
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             controller.delete(food.getId(), testUserPrincipal);
         });
 
-        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(exception.getReason()).contains("Cannot delete category: 1 words reference it");
+        assertThat(exception.getMessage()).isEqualTo("category: hasWords");
+        assertThat(exception.getArgs()).containsExactly("1");
 
         List<CategoryEntity> allCategoriesAfterDelete = categoryRepository.findAll();
         assertEquals(1, allCategoriesAfterDelete.size());

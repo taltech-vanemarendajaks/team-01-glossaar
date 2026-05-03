@@ -1,5 +1,6 @@
 package com.glossaar.backend.user;
 
+import com.glossaar.backend.ValidationException;
 import com.glossaar.backend.auth.OAuthAccount;
 import com.glossaar.backend.auth.OAuthAccountRepository;
 import com.glossaar.backend.auth.OAuthProvider;
@@ -51,7 +52,7 @@ public class UserService {
         String normalizedUsername = requireNonBlank("username", username);
 
         if (repository.existsByUsernameIgnoreCase(normalizedUsername)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
+            throw new ValidationException("username: exists");
         }
 
         try {
@@ -59,13 +60,13 @@ public class UserService {
                     new UserEntity(normalizedUsername, emailFromUsername(normalizedUsername)));
             return toResponse(saved);
         } catch (DataIntegrityViolationException ex) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
+            throw new ValidationException("username: exists");
         }
     }
 
     private static String requireNonBlank(String field, String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, field + " must not be blank");
+            throw new ValidationException("field: blank", field);
         }
         return value.trim();
     }

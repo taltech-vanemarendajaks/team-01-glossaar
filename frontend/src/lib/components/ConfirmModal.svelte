@@ -1,13 +1,20 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import Button from './ui/button/button.svelte';
+    import { _ } from 'svelte-i18n';
 
     export let open = false;
-    export let title = 'Please confirm';
+    export let title: string | undefined = undefined;
     export let message = '';
-    export let confirmText = 'Confirm';
-    export let cancelText = 'Cancel';
+    export let confirmText: string | undefined = undefined;
+    export let cancelText: string | undefined = undefined;
     export let loading = false;
 
+    $: resolvedTitle = title ?? $_('confirm.defaultTitle');
+    $: resolvedConfirm = confirmText ?? $_('common.confirm');
+    $: resolvedCancel = cancelText ?? $_('common.cancel');
+
+    // TODO: deprecated
     const dispatch = createEventDispatcher<{
         confirm: void;
         cancel: void;
@@ -37,30 +44,28 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
         role="dialog"
         aria-modal="true"
-        aria-label={title}
+        aria-label={resolvedTitle}
         on:click={onBackdropClick}
     >
         <div class="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="text-lg font-semibold text-zinc-900">{title}</h3>
+            <h3 class="text-lg font-semibold text-zinc-900">{resolvedTitle}</h3>
             <p class="mt-2 text-sm text-zinc-600">{message}</p>
 
             <div class="mt-5 flex justify-end gap-2">
-                <button
-                    type="button"
-                    class="h-10 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 disabled:opacity-60"
+                <Button
+                    variant="outline"
                     on:click={onCancel}
                     disabled={loading}
                 >
-                    {cancelText}
-                </button>
-                <button
-                    type="button"
-                    class="h-10 rounded-lg bg-red-600 px-4 text-sm font-semibold text-white disabled:opacity-60"
+                    {resolvedCancel}
+                </Button>
+                <Button
+                    variant="destructive"
                     on:click={onConfirm}
                     disabled={loading}
                 >
-                    {#if loading}Deleting...{:else}{confirmText}{/if}
-                </button>
+                    {#if loading}{$_('common.deleting')}{:else}{resolvedConfirm}{/if}
+                </Button>
             </div>
         </div>
     </div>

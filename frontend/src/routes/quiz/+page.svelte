@@ -1,7 +1,8 @@
 <script lang="ts">
     import PageHeader from '$lib/components/PageHeader.svelte';
     import Quiz from '$lib/components/QuizPage/Quiz.svelte';
+    import { _ } from 'svelte-i18n';
 </script>
 
-<PageHeader title="Quiz" subtitle="Test your knowledge and learn new words!" />
+<PageHeader title={$_('pages.quiz.title')} subtitle={$_('pages.quiz.subtitle')} />
 <Quiz />

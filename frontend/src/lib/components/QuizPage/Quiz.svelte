@@ -1,7 +1,11 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { Check } from '@lucide/svelte';
-    import { GlossarClient, type Category, type QuizQuestion } from '$lib/api/glossarClient';
+    import { GlossarClient, type QuizQuestion, type Category } from '$lib/api/glossarClient';
+    import Button from '$lib/components/ui/button/button.svelte';
+    import { _ } from 'svelte-i18n';
+    import { toast } from '$lib/stores/toast';
+    import { translateError } from '$lib/i18n/translateError';
 
     type Status = 'loading' | 'ready' | 'empty' | 'submitting' | 'error';
 
@@ -9,7 +13,6 @@
     let question: QuizQuestion | null = $state(null);
     let selected: number | undefined = $state(undefined);
     let error: string | null = $state(null);
-    let submitError: string | null = $state(null);
     let categories: Category[] = $state([]);
     let selectedCategoryId: number | null = $state(null);
     let categoriesLoading: boolean = $state(true);
@@ -34,14 +37,13 @@
     async function loadQuestion() {
         status = 'loading';
         error = null;
-        submitError = null;
         selected = undefined;
         question = null;
         try {
             question = await GlossarClient.getQuizQuestion(selectedCategoryId ?? undefined) ?? null;
             status = question ? 'ready' : 'empty';
         } catch (e) {
-            error = e instanceof Error ? e.message : 'Failed to load question';
+            error = translateError(e, 'request: failed');
             status = 'error';
         }
     }
@@ -68,11 +70,10 @@
     async function next() {
         if (!question || selected === undefined || status === 'submitting') return;
         status = 'submitting';
-        submitError = null;
         try {
             await GlossarClient.submitQuizAnswer(question.wordId, selected === question.correctIndex);
         } catch (e) {
-            submitError = e instanceof Error ? e.message : 'Failed to save answer';
+            toast.error(translateError(e, 'quiz: submitFailed'));
         }
         await loadQuestion();
     }
@@ -104,39 +105,42 @@
     </div>
 
     {#if status === 'loading'}
-        <div class="py-12 text-center text-sm text-zinc-500">Loading...</div>
+        <div class="py-12 text-center text-sm text-zinc-500">{$_('common.loading')}</div>
 
     {:else if status === 'error'}
         <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-600">
             {error}
         </div>
-        <button
-            onclick={loadQuestion}
-            class="w-full rounded-xl border border-zinc-300 bg-white py-2.5 text-sm font-medium hover:bg-zinc-50"
+        <Button
+            on:click={loadQuestion}
+            variant="outline"
+            className="w-full"
         >
-            Try again
-        </button>
+            {$_('common.tryAgain')}
+        </Button>
 
     {:else if status === 'empty'}
         <div class="py-12 text-center text-sm text-zinc-500">
+            {$_('quiz.empty')}
             {#if selectedCategoryId !== null}
                 No quiz-ready words in this category yet.
             {:else}
-                Add some words to your dictionary to start quizzing!
+                {$_('quiz.empty')}
             {/if}
         </div>
 
     {:else if question}
         <p class="text-center text-base text-zinc-500">
-            What is: <span class="text-lg font-semibold text-zinc-900 underline">{question.word}</span>
+            {$_('quiz.whatIs')} <span class="text-lg font-semibold text-zinc-900 underline">{question.word}</span>
         </p>
 
         <div class="grid grid-cols-2 gap-2">
             {#each question.options as option, idx (idx)}
+                <!-- TODO: use card component? -->
                 <button
                     onclick={() => { selected = idx; }}
                     disabled={isAnswered}
-                    class="relative flex aspect-square cursor-pointer items-center justify-center rounded-xl p-3 text-center text-sm transition-colors disabled:cursor-default {cardClass(idx)}"
+                    class="relative flex aspect-square cursor-pointer items-center justify-center rounded-xl p-3 text-center text-sm transition-colors disabled:cursor-default shadow-sm {cardClass(idx)}"
                 >
                     <span class="line-clamp-6" title={option}>{option}</span>
                     {#if selected === idx}
@@ -150,18 +154,13 @@
             {/each}
         </div>
 
-        {#if submitError}
-            <div class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-center text-xs text-amber-700">
-                Answer may not have been saved — {submitError}
-            </div>
-        {/if}
-
-        <button
-            onclick={next}
+        <Button
+            on:click={next}
             disabled={!isAnswered || status === 'submitting'}
-            class="w-full rounded-xl border border-zinc-300 bg-white py-2.5 text-sm font-medium hover:bg-zinc-50 disabled:opacity-50"
+            variant="outline"
+            className="w-full"
         >
-            {status === 'submitting' ? 'Saving...' : 'Next'}
-        </button>
+            {status === 'submitting' ? $_('common.saving') : $_('list.next')}
+        </Button>
     {/if}
 </div>

@@ -1,6 +1,7 @@
 package com.glossaar.backend.category;
 
 import com.glossaar.backend.IntegrationTest;
+import com.glossaar.backend.ValidationException;
 import com.glossaar.backend.userword.UserWordScoreRepository;
 import com.glossaar.backend.word.WordRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,11 +86,11 @@ class CategoryServiceTest extends IntegrationTest {
 
     @Test
     void create_throwsWhenBlankName() {
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             service.create("      ", testUser);
         });
 
-        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(exception.getReason()).contains("name must not be blank");
+        assertThat(exception.getMessage()).isEqualTo("field: blank");
+        assertThat(exception.getArgs()).containsExactly("name");
     }
 }
