@@ -9,6 +9,9 @@
     import Button from '$lib/components/ui/button/button.svelte';
     import { toast } from '$lib/stores/toast';
     import Card from '../ui/card/card.svelte';
+    import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+    import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+    import Funnel from '@lucide/svelte/icons/funnel';
 
     type Word = {
         id: number;
@@ -41,6 +44,7 @@
     let hasPrevious = false;
     let sortBy = 'word';
     let sortDir = 'asc';
+    let isFilterOpen = false;
 
     async function loadWords(targetPage = page) {
         wordsLoading = true;
@@ -165,29 +169,47 @@
     <form on:submit|preventDefault={applyFilter} class="flex flex-col gap-3">
         <h2 class="text-base font-semibold">{$_('list.search')}</h2>
 
-        <input bind:value={listSearch} placeholder={$_('list.searchPlaceholder')}
-        class="h-10 rounded-lg border border-zinc-300 px-3 text-sm w-full"/>
+        <div class="flex flex-row gap-1 items-center">
+            <input bind:value={listSearch} placeholder={$_('list.searchPlaceholder')} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm w-full" />
 
-        <div class="grid gap-3 grid-cols-2">
-            <select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value={5}>{$_('list.perPage', { values: { count: 5 } })}</option>
-                <option value={10}>{$_('list.perPage', { values: { count: 10 } })}</option>
-                <option value={20}>{$_('list.perPage', { values: { count: 20 } })}</option>
-                <option value={50}>{$_('list.perPage', { values: { count: 50 } })}</option>
-            </select>
-            <select bind:value={sortBy} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value="word">{$_('list.sortByWord')}</option>
-                <option value="explanation">{$_('list.sortByExplanation')}</option>
-            </select>
-            <select bind:value={sortDir} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
-                <option value="asc">{$_('list.ascending')}</option>
-                <option value="desc">{$_('list.descending')}</option>
-            </select>
+            <Button
+                type="button"
+                variant="outline"
+                on:click={() => (isFilterOpen = !isFilterOpen)}
+            >
+                <Funnel />
+
+                {#if isFilterOpen}
+                    <ChevronUpIcon />
+                {:else}
+                    <ChevronDownIcon />
+                {/if}
+            </Button>
+
+            <Button type="submit" disabled={filterLoading || wordsLoading || listSearch?.length === 0} >
+                {$_('list.searchAction')}
+            </Button>
         </div>
 
-        <Button type="submit" size="lg" className="self-end" disabled={filterLoading || wordsLoading || listSearch?.length === 0} >
-            {$_('list.searchAction')}
-        </Button>
+
+		{#if isFilterOpen}
+			<div class="grid gap-3 grid-cols-2">
+				<select bind:value={size} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+					<option value={5}>{$_('list.perPage', { values: { count: 5 } })}</option>
+					<option value={10}>{$_('list.perPage', { values: { count: 10 } })}</option>
+					<option value={20}>{$_('list.perPage', { values: { count: 20 } })}</option>
+					<option value={50}>{$_('list.perPage', { values: { count: 50 } })}</option>
+				</select>
+				<select bind:value={sortBy} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+					<option value="word">{$_('list.sortByWord')}</option>
+					<option value="explanation">{$_('list.sortByExplanation')}</option>
+				</select>
+				<select bind:value={sortDir} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm">
+					<option value="asc">{$_('list.ascending')}</option>
+					<option value="desc">{$_('list.descending')}</option>
+				</select>
+			</div>
+         {/if}
     </form>
 </Card>
 

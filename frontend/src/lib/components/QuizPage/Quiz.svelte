@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { Check } from '@lucide/svelte';
-    import { GlossarClient, type QuizQuestion } from '$lib/api/glossarClient';
+    import { GlossarClient, type QuizQuestion, type Category } from '$lib/api/glossarClient';
     import Button from '$lib/components/ui/button/button.svelte';
     import { _ } from 'svelte-i18n';
     import { toast } from '$lib/stores/toast';
@@ -13,6 +13,9 @@
     let question: QuizQuestion | null = $state(null);
     let selected: number | undefined = $state(undefined);
     let error: string | null = $state(null);
+    let categories: Category[] = $state([]);
+    let selectedCategoryId: number | null = $state(null);
+    let categoriesLoading: boolean = $state(true);
 
     let isAnswered = $derived(selected !== undefined);
 
@@ -36,12 +39,30 @@
         selected = undefined;
         question = null;
         try {
-            question = await GlossarClient.getQuizQuestion() ?? null;
+            question = await GlossarClient.getQuizQuestion(selectedCategoryId ?? undefined) ?? null;
             status = question ? 'ready' : 'empty';
         } catch (e) {
             error = translateError(e, 'request: failed');
             status = 'error';
         }
+    }
+
+    async function loadCategories() {
+        categoriesLoading = true;
+        try {
+            categories = await GlossarClient.getCategories();
+        } catch (e) {
+            error = translateError(e, 'request: failed');
+            status = 'error';
+        } finally {
+            categoriesLoading = false;
+        }
+    }
+
+    async function handleCategoryChange(event: Event) {
+        const target = event.target as HTMLSelectElement;
+        selectedCategoryId = target.value === '' ? null : Number(target.value);
+        await loadQuestion();
     }
 
     async function next() {
@@ -55,10 +76,29 @@
         await loadQuestion();
     }
 
-    onMount(() => loadQuestion());
+    onMount(async () => {
+        await loadCategories();
+        await loadQuestion();
+    });
 </script>
 
 <div class="space-y-6">
+    <div class="space-y-2">
+        <label for="quiz-category" class="block text-sm font-medium text-zinc-700">{$_('quiz.category')}</label>
+        <select
+            id="quiz-category"
+            value={selectedCategoryId === null ? '' : String(selectedCategoryId)}
+            onchange={handleCategoryChange}
+            disabled={categoriesLoading || status === 'submitting'}
+            class="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm disabled:opacity-50"
+        >
+            <option value="">{$_('quiz.allCategories')}</option>
+            {#each categories as category (category.id)}
+                <option value={String(category.id)}>{category.name}</option>
+            {/each}
+        </select>
+    </div>
+
     {#if status === 'loading'}
         <div class="py-12 text-center text-sm text-zinc-500">{$_('common.loading')}</div>
 
@@ -77,6 +117,11 @@
     {:else if status === 'empty'}
         <div class="py-12 text-center text-sm text-zinc-500">
             {$_('quiz.empty')}
+            {#if selectedCategoryId !== null}
+                {$_('quiz.emptyCategory')}
+            {:else}
+                {$_('quiz.empty')}
+            {/if}
         </div>
 
     {:else if question}
