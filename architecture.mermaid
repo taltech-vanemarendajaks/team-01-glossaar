@@ -1,11 +1,6 @@
----
-title: Glossaar architecture
----
-
 flowchart TB
     Browser --> DNS
 	DNS --> Server
-    Server --> DockerHost
 	NginxContainer -->|/api| BeContainer
 	NginxContainer -->|/| FeContainer
 
@@ -14,35 +9,39 @@ flowchart TB
 	BeContainer --> Wordnik[external English API]
 
 	subgraph Server
-		cron
-	end
+        cron[DB backup cron]
 
-	subgraph DockerHost["Docker Host"]
-		direction TB
+        subgraph DockerHost["Docker Host"]
+            direction TB
 
-		subgraph NginxContainer["Nginx container"]
-			Nginx
-		end
+            subgraph NginxContainer["Nginx container"]
+                Nginx[
+                    - Reverse proxy
+                    - Load balancer
+                    - HTTPS termination
+                ]
+            end
 
-		subgraph BeContainer["BE container 1..N"]
-			Be[
-				- Java Spring boot
-				- JPA
-				- Liquibase
-			]
-		end
+            subgraph BeContainer["BE container 1..N"]
+                Be[
+                    - Java Spring boot
+                    - JPA
+                    - Liquibase
+                ]
+            end
 
-		subgraph FeContainer["FE container (nginx)"]
-			Fe[
-				- SvelteKit static
-				- shadcn-svelte
-			]
-		end
+            subgraph FeContainer["FE container (nginx)"]
+                Fe[
+                    - SvelteKit static
+                    - shadcn-svelte
+                ]
+            end
 
-		subgraph DbContainer["DB container"]
-			DB[(PSQL)]
-		end
-	end
+            subgraph DbContainer["DB container"]
+                DB[(PSQL)]
+            end
+        end
+    end
 
 %% TODO: add monitoring, if applies
 %% TODO: add replica db logic, if applies
