@@ -57,19 +57,18 @@ public interface QuizRepository extends Repository<WordEntity, Long> {
             value = """
                     select x.explanation
                     from (
-                        select distinct w.explanation
-                        from words w
-                        where coalesce(trim(w.explanation), '') <> ''
-                        and w.id <> :excludeWordId
-                        and w.explanation <> :excludeExplanation
+                        select distinct ew.explanation
+                        from eki_words ew
+                        where ew.lang = 'est'
+                        and coalesce(trim(ew.explanation), '') <> ''
+                        and ew.explanation <> :excludeExplanation
                     ) x
                     order by random()
                     limit :count
                     """,
             nativeQuery = true
     )
-    List<String> findRandomDistractorExplanations(
-            @Param("excludeWordId") Long excludeWordId,
+    List<String> findRandomDistractorExplanationsFromEki(
             @Param("excludeExplanation") String excludeExplanation,
             @Param("count") int count
     );
