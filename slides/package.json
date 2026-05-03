@@ -1,9 +1,9 @@
 {
-  "name": "glossaar-slides",
+  "name": "slides",
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "slidev build --name glossaar-slides.mg",
+    "build": "slidev build",
     "dev": "slidev --open",
     "export": "slidev export"
   },
