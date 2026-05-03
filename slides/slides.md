@@ -123,8 +123,7 @@ Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestanud, ei pruugi see
 
 # Rakenduse video
 
-<!-- TODO: add correct ID -->
-<Youtube id="Km6CC1ujJPg" width="90%" height="90%" />
+<Youtube id="g37NQ88GHMk" width="90%" height="90%" />
 
 ---
 layout: center
