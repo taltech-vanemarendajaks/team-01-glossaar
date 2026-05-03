@@ -9,6 +9,9 @@
     import Button from '$lib/components/ui/button/button.svelte';
     import { toast } from '$lib/stores/toast';
     import Card from '../ui/card/card.svelte';
+    import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+    import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+    import Funnel from '@lucide/svelte/icons/funnel';
 
     type Word = {
         id: number;
@@ -166,20 +169,28 @@
     <form on:submit|preventDefault={applyFilter} class="flex flex-col gap-3">
         <h2 class="text-base font-semibold">{$_('list.search')}</h2>
 
-        <input bind:value={listSearch} placeholder={$_('list.searchPlaceholder')} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm w-full" />
+        <div class="flex flex-row gap-1 items-center">
+            <input bind:value={listSearch} placeholder={$_('list.searchPlaceholder')} class="h-10 rounded-lg border border-zinc-300 px-3 text-sm w-full" />
 
-        <Button type="submit" size="lg" className="self-end" disabled={filterLoading || wordsLoading || listSearch?.length === 0} >
-			{$_('list.searchAction')}
-		</Button>
+            <Button
+                type="button"
+                variant="outline"
+                on:click={() => (isFilterOpen = !isFilterOpen)}
+            >
+                <Funnel />
 
-        <Button
-			type="button"
-			class="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium"
-			aria-expanded={isFilterOpen}
-			on:click={() => (isFilterOpen = !isFilterOpen)}
-		>
-			{isFilterOpen ? 'Hide filter' : 'Filter'}
-		</Button>
+                {#if isFilterOpen}
+                    <ChevronUpIcon />
+                {:else}
+                    <ChevronDownIcon />
+                {/if}
+            </Button>
+
+            <Button type="submit" disabled={filterLoading || wordsLoading || listSearch?.length === 0} >
+                {$_('list.searchAction')}
+            </Button>
+        </div>
+
 
 		{#if isFilterOpen}
 			<div class="grid gap-3 grid-cols-2">

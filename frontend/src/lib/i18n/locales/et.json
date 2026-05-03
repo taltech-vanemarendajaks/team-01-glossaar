@@ -92,7 +92,10 @@
         "loginWith": "Logi sisse {provider}-ga"
     },
     "quiz": {
+        "category": "Kategooria",
+        "allCategories": "Kõik kategooriad",
         "empty": "Lisa oma sõnastikku sõnu, et alustada viktoriini!",
+        "emptyCategory": "Selles kategoorias pole veel viktoriiniks valmis sõnu.",
         "whatIs": "Mis on:"
     },
     "confirm": {

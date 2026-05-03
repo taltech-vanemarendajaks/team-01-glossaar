@@ -16,7 +16,6 @@
     let categories: Category[] = $state([]);
     let selectedCategoryId: number | null = $state(null);
     let categoriesLoading: boolean = $state(true);
-    let categoriesError: string | null = $state(null);
 
     let isAnswered = $derived(selected !== undefined);
 
@@ -50,12 +49,11 @@
 
     async function loadCategories() {
         categoriesLoading = true;
-        categoriesError = null;
         try {
             categories = await GlossarClient.getCategories();
         } catch (e) {
-            categoriesError = e instanceof Error ? e.message : 'Failed to load categories';
-            categories = [];
+            error = translateError(e, 'request: failed');
+            status = 'error';
         } finally {
             categoriesLoading = false;
         }
@@ -86,7 +84,7 @@
 
 <div class="space-y-6">
     <div class="space-y-2">
-        <label for="quiz-category" class="block text-sm font-medium text-zinc-700">Category</label>
+        <label for="quiz-category" class="block text-sm font-medium text-zinc-700">{$_('quiz.category')}</label>
         <select
             id="quiz-category"
             value={selectedCategoryId === null ? '' : String(selectedCategoryId)}
@@ -94,14 +92,11 @@
             disabled={categoriesLoading || status === 'submitting'}
             class="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm disabled:opacity-50"
         >
-            <option value="">All categories</option>
+            <option value="">{$_('quiz.allCategories')}</option>
             {#each categories as category (category.id)}
                 <option value={String(category.id)}>{category.name}</option>
             {/each}
         </select>
-        {#if categoriesError}
-            <p class="text-xs text-amber-700">Could not load categories: {categoriesError}</p>
-        {/if}
     </div>
 
     {#if status === 'loading'}
@@ -123,7 +118,7 @@
         <div class="py-12 text-center text-sm text-zinc-500">
             {$_('quiz.empty')}
             {#if selectedCategoryId !== null}
-                No quiz-ready words in this category yet.
+                {$_('quiz.emptyCategory')}
             {:else}
                 {$_('quiz.empty')}
             {/if}

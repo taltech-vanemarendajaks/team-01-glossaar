@@ -92,7 +92,10 @@
         "loginWith": "Login with {provider}"
     },
     "quiz": {
+        "category": "Category",
+        "allCategories": "All categories",
         "empty": "Add some words to your dictionary to start quizzing!",
+        "emptyCategory": "No quiz-ready words in this category yet.",
         "whatIs": "What is:"
     },
     "confirm": {
