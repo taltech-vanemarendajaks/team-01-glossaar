@@ -47,7 +47,7 @@ Inimene kes tunneb, et tahab oma sõnavara tähendada eesti või inglise keeles.
 </li>
 
 <li v-click>
-Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestandu, ei pruugi see püsimällu jääda.
+Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestanud, ei pruugi see püsimällu jääda.
 </li>
 </ul>
 
@@ -126,6 +126,8 @@ Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestandu, ei pruugi see
 <!-- TODO: add correct ID -->
 <Youtube id="Km6CC1ujJPg" width="90%" height="90%" />
 
+---
+layout: center
 ---
 
 # Aitäh
