@@ -43,7 +43,7 @@ Isiklik mure - asjad meelde ei jää.
 
 <ul>
 <li v-click>
-Inimene kes tunneb, et tahab oma sõnavara tähendada eesti või inglise keeles.
+Inimene kes tunneb, et tahab oma sõnavara täiendada eesti või inglise keeles.
 </li>
 
 <li v-click>
@@ -91,8 +91,8 @@ Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestanud, ei pruugi see
 
 - iganädalane kohtumine mentoriga
 - iganädalane sprint planning / retro (läbiviija roteerus)
-- GH kanban board
-- GH issued + mahud
+- GitHub kanban board
+- GitHub issued + mahtude hindamine
 
 ---
 
@@ -112,7 +112,7 @@ Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestanud, ei pruugi see
   <div v-for="person in list" :key="person.name" class="flex flex-col items-center gap-2 text-center">
     <img :src="person.avatar" :alt="person.name" class="w-20 h-20 rounded-full" />
     <span class="font-bold">{{ person.name }}</span>
-    <div v-click class="flex flex-col gap-1">
+    <div class="flex flex-col gap-1">
       <span v-for="role in person.roles" :key="role" class="text-xs opacity-70">{{ role }}</span>
     </div>
   </div>
