@@ -91,8 +91,9 @@ Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestanud, ei pruugi see
 
 - iganädalane kohtumine mentoriga
 - iganädalane sprint planning / retro (läbiviija roteerus)
-- GitHub kanban board
 - GitHub issued + mahtude hindamine
+- GitHub kanban board
+- Feature branchid + pull requestid ja review
 
 ---
 
