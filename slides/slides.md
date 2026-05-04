@@ -53,7 +53,7 @@ Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestanud, ei pruugi see
 
 ---
 
-# Rakenduse peamine funktsionaalsus
+# Rakenduse peamine funktsionaalsus (MVP)
 
 <br>
 
@@ -94,6 +94,7 @@ Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestanud, ei pruugi see
 - GitHub issued + mahtude hindamine
 - GitHub kanban board
 - Feature branchid + pull requestid ja review
+- GitHub Actions
 
 ---
 
