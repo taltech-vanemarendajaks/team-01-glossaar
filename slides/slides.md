@@ -121,7 +121,7 @@ Inimene kes tunneb, et kuigi on enda jaoks asja lahti mõtestanud, ei pruugi see
 
 ---
 
-# Rakenduse video
+# Lõppseis
 
 <!-- https://youtube.com/shorts/l3uu5mpmc6U -->
 <Youtube id="l3uu5mpmc6U" width="90%" height="90%" />
